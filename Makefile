@@ -1,27 +1,54 @@
-QUESTASIM_DIR = C:/questasim64_2021.1
-TB_DIR = C:/SV/vending_machine
+# =============================================================================
+# Переменные путей (можно переопределить из командной строки)
+# =============================================================================
+QUESTASIM_DIR ?= C:/questasim64_2021.1
+TB_DIR        ?= C:/SV/vending_machine
+BASE_LIB_DIR  ?= C:/SV/vending_machine/base_classes
+
+# =============================================================================
+# Производные переменные
+# =============================================================================
 UVM_SRC = $(QUESTASIM_DIR)/verilog_src/uvm-1.2/src
 UVM_DPI = $(QUESTASIM_DIR)/uvm-1.2/win64/uvm_dpi
-GCC = $(QUESTASIM_DIR)/gcc-7.4.0-mingw64vc16/bin/gcc.exe
+GCC     = $(QUESTASIM_DIR)/gcc-7.4.0-mingw64vc16/bin/gcc.exe
 
+
+# =============================================================================
+# Настройки симуляции
+# =============================================================================
 VERBOSITY = UVM_HIGH
-TEST_1 =register_test
+
+# =============================================================================
+# Определения тестов и количества запусков
+# =============================================================================
+TEST_1 =test_lots_of_purchases
 COUNT_TEST_1 =1
 TEST_2 =add_test
 COUNT_TEST_2 =0
 
+# =============================================================================
+# Собираем все цели для симуляции
+# =============================================================================
+SIM_TARGETS = sim_test1 sim_test2
+
 UCDB_FILES = $(wildcard ucdb_*.ucdb)
 
-all: compile sim_test1 sim_test2 merge_coverage
+all: compile run_sims merge_coverage
 
 compile:
 	vlib work
 	vmap work work
+	vlog -sv +acc +incdir+$(UVM_SRC) $(BASE_LIB_DIR)/base_pkg.sv
 	vlog -sv +acc -cover f +incdir+$(UVM_SRC) +define+UVM_REG_DATA_WIDTH=32 \
 		$(TB_DIR)/vending_machine.sv \
 		$(TB_DIR)/full_interface.sv \
 		$(TB_DIR)/vm_pkg.sv \
 		$(TB_DIR)/top.sv
+
+# =============================================================================
+# Цели для запуска симуляций
+# =============================================================================
+run_sims: $(SIM_TARGETS)
 
 sim_test1: compile
 	@set TEST_NAME=$(TEST_1) & set RUN_COUNT=$(COUNT_TEST_1) & $(MAKE) sim

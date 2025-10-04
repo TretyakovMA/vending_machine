@@ -12,17 +12,18 @@ virtual class base_test extends uvm_test;
 	env_config         env_config_h;
 	
 
-	agent_config #(virtual user_interface) user_agent_config_h;
-	agent_config #(virtual admin_interface) admin_agent_config_h;
-	agent_config #(virtual register_interface) register_agent_config_h;
+	
+	user_agent_config     user_agent_config_h;
+	admin_agent_config    admin_agent_config_h;
+	register_agent_config register_agent_config_h;
 	
 	function void build_phase(uvm_phase phase);
 		super.build_phase(phase);
 		env_config_h = env_config::type_id::create("env_config_h", this);
 
-		user_agent_config_h = agent_config #(virtual user_interface)::type_id::create("user_agent_config_h", this);
-		admin_agent_config_h = agent_config #(virtual admin_interface)::type_id::create("admin_agent_config_h", this);
-		register_agent_config_h = agent_config #(virtual register_interface)::type_id::create("register_agent_config_h", this);
+		user_agent_config_h     = user_agent_config::type_id::create("user_agent_config_h", this);
+		admin_agent_config_h    = admin_agent_config::type_id::create("admin_agent_config_h", this);
+		register_agent_config_h = register_agent_config::type_id::create("register_agent_config_h", this);
 
 		
 		
@@ -33,6 +34,9 @@ virtual class base_test extends uvm_test;
 		if(!uvm_config_db #(virtual interface register_interface)::get(this, "", "register_vif", register_agent_config_h.vif))
 			`uvm_fatal("BASE_TEST", "Faild to get register interface")
 		
+		user_agent_config_h.has_monitor      = 1;
+		admin_agent_config_h.has_monitor     = 0;
+		register_agent_config_h.has_monitor  = 1;
 		
 		env_config_h.user_agent_config_h     = user_agent_config_h;
 		env_config_h.admin_agent_config_h    = admin_agent_config_h;

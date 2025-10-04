@@ -18,16 +18,6 @@ class register_scoreboard extends uvm_scoreboard;
 		a_imp = new("a_imp", this);
 	endfunction: build_phase
 	
-	virtual function void start_of_simulation_phase( uvm_phase phase );
-		super.start_of_simulation_phase( phase );
-		uvm_top.print_topology();
-		//reg_block_h.reset();
-	endfunction: start_of_simulation_phase
-	
-	task reset_phase(uvm_phase phase);
-		super.reset_phase(phase);
-		//reg_block_h.reset();
-	endtask: reset_phase
 	
 	
 	function void write (register_transaction t);

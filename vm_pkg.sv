@@ -12,19 +12,22 @@ package vm_pkg;
 	
 	import uvm_pkg::*;
 	`include "uvm_macros.svh"
+
+	import base_pkg::*;
+
+	typedef base_agent_config #(virtual user_interface)     user_agent_config;
+	typedef base_agent_config #(virtual admin_interface)    admin_agent_config;
+	typedef base_agent_config #(virtual register_interface) register_agent_config;
 	
 	
 	`include "user_src/user_components/user_transaction.sv"
 	`include "register_src/register_components/register_transaction.sv"
 	`include "admin_src/admin_transaction.sv"
 
-	`include "config/agent_config.sv"
-	`include "config/env_config.sv"
 	
-	`include "base_classes/base_driver.sv"
-	`include "base_classes/base_monitor.sv"
-
-
+	
+	
+	`include "config/env_config.sv"
 
 	`include "register_src/registers/vend_cfg_reg.sv"
 	`include "register_src/registers/vend_clients_reg.sv"
@@ -60,9 +63,9 @@ package vm_pkg;
 	
 
 
-	`include "base_classes/base_agent.sv"
 	
-	`include "base_classes/env.sv"
+	
+	`include "env.sv"
 	`include "base_classes/base_test.sv"
 
 

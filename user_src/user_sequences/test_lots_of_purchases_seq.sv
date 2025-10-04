@@ -16,11 +16,11 @@ class test_lots_of_purchases_seq extends uvm_sequence #(user_transaction);
 			`uvm_info("TEST", s_start, UVM_LOW)
 			assert(tr.randomize() with {
 				client_id == 3;
-				coin_in_q.size() == 1;
+				coin_in_q.size() == 2;
 				coin_in_q[0] == 25;
-				//coin_in_q[1] == 25;
+				coin_in_q[1] == 25;
 				currency_type_q[0] == RUB;
-				//currency_type_q[1] == RUB;
+				currency_type_q[1] == RUB;
 				item_num == 1; 
 			});
 			

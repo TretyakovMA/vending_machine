@@ -10,6 +10,13 @@ class admin_transaction extends uvm_sequence_item;
 	function new(string name = "admin_transaction");
 		super.new(name);
 	endfunction: new
+
+	function string convert2string();
+		string s;
+		s = $sformatf("Admin_password = %h; Admin_mode = %b",
+			admin_password, admin_mode);
+		return s;
+	endfunction: convert2string
 	
 endclass
 `endif
