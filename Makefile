@@ -3,7 +3,7 @@
 # =============================================================================
 QUESTASIM_DIR ?= C:/questasim64_2021.1
 TB_DIR        ?= C:/SV/vending_machine
-BASE_LIB_DIR  ?= C:/SV/vending_machine/base_classes
+BASE_LIB_DIR  ?= C:/SV/vending_machine/tb/base_classes
 
 # =============================================================================
 # Производные переменные
@@ -21,7 +21,7 @@ VERBOSITY = UVM_HIGH
 # =============================================================================
 # Определения тестов и количества запусков
 # =============================================================================
-TEST_1 =test_lots_of_purchases
+TEST_1 =reset_test
 COUNT_TEST_1 =1
 TEST_2 =add_test
 COUNT_TEST_2 =0
@@ -40,9 +40,9 @@ compile:
 	vmap work work
 	vlog -sv +acc +incdir+$(UVM_SRC) $(BASE_LIB_DIR)/base_pkg.sv
 	vlog -sv +acc -cover f +incdir+$(UVM_SRC) +define+UVM_REG_DATA_WIDTH=32 \
-		$(TB_DIR)/vending_machine.sv \
-		$(TB_DIR)/full_interface.sv \
-		$(TB_DIR)/vm_pkg.sv \
+		$(TB_DIR)/dut/vending_machine.sv \
+		$(TB_DIR)/tb/full_interface.sv \
+		$(TB_DIR)/tb/vm_pkg.sv \
 		$(TB_DIR)/top.sv
 
 # =============================================================================
