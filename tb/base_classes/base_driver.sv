@@ -38,7 +38,7 @@ virtual class base_driver #(
 					seq_item_port.get_next_item(tr);
 					`uvm_info(get_type_name(), "Start work", UVM_HIGH)
 					drive_transaction(tr);
-					`uvm_info(get_type_name(), {"Send transaction ", tr.convert2string()}, UVM_HIGH)
+					//`uvm_info(get_type_name(), {"Send transaction ", tr.convert2string()}, UVM_HIGH)
 					seq_item_port.item_done();
 				end
 			end

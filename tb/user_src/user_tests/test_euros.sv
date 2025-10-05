@@ -1,6 +1,6 @@
 `ifndef TEST_EUROS
 `define TEST_EUROS
-class test_euros extends base_test;
+class test_euros extends user_base_test;
 	`uvm_component_utils(test_euros)
 	
 	function new(string name = "test_euros", uvm_component parent);

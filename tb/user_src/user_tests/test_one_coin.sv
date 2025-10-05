@@ -1,6 +1,6 @@
 `ifndef TEST_ONE_COIN
 `define TEST_ONE_COIN
-class test_one_coin extends base_test;
+class test_one_coin extends user_base_test;
 	`uvm_component_utils(test_one_coin)
 	
 	function new(string name = "test_one_coin", uvm_component parent);

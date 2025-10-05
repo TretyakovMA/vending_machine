@@ -54,16 +54,6 @@ virtual class base_test extends uvm_test;
 		super.start_of_simulation_phase(phase);
 		uvm_top.print_topology();
 	endfunction: start_of_simulation_phase
-	
 
-	pure virtual function uvm_sequence #(user_transaction) get_sequence();
-
-	virtual task main_phase(uvm_phase phase);
-        uvm_sequence #(user_transaction) seq;
-        seq = get_sequence();
-		seq.set_starting_phase(phase);
-		seq.set_automatic_phase_objection(1);
-        seq.start(env_h.user_agent_h.sequencer_h);
-    endtask: main_phase
 endclass
 `endif

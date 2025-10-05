@@ -32,7 +32,7 @@ virtual class base_monitor #(
                 tr = TRANSACTION_TYPE::type_id::create("tr");
 				monitor_transaction(tr);
 				ap.write(tr);
-				`uvm_info(get_type_name(), {"Get transaction: ", tr.convert2string()}, UVM_HIGH)
+				//`uvm_info(get_type_name(), {"Get transaction: ", tr.convert2string()}, UVM_HIGH)
 			end
 		end
 	endtask: main_phase

@@ -1,6 +1,3 @@
-`define NUM_ITEMS 10
-`define MAX_CLIENTS 100
-
 `ifndef USER_INTERFACE 
 `define USER_INTERFACE
 interface user_interface(input logic clk, logic rst_n);

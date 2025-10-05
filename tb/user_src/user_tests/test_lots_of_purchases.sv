@@ -1,6 +1,6 @@
 `ifndef TEST_LOTS_OF_PURCHASES
 `define TEST_LOTS_OF_PURCHASES
-class test_lots_of_purchases extends base_test;
+class test_lots_of_purchases extends user_base_test;
 	`uvm_component_utils(test_lots_of_purchases)
 	
 	function new(string name = "test_lots_of_purchases", uvm_component parent);

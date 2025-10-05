@@ -1,6 +1,6 @@
 `ifndef TEST_DOLLARS
 `define TEST_DOLLARS
-class test_dollars extends base_test;
+class test_dollars extends user_base_test;
 	`uvm_component_utils(test_dollars)
 	
 	function new(string name = "test_dollars", uvm_component parent);

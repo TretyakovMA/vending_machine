@@ -15,10 +15,9 @@ class user_monitor extends base_monitor #(virtual user_interface, user_transacti
 	task monitor_transaction (user_transaction tr);
 		tr.client_id = vif.client_id;
 		`uvm_info(get_type_name(), $sformatf("Client %0d authorized", vif.client_id), UVM_HIGH)
+		@(posedge vif.clk iff vif.coin_insert);
 		
-		wait (vif.coin_insert);//добавить срабатывание по posedge clk
-
-		repeat(2) @(posedge vif.clk);
+		repeat(1) @(posedge vif.clk);
 		
 		while (vif.item_select == 0) begin
 			`uvm_info(get_type_name(), $sformatf("Send %0d %s", vif.coin_in, currency_type_t'(vif.currency_type)), UVM_HIGH)
@@ -30,9 +29,10 @@ class user_monitor extends base_monitor #(virtual user_interface, user_transacti
 		tr.item_num = $clog2(vif.item_select);
 		`uvm_info(get_type_name(), $sformatf("Select item = %b", vif.item_select), UVM_HIGH)
 		
-		wait(vif.confirm);
+		@(posedge vif.clk iff vif.confirm);
+		
 		`uvm_info(get_type_name(), {s_send_tr_1, tr.convert2string(), s_send_tr_2}, UVM_LOW)
-		repeat(4) @(posedge vif.clk);
+		repeat(3) @(posedge vif.clk);
 		
 		tr.item_out = vif.item_out;
 		`uvm_info(get_type_name(), $sformatf("Get item = %b", vif.item_out), UVM_HIGH)
