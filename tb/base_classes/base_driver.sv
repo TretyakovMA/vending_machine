@@ -19,18 +19,20 @@ virtual class base_driver #(
 	pure virtual task reset();
 	pure virtual task drive_transaction (TRANSACTION_TYPE tr);
 	
+	task reset_phase(uvm_phase phase);
+		super.reset_phase(phase);
+		reset();
+	endtask: reset_phase
 	
 	virtual task main_phase(uvm_phase phase);
-
-		reset();
-		wait (vif.rst_n == 1);
-		@(posedge vif.clk);
+		super.main_phase(phase);
+		@(posedge vif.clk iff vif.rst_n == 1);
 
 		fork
 			forever begin
 				@(negedge vif.rst_n);
 				reset();
-				@(posedge vif.clk);
+				@(posedge vif.clk iff vif.rst_n == 1);
 			end
 			
 			forever begin

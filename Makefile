@@ -16,12 +16,12 @@ GCC     = $(QUESTASIM_DIR)/gcc-7.4.0-mingw64vc16/bin/gcc.exe
 # =============================================================================
 # Настройки симуляции
 # =============================================================================
-VERBOSITY = UVM_HIGH
+VERBOSITY = UVM_LOW
 
 # =============================================================================
 # Определения тестов и количества запусков
 # =============================================================================
-TEST_1 =test_lots_of_purchases
+TEST_1 =test_lots_of_purchases # После "=" пробелы не ставить!
 COUNT_TEST_1 =1
 TEST_2 =add_test
 COUNT_TEST_2 =0
@@ -34,11 +34,10 @@ SIM_TARGETS = sim_test1 sim_test2
 UCDB_FILES = $(wildcard ucdb_*.ucdb)
 
 all: compile run_sims merge_coverage
-
+# vlog -sv +acc +incdir+$(UVM_SRC) $(BASE_LIB_DIR)/base_pkg.sv
 compile:
 	vlib work
-	vmap work work
-	vlog -sv +acc +incdir+$(UVM_SRC) $(BASE_LIB_DIR)/base_pkg.sv
+	vmap work work 
 	vlog -sv +acc -cover f +incdir+$(UVM_SRC) +define+UVM_REG_DATA_WIDTH=32 \
 		$(TB_DIR)/dut/vending_machine.sv \
 		$(TB_DIR)/tb/full_interface.sv \

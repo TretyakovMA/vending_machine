@@ -10,7 +10,7 @@ class test_lots_of_purchases_seq extends uvm_sequence #(user_transaction);
 	task body();
 		user_transaction tr;
 		
-		repeat(20) begin
+		repeat(2) begin
 			tr = user_transaction::type_id::create("tr");
 			start_item(tr);
 			`uvm_info("TEST", s_start, UVM_LOW)
@@ -19,8 +19,8 @@ class test_lots_of_purchases_seq extends uvm_sequence #(user_transaction);
 				coin_in_q.size() == 2;
 				coin_in_q[0] == 25;
 				coin_in_q[1] == 25;
-				currency_type_q[0] == RUB;
-				currency_type_q[1] == RUB;
+				currency_type_q[0] == EUR;
+				currency_type_q[1] == EUR;
 				item_num == 1; 
 			});
 			

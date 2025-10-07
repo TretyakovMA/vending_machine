@@ -3,11 +3,11 @@
 class vend_cfg_reg extends uvm_reg;
 	`uvm_object_utils(vend_cfg_reg)
 	
-	uvm_reg_field reserved;  
+	uvm_reg_field      reserved;  
 	rand uvm_reg_field exchange_rate;
 	rand uvm_reg_field idle_timeout;
 	rand uvm_reg_field max_coins;
-	uvm_reg_field num_items;      
+	uvm_reg_field      num_items;      
 	
 	function new(string name = "vend_cfg_reg");
 		super.new(.name( name ), .n_bits(32), .has_coverage(UVM_NO_COVERAGE));

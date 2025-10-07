@@ -24,7 +24,8 @@ package vm_pkg;
 
 	//==============================================================================
 	// Base Classes
-	import base_pkg::*;
+	`include "base_classes/base_pkg.sv"
+	//import base_pkg::*;
 	//==============================================================================
 
 
@@ -73,6 +74,7 @@ package vm_pkg;
 	`include "enviroment/env_config.sv"
 	`include "enviroment/env.sv"
 	`include "enviroment/base_test.sv"
+	`include "enviroment/stimulus_base_test.sv"
 	//==============================================================================
 
 

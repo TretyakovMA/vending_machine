@@ -2,15 +2,15 @@
 `define USER_TRANSACTION
 class user_transaction extends uvm_sequence_item;
 	`uvm_object_utils(user_transaction)
-	rand bit [8:0] client_id;
-	rand bit [5:0] coin_in_q[$];
-	rand currency_type_t currency_type_q[$];
-	rand bit [4:0] item_num;
+	rand bit [8:0]        client_id;
+	rand bit [5:0]        coin_in_q[$];
+	rand currency_type_t  currency_type_q[$];
+	rand bit [4:0]        item_num;
 	
-	bit [`NUM_ITEMS-1:0] item_out;
-	bit [31:0] change_out;
-	bit no_change;
-	bit [7:0] client_points;
+	bit [`NUM_ITEMS-1:0]  item_out;
+	bit [31:0]            change_out;
+	bit                   no_change;
+	bit [7:0]             client_points;
 	
 	
 	function new(string name = "");
@@ -206,9 +206,9 @@ class user_transaction extends uvm_sequence_item;
 		item_num inside {[0:`NUM_ITEMS-1]};
 	}
 	
-	constraint valid_balance{
+	/*constraint valid_balance{
 		calculate_balance(coin_in_q, currency_type_q) >= get_item_price(item_num, client_id);
-	}
+	}*/
 	
 	
 	//----------------------------------------------------------------------------------

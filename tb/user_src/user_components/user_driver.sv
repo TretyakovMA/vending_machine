@@ -36,6 +36,7 @@ class user_driver extends base_driver #(virtual user_interface, user_transaction
 		end
 		vif.coin_insert <= 0;
 		vif.coin_in <= 0;
+		vif.currency_type <= 0;
 		vif.item_select <= (1 << tr.item_num); 
 		@(posedge vif.clk);
 		

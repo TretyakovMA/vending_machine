@@ -2,11 +2,11 @@
 `define REGISTER_TRANSACTION
 class register_transaction extends uvm_sequence_item;
 	`uvm_object_utils(register_transaction)
-	rand bit [31:0] regs_data_in;
-	rand bit [7:0] regs_addr;
-	rand bit regs_we;
+	rand bit [31:0]  regs_data_in;
+	rand bit [7:0]   regs_addr;
+	rand bit         regs_we;
 	
-	bit [31:0] regs_data_out;
+	bit [31:0]       regs_data_out;
 	
 	function new(string name = "register_transaction");
 		super.new(name);

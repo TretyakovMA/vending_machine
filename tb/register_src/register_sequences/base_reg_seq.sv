@@ -10,11 +10,10 @@ class base_reg_seq extends uvm_reg_sequence;
     
     function new(string name = "base_reg_seq");
         super.new(name);
-    endfunction
+    endfunction: new
 
     task body();
-        $cast(reg_block_h, model);
-        reg_block_h.reset();
+        model = reg_block_h;
         reg_block_h.get_registers(registers);
     endtask: body
 endclass

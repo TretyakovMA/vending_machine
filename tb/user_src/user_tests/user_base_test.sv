@@ -1,29 +1,19 @@
 `ifndef USER_BASE_TEST
 `define USER_BASE_TEST
 
-virtual class user_base_test extends base_test;
-    `uvm_component_utils(user_base_test);
+virtual class user_base_test #(
+    type USER_SEQUENCE_TYPE
+) extends stimulus_base_test #(
+    .SEQUENCE_TYPE(USER_SEQUENCE_TYPE),
+    .SEQUENCER_TYPE(user_sequencer),
+    .IS_VIRTUAL_SEQUENCE(0),
+    .PATH_TO_SEQUENCER("*env_h.user_agent_h.sequencer_h")
+);
+    `uvm_component_param_utils(user_base_test #(USER_SEQUENCE_TYPE));
     
-    function new(string name, uvm_component parent);
+    function new(string name = "user_base_test", uvm_component parent);
         super.new(name, parent);
-    endfunction: new
-    
-
-    pure virtual function uvm_sequence #(user_transaction) get_sequence();
-
-    
-    
-    task main_phase(uvm_phase phase);
-        uvm_sequence #(user_transaction) user_sequence_h;
-        user_sequence_h = get_sequence();
-        if (user_sequence_h == null) begin
-            `uvm_fatal(get_type_name(), "No sequence provided by the test")
-        end
-        user_sequence_h.set_starting_phase(phase);
-		user_sequence_h.set_automatic_phase_objection(1);
-        user_sequence_h.start(env_h.user_agent_h.sequencer_h);
-    endtask: main_phase
-
+    endfunction
     
 endclass
 `endif

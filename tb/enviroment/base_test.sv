@@ -8,14 +8,12 @@ virtual class base_test extends uvm_test;
 		super.new(name, parent);
 	endfunction: new
 	
-	env                env_h;
-	env_config         env_config_h;
+	env                    env_h;
+	env_config             env_config_h;
 	
-
-	
-	user_agent_config     user_agent_config_h;
-	admin_agent_config    admin_agent_config_h;
-	register_agent_config register_agent_config_h;
+	user_agent_config      user_agent_config_h;
+	admin_agent_config     admin_agent_config_h;
+	register_agent_config  register_agent_config_h;
 	
 	function void build_phase(uvm_phase phase);
 		super.build_phase(phase);
@@ -34,6 +32,7 @@ virtual class base_test extends uvm_test;
 		if(!uvm_config_db #(virtual interface register_interface)::get(this, "", "register_vif", register_agent_config_h.vif))
 			`uvm_fatal("BASE_TEST", "Faild to get register interface")
 		
+
 		user_agent_config_h.has_monitor      = 1;
 		admin_agent_config_h.has_monitor     = 0;
 		register_agent_config_h.has_monitor  = 1;
@@ -50,7 +49,7 @@ virtual class base_test extends uvm_test;
 	
 	
 	
-	virtual function void start_of_simulation_phase(uvm_phase phase);
+	function void start_of_simulation_phase(uvm_phase phase);
 		super.start_of_simulation_phase(phase);
 		uvm_top.print_topology();
 	endfunction: start_of_simulation_phase

@@ -4,18 +4,18 @@
 virtual class base_agent #(
 	type INTERFACE_TYPE,
 	type TRANSACTION_TYPE,
-	type DRIVER_TYPE    = void_driver #(INTERFACE_TYPE, TRANSACTION_TYPE),
-	type MONITOR_TYPE   = void_monitor #(INTERFACE_TYPE, TRANSACTION_TYPE),
+	type DRIVER_TYPE    = void_driver   #(INTERFACE_TYPE, TRANSACTION_TYPE),
+	type MONITOR_TYPE   = void_monitor  #(INTERFACE_TYPE, TRANSACTION_TYPE),
 	type SEQUENCER_TYPE = uvm_sequencer #(TRANSACTION_TYPE)
 ) extends uvm_agent;
 
     `uvm_component_param_utils (base_agent #(
-								INTERFACE_TYPE, 
-								TRANSACTION_TYPE, 
-								DRIVER_TYPE, 
-								MONITOR_TYPE, 
-								SEQUENCER_TYPE
-								)
+		INTERFACE_TYPE, 
+		TRANSACTION_TYPE, 
+		DRIVER_TYPE, 
+		MONITOR_TYPE, 
+		SEQUENCER_TYPE
+		)
 	)
 
     function new(string name, uvm_component parent);
@@ -31,20 +31,17 @@ virtual class base_agent #(
 	uvm_analysis_port #(TRANSACTION_TYPE) ap;
 
 
-
 	function void build_phase(uvm_phase phase);
 		super.build_phase(phase);
 		if(!uvm_config_db #(base_agent_config #(INTERFACE_TYPE))::get(this, "", "agent_config", config_h))
 			`uvm_fatal(get_type_name(), "Faild to get config")
 	
 		if (config_h.is_active == UVM_ACTIVE) begin
-			
 			driver_h    = DRIVER_TYPE::type_id::create("driver_h", this);
 			sequencer_h = SEQUENCER_TYPE::type_id::create("sequencer_h", this);
 		end 
 		
 		if (config_h.has_monitor == 1) begin
-			
 			monitor_h = MONITOR_TYPE::type_id::create("monitor_h", this);
 			ap = new("ap", this);
 		end
