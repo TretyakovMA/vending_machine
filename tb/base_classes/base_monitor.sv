@@ -22,19 +22,35 @@ virtual class base_monitor #(
 		ap = new("ap", this);
 	endfunction: build_phase
 	
-    pure virtual task monitor_transaction (TRANSACTION_TYPE tr);
-    pure virtual function bit condition ();
+	pure virtual task reset();
+	pure virtual function bit condition ();
+    pure virtual task monitoring_transaction (TRANSACTION_TYPE tr);
+    
 	
+	task reset_phase(uvm_phase phase);
+		super.reset_phase(phase);
+		reset();
+	endtask: reset_phase
+
 	task main_phase(uvm_phase phase);
-		forever begin
-			@(posedge vif.clk);
-			if (vif.rst_n && condition()) begin
-                tr = TRANSACTION_TYPE::type_id::create("tr");
-				monitor_transaction(tr);
-				ap.write(tr);
-				//`uvm_info(get_type_name(), {"Get transaction: ", tr.convert2string()}, UVM_HIGH)
+		super.main_phase(phase);
+		fork
+			forever begin
+				@(negedge vif.rst_n);
+				reset();
+				@(posedge vif.clk iff vif.rst_n == 1);
 			end
-		end
+
+			forever begin
+				@(posedge vif.clk);
+				if (vif.rst_n && condition()) begin
+					tr = TRANSACTION_TYPE::type_id::create("tr");
+					monitoring_transaction(tr);
+					ap.write(tr);
+					//`uvm_info(get_type_name(), {"Get transaction: ", tr.convert2string()}, UVM_HIGH)
+				end
+			end
+		join_any
 	endtask: main_phase
 	
 endclass

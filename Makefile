@@ -21,7 +21,7 @@ VERBOSITY = UVM_LOW
 # =============================================================================
 # Определения тестов и количества запусков
 # =============================================================================
-TEST_1 =test_lots_of_purchases # После "=" пробелы не ставить!
+TEST_1 =full_client_session_with_no_errors       # После "=" пробелы не ставить!
 COUNT_TEST_1 =1
 TEST_2 =add_test
 COUNT_TEST_2 =0
@@ -75,7 +75,7 @@ merge_coverage:
 
 
 clean:
-	del /Q /F transcript *.wlf *.ucdb sim_log_*.txt tr_db.log vsim_stacktrace.vstf vsim_*.vlf 2>NUL
+	del /Q /F transcript *.wlf *.ucdb sim_log_*.txt tr_db.log vsim_stacktrace.vstf vsim_*.vlf wlf* 2>NUL
 	rmdir /S /Q work 2>NUL
 	
 

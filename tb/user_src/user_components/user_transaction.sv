@@ -18,15 +18,6 @@ class user_transaction extends uvm_sequence_item;
 	endfunction: new
 	
 	
-	static int client_points_db[int];//подумать над переносом
-	
-	static function void reset_points();
-		for (int i = 0; i < `MAX_CLIENTS; i++) begin
-			client_points_db[i] = i % 20;
-		end
-	endfunction: reset_points
-	
-	
 	
 	
 	//************************************************************************************
@@ -113,7 +104,6 @@ class user_transaction extends uvm_sequence_item;
 			`uvm_error("SCOREBOARD", $sformatf("Points accrual error: client_points = %0d, expected = %0d", compared_tr.client_points, this.client_points))
 		end
 		else begin
-			client_points_db[client_id] = compared_tr.client_points;
 			`uvm_info("SCOREBOARD", "Points accrued correctly", UVM_HIGH)
 		end
 		
@@ -130,60 +120,6 @@ class user_transaction extends uvm_sequence_item;
 	
 	
 
-	
-	//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-	//Calculate expected transaction
-	function int convert_to_rub(bit [5:0] coin, currency_type_t currency);
-		case (currency)
-			RUB: return coin;
-			USD: return coin * 2;
-			EUR: return coin * 3;
-		endcase
-	endfunction: convert_to_rub
-	
-	
-	
-	function int get_item_price(bit[4:0] item_num, bit [8:0] client_id);
-		int discount;
-		int price;
-		bit vip;
-		discount = (client_id % 3) * 10;
-		vip = (client_id % 10 == 0);
-		if (vip) discount += 10;
-		if (discount > 30) discount = 30;
-		price = (item_num + 1) * 10;
-		
-		price = price * (100 - discount) / 100;
-		return price;
-	endfunction: get_item_price
-	
-	
-	
-	function int calculate_balance(bit [5:0] q[$], currency_type_t cur_q[$]);
-		int balance = 0;
-		
-		foreach(q[i])
-			balance += convert_to_rub(q[i], cur_q[i]);
-		
-		return balance;
-	endfunction: calculate_balance
-	
-	
-	
-	
-	function void calculate_exp_transaction();
-		int balance;
-		int item_price;
-		
-		item_price = get_item_price(item_num, client_id);
-		balance = calculate_balance(coin_in_q, currency_type_q);
-		
-		item_out = (1 << item_num);
-		change_out = balance - item_price;
-		no_change = (balance - item_price == 0) ? 1 : 0;
-		client_points = client_points_db[client_id] + $floor(item_price / 20);
-	endfunction: calculate_exp_transaction
-	//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 	
 	
 	
@@ -205,10 +141,6 @@ class user_transaction extends uvm_sequence_item;
 	constraint valid_item_select{
 		item_num inside {[0:`NUM_ITEMS-1]};
 	}
-	
-	/*constraint valid_balance{
-		calculate_balance(coin_in_q, currency_type_q) >= get_item_price(item_num, client_id);
-	}*/
 	
 	
 	//----------------------------------------------------------------------------------

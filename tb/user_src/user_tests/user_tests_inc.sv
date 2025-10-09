@@ -1,0 +1,10 @@
+`include "user_base_test.sv"
+
+`include "simple_test.sv"
+`include "test_one_coin.sv"
+`include "test_few_coin.sv"
+`include "test_dollars.sv"
+`include "test_euros.sv"
+`include "test_random_client_with_no_change.sv"
+`include "full_client_session_with_no_errors.sv"
+`include "test_lots_of_purchases.sv"

@@ -57,7 +57,7 @@ package vm_pkg;
 
 	//==============================================================================
 	// User Components
-	`include "user_src/user_components_inc.sv"
+	`include "user_src/user_components/user_components_inc.sv"
 	//==============================================================================
 	
 
@@ -83,13 +83,13 @@ package vm_pkg;
 
 	//==============================================================================
 	// User Sequences
-	`include "user_src/user_sequences_inc.sv"
+	`include "user_src/user_sequences/user_sequences_inc.sv"
 	//==============================================================================
 
 
 	//==============================================================================
 	// User Tests
-	`include "user_src/user_tests_inc.sv"
+	`include "user_src/user_tests/user_tests_inc.sv"
 	//==============================================================================
 
 

@@ -12,7 +12,11 @@ class user_monitor extends base_monitor #(virtual user_interface, user_transacti
 		return vif.id_valid == 1;
 	endfunction: condition
 
-	task monitor_transaction (user_transaction tr);
+	task reset();
+		user_scoreboard::reset_points();
+	endtask: reset
+
+	task monitoring_transaction (user_transaction tr);
 		tr.client_id = vif.client_id;
 		`uvm_info(get_type_name(), $sformatf("Client %0d authorized", vif.client_id), UVM_HIGH)
 		@(posedge vif.clk iff vif.coin_insert);
@@ -42,7 +46,7 @@ class user_monitor extends base_monitor #(virtual user_interface, user_transacti
 		tr.no_change = vif.no_change;
 		tr.client_points = vif.client_points;
 		`uvm_info(get_type_name(), {s_get_tr_1, tr.convert2string(), s_get_tr_2}, UVM_LOW)
-	endtask: monitor_transaction
+	endtask: monitoring_transaction
 	
 	
 	
