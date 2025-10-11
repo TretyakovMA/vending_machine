@@ -1,10 +1,10 @@
-`ifndef REGISTER_TEST_SEQ
-`define REGISTER_TEST_SEQ
-class register_test_seq extends base_reg_seq;
-	`uvm_object_utils(register_test_seq)
+`ifndef READ_AFTER_WRITE_TEST_SEQ
+`define READ_AFTER_WRITE_TEST_SEQ
+class read_after_write_test_seq extends base_reg_seq;
+	`uvm_object_utils(read_after_write_test_seq)
 
     
-	function new(string name = "register_test_seq");
+	function new(string name = "read_after_write_test_seq");
 		super.new(name);
 	endfunction
     

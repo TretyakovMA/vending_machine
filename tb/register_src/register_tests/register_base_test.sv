@@ -4,7 +4,6 @@ virtual class register_base_test #(
     type REGISTER_SEQUENCE_TYPE
 ) extends stimulus_base_test #(
     .SEQUENCE_TYPE(register_test_vseq #(REGISTER_SEQUENCE_TYPE)),
-    .SEQUENCER_TYPE(register_sequencer),
     .IS_VIRTUAL_SEQUENCE(1)
 );
     `uvm_component_param_utils(register_base_test #(REGISTER_SEQUENCE_TYPE));

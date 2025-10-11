@@ -124,7 +124,7 @@ module vending_machine #(
                 8'h08: regs_data_out = r_current_admin_password;
                 default: if (regs_addr >= 8'h0C && regs_addr < 8'h0C + NUM_ITEMS*4) begin
                     automatic int idx = (regs_addr - 8'h0C) / 4;
-                    regs_data_out[7:0]  = r_item_prices[idx];
+                    regs_data_out[7:0]   = r_item_prices[idx];
                     regs_data_out[15:8]  = r_item_count[idx];
                     regs_data_out[23:16] = r_item_discount[idx];
                 end

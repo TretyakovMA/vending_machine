@@ -3,9 +3,9 @@
 
 virtual class stimulus_base_test #(
     type   SEQUENCE_TYPE,
-    type   SEQUENCER_TYPE,
+    type   SEQUENCER_TYPE      = uvm_sequencer #(uvm_sequence_item),
     bit    IS_VIRTUAL_SEQUENCE = 1,
-    string PATH_TO_SEQUENCER = "virtual sequence don't use this"
+    string PATH_TO_SEQUENCER   = "virtual sequence don't use this"
 ) extends base_test;
 
     `uvm_component_param_utils(stimulus_base_test #(
@@ -17,7 +17,7 @@ virtual class stimulus_base_test #(
     );
 
     SEQUENCE_TYPE  sequence_h;
-    SEQUENCER_TYPE sequencer_h;
+    SEQUENCER_TYPE sequencer_h = null;
     uvm_component  component_h;
     
 
@@ -35,10 +35,14 @@ virtual class stimulus_base_test #(
                 `uvm_fatal (get_type_name(), $sformatf("Failed to cast: component_h -> sequencer_h, path: %s", PATH_TO_SEQUENCER))
         end
 
+        
         sequence_h = SEQUENCE_TYPE::type_id::create("sequence_h");
+        
         sequence_h.set_starting_phase(phase);
 		sequence_h.set_automatic_phase_objection(1);
+        
         sequence_h.start(sequencer_h);
+        
     endtask: main_phase
 
 endclass

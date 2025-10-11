@@ -8,9 +8,8 @@ class user_scoreboard extends uvm_scoreboard;
 
 	user_transaction     tr;
 	user_transaction     exp_tr;
-	user_transaction     new_tr;
 
-	static vm_reg_block	 reg_block_h;
+	vm_reg_block	     reg_block_h;
 	
 	function new(string name, uvm_component parent);
 		super.new(name, parent);
@@ -56,12 +55,12 @@ class user_scoreboard extends uvm_scoreboard;
 	endfunction: convert_to_rub
 
 	function shortreal get_item_price(bit[4:0] item_num, bit [8:0] client_id);
-		int        discount;
-		shortreal  price;
-		bit        vip;
-		bit [7:0]  item_discount;
+		int           discount;
+		shortreal     price;
+		bit           vip;
+		bit [7:0]     item_discount;
 
-
+		price         = reg_block_h.vend_item[item_num].item_price.get_mirrored_value();
 		item_discount = reg_block_h.vend_item[item_num].item_discount.get_mirrored_value();
 
 		discount = (client_id % 3) * 10;
@@ -70,7 +69,7 @@ class user_scoreboard extends uvm_scoreboard;
 		if (vip)           discount += 10;
 		if (discount > 30) discount = 30;
 
-		price = (item_num + 1) * 10 - item_discount;
+		price = price - item_discount;
 		price = price * (100 - discount) / 100;
 		return price;
 	endfunction: get_item_price
@@ -125,7 +124,12 @@ class user_scoreboard extends uvm_scoreboard;
 		end
 
 		`uvm_info(get_type_name(), s_test_done, UVM_LOW)
+		
+		//uvm_top.die();
+		
 	endfunction: write
+
+	
 	
 	
 	

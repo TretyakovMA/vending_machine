@@ -1,0 +1,5 @@
+`include "vend_cfg_reg.sv"
+`include "vend_clients_reg.sv"
+`include "vend_item_reg.sv"
+`include "vend_paswd_reg.sv"
+`include "vm_reg_block.sv"

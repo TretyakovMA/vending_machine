@@ -42,7 +42,7 @@ package vm_pkg;
 	
 	//==============================================================================
 	//Registers
-	`include "register_src/registers_inc.sv"
+	`include "register_src/registers/registers_inc.sv"
 	//==============================================================================
 
 
@@ -51,7 +51,7 @@ package vm_pkg;
 
 	//==============================================================================
 	// Register Components
-	`include "register_src/register_components_inc.sv"
+	`include "register_src/register_components/register_components_inc.sv"
 	//==============================================================================
 
 
@@ -86,7 +86,6 @@ package vm_pkg;
 	`include "user_src/user_sequences/user_sequences_inc.sv"
 	//==============================================================================
 
-
 	//==============================================================================
 	// User Tests
 	`include "user_src/user_tests/user_tests_inc.sv"
@@ -99,14 +98,29 @@ package vm_pkg;
 
 	//==============================================================================
 	// Register Sequences
-	`include "register_src/register_sequences_inc.sv"
+	`include "register_src/register_sequences/register_sequences_inc.sv"
 	//==============================================================================
-
 
 	//==============================================================================
 	// Register Tests
-	`include "register_src/register_tests_inc.sv"
+	`include "register_src/register_tests/register_tests_inc.sv"
 	//==============================================================================
 	
+
+
+
+
+
+	//==============================================================================
+	// Summary Sequences
+	`include "summary_tests/summary_sequences/summary_sequences_inc.sv"
+	//==============================================================================
+
+	//==============================================================================
+	// Summary Tests
+	`include "summary_tests/summary_tests_inc.sv"
+	//==============================================================================
+
+
 endpackage
 `endif

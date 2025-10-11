@@ -45,12 +45,16 @@ virtual class base_test extends uvm_test;
 		uvm_config_db #(env_config)::set(this, "env_h*", "env_config", env_config_h);
 		
 		env_h = env::type_id::create("env_h", this);
+		
 	endfunction: build_phase
 	
 	
 	
 	function void start_of_simulation_phase(uvm_phase phase);
 		super.start_of_simulation_phase(phase);
+		
+		uvm_top.set_timeout(5ms);
+		
 		uvm_top.print_topology();
 	endfunction: start_of_simulation_phase
 

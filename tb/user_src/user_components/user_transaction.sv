@@ -132,7 +132,14 @@ class user_transaction extends uvm_sequence_item;
 	}
 	
 	constraint valid_coin_in{
-		coin_in_q.size() inside {[1:100]};
+		//coin_in_q.size() inside {[1:100]};
+		coin_in_q.size() dist{
+			[1:3]    :/ 40,
+			[4:6]    :/ 25,
+			[6:10]   :/ 15,
+			[11:20]  :/ 15,
+			[21:100] :/ 5
+		};
 		currency_type_q.size() == coin_in_q.size();
 		foreach (coin_in_q[i])
 			coin_in_q[i] inside {1, 5, 10, 25, 50};

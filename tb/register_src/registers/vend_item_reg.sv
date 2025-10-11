@@ -7,6 +7,12 @@ class vend_item_reg extends uvm_reg;
 	rand uvm_reg_field item_discount;
 	rand uvm_reg_field item_count;
 	rand uvm_reg_field item_price;
+
+    constraint valid_discount {
+        item_discount.value < item_price.value;
+    }
+
+    
 	
 	function new(string name = "vend_item_reg");
 		super.new(.name(name), .n_bits(32), .has_coverage(UVM_NO_COVERAGE));

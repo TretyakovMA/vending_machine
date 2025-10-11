@@ -1,4 +1,8 @@
+`ifndef USER_SEQUENCES_INC
+`define USER_SEQUENCES_INC
+
 `include "user_base_seq.sv"
+
 `include "simple_test_seq.sv"
 `include "test_one_coin_seq.sv"
 `include "test_few_coin_seq.sv"
@@ -7,3 +11,7 @@
 `include "test_random_client_with_no_change_seq.sv"
 `include "full_client_session_with_no_errors_seq.sv"
 `include "test_lots_of_purchases_seq.sv"
+
+`include "buy_one_product_seq.sv"
+
+`endif

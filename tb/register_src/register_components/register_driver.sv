@@ -20,12 +20,15 @@ class register_driver extends base_driver #(
 	endtask: reset
 	
 	virtual task drive_transaction (register_transaction tr);
-		vif.regs_addr <= tr.regs_addr;
+		vif.regs_addr    <= tr.regs_addr;
 		vif.regs_data_in <= tr.regs_data_in;
-		vif.regs_we <= tr.regs_we;
+		vif.regs_we      <= tr.regs_we;
 		
 		@(posedge vif.clk);
 		if (!tr.regs_we) tr.regs_data_out = vif.regs_data_out;
+		vif.regs_addr    <= 0;
+		vif.regs_data_in <= 0;
+		vif.regs_we      <= 0;
 	endtask: drive_transaction
 
 endclass
