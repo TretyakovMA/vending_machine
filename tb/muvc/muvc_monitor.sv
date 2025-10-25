@@ -1,11 +1,11 @@
-`ifndef BASE_MONITOR
-`define BASE_MONITOR
-virtual class base_monitor #(
+`ifndef MUVC_MONITOR
+`define MUVC_MONITOR
+virtual class muvc_monitor #(
     type INTERFACE_TYPE,
 	type TRANSACTION_TYPE
 ) extends uvm_monitor;
 
-	`uvm_component_param_utils(base_monitor #(INTERFACE_TYPE, TRANSACTION_TYPE))
+	`uvm_component_param_utils(muvc_monitor #(INTERFACE_TYPE, TRANSACTION_TYPE))
 	
 	uvm_analysis_port #(TRANSACTION_TYPE) ap;
 	
@@ -46,8 +46,8 @@ virtual class base_monitor #(
 				if (vif.rst_n && condition()) begin
 					tr = TRANSACTION_TYPE::type_id::create("tr");
 					monitoring_transaction(tr);
+					`muvc_tr_info("MUVC_GET_TR", tr, UVM_LOW)
 					ap.write(tr);
-					//`uvm_info(get_type_name(), {"Get transaction: ", tr.convert2string()}, UVM_HIGH)
 				end
 			end
 		join_any

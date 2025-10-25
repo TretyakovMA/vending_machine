@@ -18,7 +18,7 @@ class register_env extends uvm_env;
 	function void build_phase(uvm_phase phase);
 		super.build_phase(phase);
 		predictor_h = register_predictor::type_id::create("predictor_h", this);
-		adapter_h = register_adapter::type_id::create("adapter_h", this);
+		adapter_h   = register_adapter::type_id::create("adapter_h", this);
 		reg_block_h = vm_reg_block::type_id::create("reg_block_h", this);
 		reg_block_h.build();
 		uvm_config_db #(vm_reg_block)::set(null, "*", "reg_block_h", reg_block_h);

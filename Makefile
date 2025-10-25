@@ -21,10 +21,10 @@ VERBOSITY = UVM_LOW
 # =============================================================================
 # Определения тестов и количества запусков
 # =============================================================================
-TEST_1 =buy_one_product_test       # После "=" пробелы не ставить!
-COUNT_TEST_1 =1
-TEST_2 =add_test
-COUNT_TEST_2 =0
+TEST_1 = test_lots_of_purchases
+COUNT_TEST_1 = 1
+TEST_2 = add_test
+COUNT_TEST_2 = 0
 
 # =============================================================================
 # Собираем все цели для симуляции
@@ -33,8 +33,9 @@ SIM_TARGETS = sim_test1 sim_test2
 
 UCDB_FILES = $(wildcard ucdb_*.ucdb)
 
-all: compile run_sims merge_coverage
-# vlog -sv +acc +incdir+$(UVM_SRC) $(BASE_LIB_DIR)/base_pkg.sv
+all: compile start_sim run_sims merge_coverage
+
+
 compile:
 	vlib work
 	vmap work work 
@@ -47,6 +48,9 @@ compile:
 # =============================================================================
 # Цели для запуска симуляций
 # =============================================================================
+start_sim: 
+	@echo. > uvm_errors.log
+
 run_sims: $(SIM_TARGETS)
 
 sim_test1: compile
@@ -55,18 +59,28 @@ sim_test1: compile
 sim_test2: compile
 	@set TEST_NAME=$(TEST_2) & set RUN_COUNT=$(COUNT_TEST_2) & $(MAKE) sim
 
+
 sim:
 	@for /L %%i in (1,1,$(RUN_COUNT)) do @( \
 		echo Simulation #%%i start for $(TEST_NAME) & \
-		vsim -c -cvgperinstance -wlf "vsim_$(strip $(TEST_NAME))_%%i.wlf" \
-		-do "set NoQuitOnFinish 1; log -r /*; run -all; coverage save \"ucdb_$(strip $(TEST_NAME))_%%i.ucdb\"; quit -f" top \
-		-coverage -sv_seed random \
+		@echo. > sim_log_$(strip $(TEST_NAME))_%%i.txt & \
+		vsim -c \
+		-cvgperinstance \
+		-wlf "vsim_$(strip $(TEST_NAME))_%%i.wlf" \
+		-do "set NoQuitOnFinish 1; \
+		log -r /*; \
+		run -all; \
+		coverage save \"ucdb_$(strip $(TEST_NAME))_%%i.ucdb\"; \
+		quit -f" \
+		top \
+		-coverage \
+		-sv_seed random \
 		-uvmtestname \
 		"+UVM_TESTNAME=$(strip $(TEST_NAME))" \
+		"+RUN_COUNT=%%i" \
 		"+UVM_VERBOSITY=$(VERBOSITY)" \
 		-sv_lib $(UVM_DPI) \
 		-cpppath $(GCC) \
-		-logfile "sim_log_$(strip $(TEST_NAME))_%%i.txt" \
 	)
 	@echo "All simulations completed for $(TEST_NAME)"
 
@@ -75,7 +89,7 @@ merge_coverage:
 
 
 clean:
-	del /Q /F transcript *.wlf *.ucdb sim_log_*.txt tr_db.log vsim_stacktrace.vstf vsim_*.vlf wlf* 2>NUL
+	del /Q /F transcript *.wlf *.ucdb *.txt *.log vsim_stacktrace.vstf vsim_*.vlf wlf* 2>NUL
 	rmdir /S /Q work 2>NUL
 	
 

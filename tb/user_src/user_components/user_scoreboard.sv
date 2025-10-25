@@ -27,8 +27,7 @@ class user_scoreboard extends uvm_scoreboard;
 			`uvm_fatal(get_type_name(), "Faild to get reg_block_h")
 	endfunction: connect_phase
 
-	//=======================================================================
-	// Database of clients points
+	
 	static int client_points_db[int];
 
 	static function void reset_points();
@@ -36,7 +35,7 @@ class user_scoreboard extends uvm_scoreboard;
 			client_points_db[i] = i % 20;
 		end
 	endfunction: reset_points
-	//=======================================================================
+	
 
 	function shortreal convert_to_rub(bit [5:0] coin, currency_type_t currency);
 		bit [1:0] exchange_rate;
@@ -48,8 +47,6 @@ class user_scoreboard extends uvm_scoreboard;
 			USD: res = shortreal'(coin) * exchange_rate;
 			EUR: res = shortreal'(coin) * exchange_rate * 1.5;
 		endcase
-
-		`uvm_info(get_type_name(), {s_exp_tr_1, "Convert ", $sformatf("%0d", coin), " of ", currency.name(), " to RUB: ", $sformatf("%0.2f", res), s_exp_tr_2}, UVM_FULL)
 
 		return res;
 	endfunction: convert_to_rub
@@ -79,9 +76,8 @@ class user_scoreboard extends uvm_scoreboard;
 		
 		foreach(q[i]) begin
 			balance += convert_to_rub(q[i], cur_q[i]);
-			`uvm_info(get_type_name(), {s_exp_tr_1, "Inserted coin: ", $sformatf("%0d", q[i]), " of ", cur_q[i].name(), $sformatf("\nBalance = %0.2f", balance), s_exp_tr_2}, UVM_FULL)
 		end
-		`uvm_info(get_type_name(), {s_exp_tr_1, "Inserted coins total: ", $sformatf("%0.2f", balance), s_exp_tr_2}, UVM_FULL)
+		
 		return balance;
 	endfunction: calculate_balance
 
@@ -113,17 +109,20 @@ class user_scoreboard extends uvm_scoreboard;
 		if (tr.item_out == 0)
 			`uvm_fatal(get_type_name(), "No response from DUT")
 		
-		`uvm_info(get_type_name(), {s_exp_tr_1, exp_tr.convert2string(), s_exp_tr_2}, UVM_LOW)
-		
+		//`uvm_info(get_type_name(), {s_exp_tr_1, exp_tr.convert2string(), s_exp_tr_2}, UVM_LOW)
+		`muvc_tr_info("MUVC_EXP_TR", exp_tr, UVM_LOW)
 		if(exp_tr.compare(tr)) begin
-			`uvm_info(get_type_name(), s_com_successful, UVM_LOW)
+			//`uvm_info(get_type_name(), s_com_successful, UVM_LOW)
+			`muvc_info("MUVC_RES_SUC",  UVM_LOW)
 			client_points_db[tr.client_id] = exp_tr.client_points;
 		end
 		else begin
-			`uvm_error(get_type_name(), s_com_error)
+			`muvc_info("MUVC_RES_FAILD",  UVM_LOW)
+			//`uvm_error(get_type_name(), s_com_error)
 		end
 
-		`uvm_info(get_type_name(), s_test_done, UVM_LOW)
+		//`uvm_info(get_type_name(), "MUVC_END_TEST", UVM_LOW)
+		`muvc_info("MUVC_END_TEST", UVM_LOW)
 		
 		//uvm_top.die();
 		
@@ -135,14 +134,14 @@ class user_scoreboard extends uvm_scoreboard;
 	
 	
 	
-	string s_exp_tr_1 = "\n\n\n*********************************   Expected transaction   *********************************\n";
+	string s_exp_tr_1 = "\n*********************************   Expected transaction   *********************************\n";
 	
-	string s_exp_tr_2 = "\n********************************************************************************************\n\n";
+	string s_exp_tr_2 = "\n********************************************************************************************";
 	
-	string s_com_successful = "\n\n\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!   Result   !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\nTest successful\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n\n";
+	string s_com_successful = "\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!   Result   !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\nTest successful\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!";
 	
-	string s_com_error = "\n\n\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!   Result   !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\nTest faild\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n\n";
+	string s_com_error = "\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!   Result   !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\nTest faild\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!";
 	
-	string s_test_done = "\n###########################################   End   ##########################################\n\n\n\n\n\n\n\n";
+	string s_test_done = "\n###########################################   End   ##########################################";
 endclass
 `endif

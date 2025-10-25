@@ -28,7 +28,7 @@ class read_after_reset_test_seq extends base_reg_seq;
                 if (status != UVM_IS_OK)
                     `uvm_fatal(get_type_name(), "UVM_IS_NOT_OK")
             end
-            reg_block_h.print();
+            //reg_block_h.print();
         end
     endtask
 endclass

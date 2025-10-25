@@ -1,6 +1,6 @@
 `ifndef REGISTER_MONITOR
 `define REGISTER_MONITOR
-class register_monitor extends base_monitor #(
+class register_monitor extends muvc_monitor #(
 	virtual register_interface, 
 	register_transaction
 );
@@ -21,9 +21,9 @@ class register_monitor extends base_monitor #(
 	
 	
 	task monitoring_transaction (register_transaction tr);
-		tr.regs_we = vif.regs_we;
-		tr.regs_addr = vif.regs_addr;
-		tr.regs_data_in = vif.regs_data_in;
+		tr.regs_we       = vif.regs_we;
+		tr.regs_addr     = vif.regs_addr;
+		tr.regs_data_in  = vif.regs_data_in;
 		tr.regs_data_out = vif.regs_data_out;
 	endtask: monitoring_transaction
 

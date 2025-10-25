@@ -56,11 +56,12 @@ class user_base_seq #(
             if (count_test == NUMBER_OF_ATTEMPTS)
                 `uvm_fatal(get_type_name(), $sformatf("Failed to generate a valid transaction after %0d attempts", count_test))
             
-            `uvm_info("TEST", s_start, UVM_LOW)
+            //`uvm_info("TEST", s_start, UVM_LOW)
+            `muvc_info("MUVC_START_TEST", UVM_LOW)
 			finish_item(tr);
 		end
     endtask
 
-    string s_start = "\n\n\n\n\n\n\n\n##########################################   Start   #########################################";
+    //string s_start = "\n##########################################   Start   #########################################";
 endclass
 `endif

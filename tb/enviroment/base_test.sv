@@ -1,6 +1,8 @@
 `ifndef BASE_TEST
 `define BASE_TEST
 
+
+
 virtual class base_test extends uvm_test;
 	`uvm_component_utils(base_test);
 	
@@ -50,8 +52,14 @@ virtual class base_test extends uvm_test;
 	
 	
 	
+	
 	function void start_of_simulation_phase(uvm_phase phase);
+		muvc_report_server my_server;
+		my_server = new();
 		super.start_of_simulation_phase(phase);
+
+		
+		uvm_report_server::set_server(my_server);
 		
 		uvm_top.set_timeout(5ms);
 		

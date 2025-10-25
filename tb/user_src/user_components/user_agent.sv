@@ -1,6 +1,6 @@
 `ifndef USER_AGENT
 `define USER_AGENT
-class user_agent extends base_agent #(
+class user_agent extends muvc_agent #(
 	.INTERFACE_TYPE   (virtual user_interface), 
 	.TRANSACTION_TYPE (user_transaction), 
 	.DRIVER_TYPE      (user_driver), 

@@ -1,11 +1,11 @@
-`ifndef BASE_DRIVER
-`define BASE_DRIVER
-virtual class base_driver #(
+`ifndef MUVC_DRIVER
+`define MUVC_DRIVER
+virtual class muvc_driver #(
 	type INTERFACE_TYPE,
 	type TRANSACTION_TYPE
 ) extends uvm_driver#(TRANSACTION_TYPE);
 
-	`uvm_component_param_utils(base_driver #(INTERFACE_TYPE, TRANSACTION_TYPE))
+	`uvm_component_param_utils(muvc_driver #(INTERFACE_TYPE, TRANSACTION_TYPE))
 	
 	INTERFACE_TYPE   vif;
 	TRANSACTION_TYPE tr;

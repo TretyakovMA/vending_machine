@@ -23,7 +23,7 @@ class register_adapter extends uvm_reg_adapter;
 		else begin
 			tr.regs_data_out = rw.data;
 		end
-		`uvm_info ("adapter", {"\n\n\n\nreg2bus: ", tr.convert2string()}, UVM_HIGH) 
+		`uvm_info ("adapter", {"reg2bus: ", tr.convert2string()}, UVM_HIGH) 
 		return tr;
 	endfunction
 	

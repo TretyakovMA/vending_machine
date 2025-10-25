@@ -3,7 +3,6 @@
 
 
 
-
 `ifndef VM_PKG
 `define VM_PKG
 package vm_pkg;
@@ -24,17 +23,16 @@ package vm_pkg;
 
 	//==============================================================================
 	// Base Classes
-	`include "base_classes/base_pkg.sv"
-	//import base_pkg::*;
+	`include "muvc/muvc_pkg.sv"
 	//==============================================================================
 
 
 
 	//==============================================================================
 	//Config Classes
-	typedef base_agent_config #(virtual user_interface)     user_agent_config;
-	typedef base_agent_config #(virtual admin_interface)    admin_agent_config;
-	typedef base_agent_config #(virtual register_interface) register_agent_config;
+	typedef muvc_agent_config #(virtual user_interface)     user_agent_config;
+	typedef muvc_agent_config #(virtual admin_interface)    admin_agent_config;
+	typedef muvc_agent_config #(virtual register_interface) register_agent_config;
 	//==============================================================================
 
 

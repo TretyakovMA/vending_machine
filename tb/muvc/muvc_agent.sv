@@ -1,7 +1,7 @@
-`ifndef BASE_AGENT
-`define BASE_AGENT
+`ifndef MUVC_AGENT
+`define MUVC_AGENT
 
-virtual class base_agent #(
+virtual class muvc_agent #(
 	type INTERFACE_TYPE,
 	type TRANSACTION_TYPE,
 	type DRIVER_TYPE    = void_driver   #(INTERFACE_TYPE, TRANSACTION_TYPE),
@@ -9,7 +9,7 @@ virtual class base_agent #(
 	type SEQUENCER_TYPE = uvm_sequencer #(TRANSACTION_TYPE)
 ) extends uvm_agent;
 
-    `uvm_component_param_utils (base_agent #(
+    `uvm_component_param_utils (muvc_agent #(
 		INTERFACE_TYPE, 
 		TRANSACTION_TYPE, 
 		DRIVER_TYPE, 
@@ -22,7 +22,7 @@ virtual class base_agent #(
 		super.new(name, parent);
 	endfunction: new
 
-	base_agent_config #(INTERFACE_TYPE) config_h;
+	muvc_agent_config #(INTERFACE_TYPE) config_h;
 
 	DRIVER_TYPE     driver_h;
 	SEQUENCER_TYPE  sequencer_h;
@@ -33,7 +33,7 @@ virtual class base_agent #(
 
 	function void build_phase(uvm_phase phase);
 		super.build_phase(phase);
-		if(!uvm_config_db #(base_agent_config #(INTERFACE_TYPE))::get(this, "", "agent_config", config_h))
+		if(!uvm_config_db #(muvc_agent_config #(INTERFACE_TYPE))::get(this, "", "agent_config", config_h))
 			`uvm_fatal(get_type_name(), "Faild to get config")
 	
 		if (config_h.is_active == UVM_ACTIVE) begin
