@@ -1,11 +1,12 @@
 `ifndef REGISTER_MONITOR
 `define REGISTER_MONITOR
-class register_monitor extends muvc_monitor #(
+class register_monitor extends base_monitor #(
 	virtual register_interface, 
 	register_transaction
 );
 
 	`uvm_component_utils(register_monitor)
+
 	vm_reg_block reg_block_h;
 	
 	function new(string name, uvm_component parent);
@@ -27,9 +28,9 @@ class register_monitor extends muvc_monitor #(
 		tr.regs_data_out = vif.regs_data_out;
 	endtask: monitoring_transaction
 
-	function bit condition ();
-		return vif.regs_data_out != 32'hdead_beef;
-	endfunction: condition
+	function bit condition_start_monitoring ();
+		return (vif.regs_data_out != 32'hdead_beef) && (vif.rst_n == 1);
+	endfunction: condition_start_monitoring
 
 	task reset();
 		reg_block_h.reset();

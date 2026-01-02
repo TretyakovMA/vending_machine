@@ -4,5 +4,6 @@
 `include "summary_base_vseq.sv"
 
 `include "buy_one_product_vseq.sv"
+`include "client_session_after_write_reg_vseq.sv"
 
 `endif

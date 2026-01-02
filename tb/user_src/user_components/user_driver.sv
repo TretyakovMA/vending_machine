@@ -1,6 +1,6 @@
 `ifndef USER_DRIVER
 `define USER_DRIVER
-class user_driver extends muvc_driver #(
+class user_driver extends base_driver #(
 	virtual user_interface, 
 	user_transaction
 );
@@ -48,8 +48,8 @@ class user_driver extends muvc_driver #(
 		vif.item_select <= 0;
 		vif.confirm     <= 0;
 		`uvm_info(get_type_name(), {"Send transaction ", tr.convert2string()}, UVM_HIGH)
-		repeat(4) @(posedge vif.clk);
-		
+		end_work_dut.wait_trigger;
+		//repeat(1) @(posedge vif.clk);
 	endtask: drive_transaction
 		
 endclass

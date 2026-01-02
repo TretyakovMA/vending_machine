@@ -8,11 +8,12 @@ class env_config extends uvm_object;
 	user_agent_config     user_agent_config_h;
 	admin_agent_config    admin_agent_config_h;
 	register_agent_config register_agent_config_h;
+	errors_agent_config   errors_agent_config_h;
 
 	
-	function new(string name = "");
+	function new(string name = "env_config");
 		super.new(name);
-	endfunction
+	endfunction: new
 	
 endclass
 `endif

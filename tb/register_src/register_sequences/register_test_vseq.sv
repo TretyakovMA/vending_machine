@@ -3,6 +3,7 @@
 class register_test_vseq #(
     type REG_TEST_SEQ
 ) extends uvm_reg_sequence;
+
 	`uvm_object_param_utils(register_test_vseq #(REG_TEST_SEQ))
     
 	function new(string name = "register_test_vseq");

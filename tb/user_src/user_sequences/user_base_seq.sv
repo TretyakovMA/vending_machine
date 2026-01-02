@@ -50,18 +50,18 @@ class user_base_seq #(
 				exp_tr = scoreboard_h.calculate_exp_transaction(tr);
 
 				success = check_success(exp_tr);
-				`uvm_info("TEST", {"\n\n\nAttempt to send a transaction: ", exp_tr.convert2string(), "\n\n\n"}, UVM_HIGH)
+				`uvm_info("TEST", {"\n\n\nAttempt to send a transaction: ", exp_tr.convert2string(), "\n\n\n"}, UVM_FULL)
 			end while (success == 0 && count_test < NUMBER_OF_ATTEMPTS);
 
             if (count_test == NUMBER_OF_ATTEMPTS)
                 `uvm_fatal(get_type_name(), $sformatf("Failed to generate a valid transaction after %0d attempts", count_test))
             
-            //`uvm_info("TEST", s_start, UVM_LOW)
-            `muvc_info("MUVC_START_TEST", UVM_LOW)
+            `uvm_info(get_type_name(), `MUVC_START_TEST_STR, UVM_LOW)
+           
 			finish_item(tr);
 		end
     endtask
 
-    //string s_start = "\n##########################################   Start   #########################################";
+    
 endclass
 `endif

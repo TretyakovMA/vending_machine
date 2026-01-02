@@ -1,11 +1,12 @@
-`ifndef MUVC_REPORT_SERVER
-`define MUVC_REPORT_SERVER
+`ifndef MY_REPORT_SERVER
+`define MY_REPORT_SERVER
 
 
-class muvc_report_server extends uvm_default_report_server;
+import "DPI-C" function string get_simulation_start_time();
 
-    
+class my_report_server extends uvm_default_report_server;
 
+    // ANSI-коды цветов для терминала
     localparam string RED             = "\033[31;0m";
     localparam string RED_BOLD        = "\033[31;1m";
     localparam string RED_BACKGROUND  = "\033[30;41m";
@@ -21,86 +22,7 @@ class muvc_report_server extends uvm_default_report_server;
 
     localparam string DEFAULT         = "\033[0m";
 
-
-    static string start_test_str = {
-        "\n", 
-        {50{"#"}}, 
-        "   \033[35mStart Test\033[0m   ", 
-        {50{"#"}}                                 
-    };
-
-
-    static string send_tr_str_1 = {
-        "\n", 
-        {46{"*"}}, 
-        "   Send transaction   ", 
-        {46{"*"}},
-        "\nDriver->DUT:\n"                     
-    };
-	static string send_tr_str_2 = {
-        "\n", 
-        {114{"*"}}
-    };
-
-
-    static string get_tr_str_1 = {
-        "\n", 
-        {47{"*"}}, 
-        "   Get transaction   ", 
-        {46{"*"}},
-        "\nDUT->Scoreboard:\n"
-    };
-	static string get_tr_str_2 = {
-        "\n", 
-        {114{"*"}}
-    };
-
-
-    static string exp_tr_str_1 = {
-        "\n", 
-        {44{"*"}}, 
-        "   Expected transaction   ", 
-        {44{"*"}}, 
-        "\n"
-    };
-    static string exp_tr_str_2 = {
-        "\n", 
-        {114{"*"}}
-    };
-
-
-    static string result_str_1 = {
-        "\n", 
-        {51{"!"}}, 
-        "   Result   ", 
-        {51{"!"}}, 
-        "\n"
-    };
-    static string result_str_2 = {
-        "\n", 
-        {114{"!"}}
-    };
-
-
-    static string result_succsessful = {
-        {49{" "}}, 
-        "\033[32mTest successful\033[0m"
-    };
-
-    static string result_faild = {
-        {51{" "}}, 
-        "\033[31mTest faild\033[0m"
-    };
-
-
-    static string end_test_str = {
-        "\n", 
-        {51{"#"}}, 
-        "   \033[35mEnd Test\033[0m   ", 
-        {51{"#"}}
-    };
-
-
+    
 
 
     // Переменные для цветов 
@@ -114,15 +36,23 @@ class muvc_report_server extends uvm_default_report_server;
     string msg_color     = DEFAULT;
     string reset         = DEFAULT;
 
-    bit    no_color      = 0;  // Флаг отключения цветов
 
-    protected int errors_fd;  // Дескриптор файла для логирования
-    protected int sim_log_fd;  // Дескриптор файла для sim_log
+
+
+    bit    no_color      = 0;      // Флаг отключения цветов
+
+
+
+    protected int errors_fd;       // Дескриптор файла для логирования
+    protected int sim_log_fd;      // Дескриптор файла для sim_log
+
     string test_name = "UNKNOWN";  // Имя теста
-    string run_count = "0";  // Номер запуска
-    string sim_log_file;  // Имя файла sim_log
+    string run_count = "0";        // Номер запуска
+    string sim_log_file;           // Имя файла sim_log
+    string start_time_sim;         // Время старта симуляции
     string log_header;
     int    seed;
+    bit    has_errors = 0;
     
 
     function new();
@@ -144,16 +74,20 @@ class muvc_report_server extends uvm_default_report_server;
             run_count = "0";
         end
 
+        // Получаем значение seed
         seed = $get_initial_random_seed();
+
+        // Получаем время старта симуляции из C-функции
+        start_time_sim = get_simulation_start_time();
         
 
         // Формируем имя файла sim_log
-        sim_log_file = $sformatf("sim_log_%s_%s.txt", test_name, run_count);
+        sim_log_file = $sformatf("sim_log_%s_%s.log", test_name, run_count);
 
         
-        errors_fd = $fopen("uvm_errors.log", "a");
+        errors_fd = $fopen("errors.log", "a");
         if (errors_fd == 0) begin
-            uvm_report_fatal("REPORT_SERVER", "Failed to open uvm_errors.log for logging!");
+            uvm_report_fatal("REPORT_SERVER", "Failed to open errors.log for logging!");
         end
 
         // Открываем файл sim_log
@@ -163,18 +97,17 @@ class muvc_report_server extends uvm_default_report_server;
         end
 
         
-        log_header = $sformatf("---------- Test: %s, Run: %s, Seed: %0d ----------\n", 
-                              test_name, run_count, seed);
+        log_header = $sformatf("---------- Test: %s, Run: %s, Seed: %0d, Start time: %s ----------\n", 
+                              test_name, run_count, seed, start_time_sim);
         $fdisplay(sim_log_fd, "%s", log_header);
         $fflush(sim_log_fd);
 
-        $fdisplay(errors_fd, "%s", log_header);
-        $fflush(errors_fd);
+        //$fdisplay(errors_fd, "%s", log_header);
+        //$fflush(errors_fd);
         
     endfunction
 
     virtual function void execute_report_message(uvm_report_message report_message, string composed_message);
-        
         // Убираем ANSI-коды цветов для файла
         string plain_message = remove_ansi_codes(composed_message);
         
@@ -183,6 +116,12 @@ class muvc_report_server extends uvm_default_report_server;
         $fflush(sim_log_fd);
 
         if (report_message.get_severity() inside {UVM_WARNING, UVM_ERROR, UVM_FATAL}) begin
+            if (has_errors == 0) begin
+                $fdisplay(errors_fd, "%s", log_header);
+                $fflush(errors_fd);
+            end
+
+            has_errors = 1;
             $fdisplay(errors_fd, "%s", plain_message);
             $fflush(errors_fd);  // Сбрасываем буфер для гарантии записи
         end
@@ -260,67 +199,89 @@ class muvc_report_server extends uvm_default_report_server;
                         time_str,
                         name,
                         id_str,
-                        msg_str); 
-        
+                        msg_str
+        ); 
+
         return result;
     endfunction: compose_report_message
 
-    virtual function void summarize(UVM_FILE file=0);
-        super.summarize(file);
+    virtual function void report_summarize(UVM_FILE file=0);
+        super.report_summarize(file);
         if (file != 0) begin
             $fclose(file);
         end
+        
+
         $fclose(errors_fd);
         $fclose(sim_log_fd);
-    endfunction: summarize
+    endfunction: report_summarize
 
-    `define muvc_tr_info(MSG, TR, VERBOSITY)\
-        case(MSG)\
-            "MUVC_SEND_TR": `uvm_info(get_type_name(), \
-									 {muvc_report_server::send_tr_str_1, \
-									 TR.convert2string(), \
-									 muvc_report_server::send_tr_str_2}, \
-									 VERBOSITY \
-									 )\
-            "MUVC_GET_TR" : `uvm_info(get_type_name(), \
-								  	 {muvc_report_server::get_tr_str_1, \
-									 TR.convert2string(), \
-									 muvc_report_server::get_tr_str_2}, \
-									 VERBOSITY \
-									 )\
-            "MUVC_EXP_TR" : `uvm_info(get_type_name(), \
-									 {muvc_report_server::exp_tr_str_1, \
-									 TR.convert2string(), \
-									 muvc_report_server::exp_tr_str_2}, \
-									 VERBOSITY \
-									 )\
-            default: `uvm_info(get_type_name(), MSG, VERBOSITY)\
-        endcase
+    
 
-    `define muvc_info(MSG, VERBOSITY)\
-		case(MSG)\
-            "MUVC_START_TEST": `uvm_info(get_type_name(), \
-									  muvc_report_server::start_test_str, \
-									  VERBOSITY \
-									  )\
-            "MUVC_RES_SUC": `uvm_info(get_type_name(), \
-									  {muvc_report_server::result_str_1, \
-									  muvc_report_server::result_succsessful, \
-									  muvc_report_server::result_str_2}, \
-									  VERBOSITY \
-									  )\
-            "MUVC_RES_FAILD": `uvm_info(get_type_name(), \
-									  {muvc_report_server::result_str_1, \
-									  muvc_report_server::result_faild, \
-									  muvc_report_server::result_str_2}, \
-									  VERBOSITY \
-									  )\
-			"MUVC_END_TEST": `uvm_info(get_type_name(), \
-									  muvc_report_server::end_test_str, \
-									  VERBOSITY \
-									  )\
-			default        : `uvm_info(get_type_name(), MSG, VERBOSITY)\
-		endcase
+    //-------------------------------------------------------------------
+    `define MUVC_START_TEST_STR {\
+        "\n",{50{"#"}},\
+        "   \033[35mStart Test\033[0m   ",\
+        {50{"#"}}\
+    }
+
+    `define MUVC_SEND_TR_STR(TR) {\
+        "\n", \
+        {46{"*"}}, \
+        "   Send transaction   ", \
+        {46{"*"}},\
+        "\nDriver->DUT:\n", \
+        TR.convert2string(), \
+        "\n", \
+        {114{"*"}}\
+    }
+
+    `define MUVC_GET_TR_STR(TR) {\
+        "\n",\
+        {47{"*"}},\
+        "   Get transaction   ",\
+        {46{"*"}},\
+        "\nDUT->Scoreboard:\n", \
+        TR.convert2string(), \
+        "\n", \
+        {114{"*"}}\
+    }
+
+    `define MUVC_EXP_TR_STR(TR) {\
+        "\n",\
+        {44{"*"}},\
+        "   Expected transaction   ",\
+        {44{"*"}},\
+        "\n",\
+        TR.convert2string(), \
+        "\n", \
+        {114{"*"}}\
+    }
+
+    `define RES_STR_1 {"\n", {51{"!"}}, "   Result   ", {51{"!"}}, "\n"}
+    `define RES_STR_2 {"\n", {114{"!"}}}
+
+    `define MUVC_RES_SUC_STR{\
+        `RES_STR_1, \
+        {49{" "}}, \
+        "\033[32mTest successful\033[0m", \
+        `RES_STR_2\
+    }
+
+    `define MUVC_RES_FAILD_STR{\
+        `RES_STR_1, \
+        {51{" "}}, \
+        "\033[31mTest faild\033[0m", \
+        `RES_STR_2\
+    }
+
+    `define MUVC_END_TEST_STR {\
+        "\n", \
+        {51{"#"}},\
+        "   \033[35mEnd Test\033[0m   ", \
+        {51{"#"}}\
+    }
+    //----------------------------------------------------------------------------
 
 endclass
 `endif

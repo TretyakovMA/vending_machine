@@ -8,6 +8,7 @@
 `include "read_after_write_test_seq.sv"
 
 `include "change_item_price_seq.sv"
+`include "write_random_reg_seq.sv"
 
 
 `endif

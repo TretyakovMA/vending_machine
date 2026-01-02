@@ -1,6 +1,6 @@
 `ifndef REGISTER_AGENT
 `define REGISTER_AGENT
-class register_agent extends muvc_agent #(
+class register_agent extends base_agent #(
 	.INTERFACE_TYPE   (virtual register_interface), 
 	.TRANSACTION_TYPE (register_transaction), 
 	.DRIVER_TYPE      (register_driver), 

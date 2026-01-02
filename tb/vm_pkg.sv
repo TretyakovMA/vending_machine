@@ -6,6 +6,8 @@
 `ifndef VM_PKG
 `define VM_PKG
 package vm_pkg;
+	timeunit 1ns;
+	timeprecision 1ps;
 	
 	typedef enum bit[1:0] {
 		RUB = 2'b00, 
@@ -23,16 +25,17 @@ package vm_pkg;
 
 	//==============================================================================
 	// Base Classes
-	`include "muvc/muvc_pkg.sv"
+	`include "base_classes/base_pkg.sv"
 	//==============================================================================
 
 
 
 	//==============================================================================
 	//Config Classes
-	typedef muvc_agent_config #(virtual user_interface)     user_agent_config;
-	typedef muvc_agent_config #(virtual admin_interface)    admin_agent_config;
-	typedef muvc_agent_config #(virtual register_interface) register_agent_config;
+	typedef base_agent_config #(virtual user_interface)     user_agent_config;
+	typedef base_agent_config #(virtual admin_interface)    admin_agent_config;
+	typedef base_agent_config #(virtual register_interface) register_agent_config;
+	typedef base_agent_config #(virtual errors_interface)   errors_agent_config;
 	//==============================================================================
 
 
@@ -65,6 +68,11 @@ package vm_pkg;
 	//==============================================================================
 
 
+	//==============================================================================
+	// Errors Components
+	`include "errors_src/errors_components/errors_components_inc.sv"
+	//==============================================================================
+	
 	
 
 	//==============================================================================
@@ -105,6 +113,19 @@ package vm_pkg;
 	//==============================================================================
 	
 
+
+
+
+
+	//==============================================================================
+	// Errors Sequences
+	`include "errors_src/errors_sequences/errors_sequences_inc.sv"
+	//==============================================================================
+
+	//==============================================================================
+	// Errors Tests
+	`include "errors_src/errors_tests/errors_tests_inc.sv"
+	//==============================================================================
 
 
 

@@ -16,6 +16,9 @@ virtual class base_test extends uvm_test;
 	user_agent_config      user_agent_config_h;
 	admin_agent_config     admin_agent_config_h;
 	register_agent_config  register_agent_config_h;
+	errors_agent_config    errors_agent_config_h;
+
+	my_report_server       my_server;
 	
 	function void build_phase(uvm_phase phase);
 		super.build_phase(phase);
@@ -24,29 +27,35 @@ virtual class base_test extends uvm_test;
 		user_agent_config_h     = user_agent_config::type_id::create("user_agent_config_h", this);
 		admin_agent_config_h    = admin_agent_config::type_id::create("admin_agent_config_h", this);
 		register_agent_config_h = register_agent_config::type_id::create("register_agent_config_h", this);
+		errors_agent_config_h   = errors_agent_config::type_id::create("errors_agent_config_h", this);
 
 		
 		
 		if(!uvm_config_db #(virtual interface user_interface)::get(this, "", "user_vif", user_agent_config_h.vif))
-			`uvm_fatal("BASE_TEST", "Faild to get user interface")
+			`uvm_fatal(get_type_name(), "Faild to get user interface")
 		if(!uvm_config_db #(virtual interface admin_interface)::get(this, "", "admin_vif", admin_agent_config_h.vif))
-			`uvm_fatal("BASE_TEST", "Faild to get admin interface")
+			`uvm_fatal(get_type_name(), "Faild to get admin interface")
 		if(!uvm_config_db #(virtual interface register_interface)::get(this, "", "register_vif", register_agent_config_h.vif))
-			`uvm_fatal("BASE_TEST", "Faild to get register interface")
+			`uvm_fatal(get_type_name(), "Faild to get register interface")
+		if(!uvm_config_db #(virtual interface errors_interface)::get(this, "", "errors_vif", errors_agent_config_h.vif))
+			`uvm_fatal(get_type_name(), "Faild to get errors interface")
 		
 
 		user_agent_config_h.has_monitor      = 1;
 		admin_agent_config_h.has_monitor     = 0;
 		register_agent_config_h.has_monitor  = 1;
+		errors_agent_config_h.has_monitor    = 0;
 		
 		env_config_h.user_agent_config_h     = user_agent_config_h;
 		env_config_h.admin_agent_config_h    = admin_agent_config_h;
 		env_config_h.register_agent_config_h = register_agent_config_h;
+		env_config_h.errors_agent_config_h   = errors_agent_config_h;
 
 		
 		uvm_config_db #(env_config)::set(this, "env_h*", "env_config", env_config_h);
 		
-		env_h = env::type_id::create("env_h", this);
+		env_h     = env::type_id::create("env_h", this);
+		my_server = new();
 		
 	endfunction: build_phase
 	
@@ -54,14 +63,12 @@ virtual class base_test extends uvm_test;
 	
 	
 	function void start_of_simulation_phase(uvm_phase phase);
-		muvc_report_server my_server;
-		my_server = new();
 		super.start_of_simulation_phase(phase);
 
 		
 		uvm_report_server::set_server(my_server);
 		
-		uvm_top.set_timeout(5ms);
+		uvm_top.set_timeout(10**9);
 		
 		uvm_top.print_topology();
 	endfunction: start_of_simulation_phase

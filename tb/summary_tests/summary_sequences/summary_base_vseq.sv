@@ -16,7 +16,7 @@ class summary_base_vseq extends uvm_sequence #(uvm_sequence_item);
         if(component_h == null)
             `uvm_fatal (get_type_name(), "Failed to get user_sequencer")
         if(!$cast(user_sequencer_h, component_h))
-             `uvm_fatal (get_type_name(), "Failed to cast: component_h -> user_sequencer_h")
+            `uvm_fatal (get_type_name(), "Failed to cast: component_h -> user_sequencer_h")
 
     endtask: body
 endclass

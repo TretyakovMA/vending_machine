@@ -1,6 +1,6 @@
 `ifndef ADMIN_DRIVER
 `define ADMIN_DRIVER
-class admin_driver extends muvc_driver #(
+class admin_driver extends base_driver #(
 	virtual admin_interface, 
 	admin_transaction
 );

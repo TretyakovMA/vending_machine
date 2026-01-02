@@ -1,6 +1,6 @@
 `ifndef REGISTER_DRIVER
 `define REGISTER_DRIVER
-class register_driver extends muvc_driver #(
+class register_driver extends base_driver #(
 	virtual register_interface, 
 	register_transaction
 );

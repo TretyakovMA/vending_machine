@@ -1,6 +1,6 @@
 `ifndef USER_MONITOR
 `define USER_MONITOR
-class user_monitor extends muvc_monitor #(
+class user_monitor extends base_monitor #(
 	virtual user_interface, 
 	user_transaction
 );
@@ -11,9 +11,9 @@ class user_monitor extends muvc_monitor #(
 	endfunction: new
 	
 	
-	function bit condition ();
-		return vif.id_valid == 1;
-	endfunction: condition
+	function bit condition_start_monitoring ();
+		return (vif.id_valid == 1) && (vif.rst_n == 1);
+	endfunction: condition_start_monitoring
 
 	task reset();
 		user_scoreboard::reset_points();
@@ -38,8 +38,8 @@ class user_monitor extends muvc_monitor #(
 		
 		@(posedge vif.clk iff vif.confirm);
 		
-		//`uvm_info(get_type_name(), {s_send_tr_1, tr.convert2string(), s_send_tr_2}, UVM_LOW)
-		`muvc_tr_info("MUVC_SEND_TR", tr, UVM_LOW)
+		`uvm_info(get_type_name(), `MUVC_SEND_TR_STR(tr), UVM_LOW)
+		
 		repeat(3) @(posedge vif.clk);
 		
 		tr.item_out = vif.item_out;
@@ -49,18 +49,9 @@ class user_monitor extends muvc_monitor #(
 		tr.change_out = vif.change_out;
 		tr.no_change = vif.no_change;
 		tr.client_points = vif.client_points;
-		//`uvm_info(get_type_name(), {s_get_tr_1, tr.convert2string(), s_get_tr_2}, UVM_LOW)
+		end_work_dut.trigger;
 	endtask: monitoring_transaction
 	
-	
-	
-	//string s_send_tr_1 = "\n***********************************   Send transaction   ***********************************\nDriver->DUT:\n";
-	
-	//string s_send_tr_2 = "\n********************************************************************************************";
-	
-	//string s_get_tr_1 = "\n***********************************   Get transaction   ************************************\nDUT->Scoreboard:\n";
-	
-	//string s_get_tr_2 = "\n********************************************************************************************";
 	
 endclass
 `endif

@@ -90,7 +90,7 @@ class user_scoreboard extends uvm_scoreboard;
 		
 		item_price            = get_item_price(tr.item_num, tr.client_id);
 		balance               = calculate_balance(tr.coin_in_q, tr.currency_type_q);
-		`uvm_info(get_type_name(), {s_exp_tr_1, "Balance: ", $sformatf("%0.2f", balance), "\nItem price: ", $sformatf("%0.2f", item_price), s_exp_tr_2}, UVM_FULL)
+		
 		
 		calc_tr.item_out      = (1 << tr.item_num);
 		calc_tr.change_out    = balance - item_price;
@@ -106,25 +106,23 @@ class user_scoreboard extends uvm_scoreboard;
 		tr     = t.clone_me();
 		exp_tr = calculate_exp_transaction(tr);
 
+		`uvm_info(get_type_name(), `MUVC_EXP_TR_STR(exp_tr), UVM_LOW)
+
 		if (tr.item_out == 0)
 			`uvm_fatal(get_type_name(), "No response from DUT")
 		
-		//`uvm_info(get_type_name(), {s_exp_tr_1, exp_tr.convert2string(), s_exp_tr_2}, UVM_LOW)
-		`muvc_tr_info("MUVC_EXP_TR", exp_tr, UVM_LOW)
+		
 		if(exp_tr.compare(tr)) begin
-			//`uvm_info(get_type_name(), s_com_successful, UVM_LOW)
-			`muvc_info("MUVC_RES_SUC",  UVM_LOW)
-			client_points_db[tr.client_id] = exp_tr.client_points;
+			`uvm_info(get_type_name(), `MUVC_RES_SUC_STR, UVM_LOW)
 		end
 		else begin
-			`muvc_info("MUVC_RES_FAILD",  UVM_LOW)
-			//`uvm_error(get_type_name(), s_com_error)
+			`uvm_info(get_type_name(), `MUVC_RES_FAILD_STR, UVM_LOW)
 		end
+		client_points_db[tr.client_id] = exp_tr.client_points;
 
-		//`uvm_info(get_type_name(), "MUVC_END_TEST", UVM_LOW)
-		`muvc_info("MUVC_END_TEST", UVM_LOW)
+		`uvm_info(get_type_name(), `MUVC_END_TEST_STR, UVM_LOW)
 		
-		//uvm_top.die();
+		
 		
 	endfunction: write
 
@@ -134,14 +132,14 @@ class user_scoreboard extends uvm_scoreboard;
 	
 	
 	
-	string s_exp_tr_1 = "\n*********************************   Expected transaction   *********************************\n";
+	//string s_exp_tr_1 = "\n*********************************   Expected transaction   *********************************\n";
 	
-	string s_exp_tr_2 = "\n********************************************************************************************";
+	//string s_exp_tr_2 = "\n********************************************************************************************";
 	
-	string s_com_successful = "\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!   Result   !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\nTest successful\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!";
+	//string s_com_successful = "\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!   Result   !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\nTest successful\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!";
 	
-	string s_com_error = "\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!   Result   !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\nTest faild\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!";
+	//string s_com_error = "\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!   Result   !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\nTest faild\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!";
 	
-	string s_test_done = "\n###########################################   End   ##########################################";
+	//string s_test_done = "\n###########################################   End   ##########################################";
 endclass
 `endif
