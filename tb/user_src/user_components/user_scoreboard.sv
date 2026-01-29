@@ -10,6 +10,11 @@ class user_scoreboard extends uvm_scoreboard;
 	user_transaction     exp_tr;
 
 	vm_reg_block	     reg_block_h;
+
+	local int client_points_db[int];
+
+
+
 	
 	function new(string name, uvm_component parent);
 		super.new(name, parent);
@@ -20,6 +25,10 @@ class user_scoreboard extends uvm_scoreboard;
 		a_imp = new("a_imp", this);
 	endfunction: build_phase
 
+	task reset_phase(uvm_phase phase);
+		super.reset_phase(phase);
+		reset_points();
+	endtask: reset_phase
 
 	function void connect_phase(uvm_phase phase);
 		super.connect_phase(phase);
@@ -28,13 +37,14 @@ class user_scoreboard extends uvm_scoreboard;
 	endfunction: connect_phase
 
 	
-	static int client_points_db[int];
 
-	static function void reset_points();
+
+	local function void reset_points();
 		for (int i = 0; i < `MAX_CLIENTS; i++) begin
 			client_points_db[i] = i % 20;
 		end
 	endfunction: reset_points
+	
 	
 
 	function shortreal convert_to_rub(bit [5:0] coin, currency_type_t currency);
@@ -75,6 +85,7 @@ class user_scoreboard extends uvm_scoreboard;
 		shortreal balance = 0;
 		
 		foreach(q[i]) begin
+			//`uvm_info(get_type_name(), $sformatf("Coin %0d of type %s", q[i], currency_type_t'(cur_q[i])), UVM_HIGH)
 			balance += convert_to_rub(q[i], cur_q[i]);
 		end
 		
@@ -86,13 +97,18 @@ class user_scoreboard extends uvm_scoreboard;
 		shortreal             item_price;
 		user_transaction      calc_tr;
 
+
 		calc_tr               = tr.clone_me();
 		
-		item_price            = get_item_price(tr.item_num, tr.client_id);
-		balance               = calculate_balance(tr.coin_in_q, tr.currency_type_q);
-		
-		
-		calc_tr.item_out      = (1 << tr.item_num);
+		item_price            = get_item_price(calc_tr.item_num, calc_tr.client_id);
+		balance               = calculate_balance(calc_tr.coin_in_q, calc_tr.currency_type_q);
+
+		//`uvm_info(get_type_name(), tr.convert2string(), UVM_HIGH)
+
+		//`uvm_info(get_type_name(), $sformatf("Client %0d: balance = %0.2f; item_price = %0.2f", tr.client_id, balance, item_price), UVM_HIGH)
+
+
+		calc_tr.item_out      = (1 << calc_tr.item_num);
 		calc_tr.change_out    = balance - item_price;
 		calc_tr.no_change     = (balance - item_price == 0) ? 1 : 0;
 		calc_tr.client_points = client_points_db[tr.client_id] + $floor(item_price / 20);
@@ -103,43 +119,31 @@ class user_scoreboard extends uvm_scoreboard;
 	
 	
 	function void write (user_transaction t);
+		if(t.has_reset) begin
+			`uvm_info(get_type_name(), "Reset detected", UVM_HIGH)
+			reset_points();
+			return;
+		end
+
 		tr     = t.clone_me();
 		exp_tr = calculate_exp_transaction(tr);
 
-		`uvm_info(get_type_name(), `MUVC_EXP_TR_STR(exp_tr), UVM_LOW)
+		`uvm_info(get_type_name(), `EXP_TR_STR(exp_tr), UVM_LOW)
 
 		if (tr.item_out == 0)
 			`uvm_fatal(get_type_name(), "No response from DUT")
 		
 		
 		if(exp_tr.compare(tr)) begin
-			`uvm_info(get_type_name(), `MUVC_RES_SUC_STR, UVM_LOW)
+			`uvm_info(get_type_name(), `RES_SUC_STR, UVM_LOW)
 		end
 		else begin
-			`uvm_info(get_type_name(), `MUVC_RES_FAILD_STR, UVM_LOW)
+			`uvm_info(get_type_name(), `RES_FAILD_STR, UVM_LOW)
 		end
 		client_points_db[tr.client_id] = exp_tr.client_points;
 
-		`uvm_info(get_type_name(), `MUVC_END_TEST_STR, UVM_LOW)
-		
-		
-		
+		`uvm_info(get_type_name(), `END_TEST_STR, UVM_LOW)
 	endfunction: write
 
-	
-	
-	
-	
-	
-	
-	//string s_exp_tr_1 = "\n*********************************   Expected transaction   *********************************\n";
-	
-	//string s_exp_tr_2 = "\n********************************************************************************************";
-	
-	//string s_com_successful = "\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!   Result   !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\nTest successful\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!";
-	
-	//string s_com_error = "\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!   Result   !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\nTest faild\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!";
-	
-	//string s_test_done = "\n###########################################   End   ##########################################";
 endclass
 `endif

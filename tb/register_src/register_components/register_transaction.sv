@@ -1,6 +1,6 @@
 `ifndef REGISTER_TRANSACTION
 `define REGISTER_TRANSACTION
-class register_transaction extends uvm_sequence_item;
+class register_transaction extends base_transaction;
 	`uvm_object_utils(register_transaction)
 	rand bit [31:0]  regs_data_in;
 	rand bit [7:0]   regs_addr;

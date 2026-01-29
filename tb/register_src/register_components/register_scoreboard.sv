@@ -4,10 +4,10 @@ class register_scoreboard extends uvm_scoreboard;
 	`uvm_component_utils(register_scoreboard)
 
 	uvm_analysis_imp #(register_transaction, register_scoreboard) a_imp;
-	register_transaction exp_tr;
-	vm_reg_block reg_block_h;
+	//register_transaction exp_tr;
+	vm_reg_block         reg_block_h;
 	
-	bit[31:0] result;
+	//bit[31:0] result;
 	
 	function new(string name, uvm_component parent);
 		super.new(name, parent);
@@ -18,9 +18,24 @@ class register_scoreboard extends uvm_scoreboard;
 		a_imp = new("a_imp", this);
 	endfunction: build_phase
 	
+	function void connect_phase(uvm_phase phase);
+		super.connect_phase(phase);
+		if(!uvm_config_db #(vm_reg_block)::get(this, "", "reg_block_h", reg_block_h))
+			`uvm_fatal(get_type_name(), "Faild to get reg_block_h")
+	endfunction: connect_phase
+
+	task reset_phase(uvm_phase phase);
+		super.reset_phase(phase);
+		reg_block_h.reset();
+	endtask: reset_phase
 	
 	
 	function void write (register_transaction t);
+		if(t.has_reset) begin
+			`uvm_info(get_type_name(), "Reset detected", UVM_HIGH)
+			reg_block_h.reset();
+			return;
+		end
 		//if(t.regs_we == 0) begin
 			
 			/*uvm_reg rg;

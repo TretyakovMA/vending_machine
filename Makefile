@@ -18,12 +18,12 @@ GCC           = $(QUESTASIM_DIR)/gcc-7.4.0-mingw64vc16/bin/gcc.exe
 # =============================================================================
 # Настройки симуляции
 # =============================================================================
-VERBOSITY = UVM_LOW # (UVM_NONE, UVM_LOW, UVM_MEDIUM, UVM_HIGH, UVM_FULL, UVM_DEBUG)
+VERBOSITY = UVM_HIGH # (UVM_NONE, UVM_LOW, UVM_MEDIUM, UVM_HIGH, UVM_FULL, UVM_DEBUG)
 
 
 # Определения тестов и количества запусков (<имя_теста>:<количество_запусков>)
-TESTS = read_after_reset_test:1 \
-		test_euros:0 \
+TESTS = test_lots_of_purchases:1 \
+		read_after_reset_test:0 \
 		client_session_after_write_reg_test:0
 
 
@@ -42,7 +42,7 @@ compile:
 
 	$(GCC) -shared -o \
 		$(PROJECT_DIR)/c_functions.dll \
-		$(PROJECT_DIR)/tb/base_classes/c_functions.cpp \
+		$(PROJECT_DIR)/tb/base_classes/c_functions.c \
 		-I"$(QUESTASIM_DIR)/include"
 		
 

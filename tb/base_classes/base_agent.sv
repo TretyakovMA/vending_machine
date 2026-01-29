@@ -5,7 +5,7 @@ virtual class base_agent #(
 	type INTERFACE_TYPE,
 	type TRANSACTION_TYPE,
 	type DRIVER_TYPE    = base_driver   #(INTERFACE_TYPE, TRANSACTION_TYPE),
-	type MONITOR_TYPE   = base_monitor  #(INTERFACE_TYPE, TRANSACTION_TYPE),
+	type MONITOR_TYPE   = void_monitor  #(INTERFACE_TYPE, TRANSACTION_TYPE),
 	type SEQUENCER_TYPE = uvm_sequencer #(TRANSACTION_TYPE)
 ) extends uvm_agent;
 

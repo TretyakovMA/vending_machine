@@ -15,7 +15,7 @@ class read_after_reset_test_seq extends base_reg_seq;
         
         
         repeat(1) begin
-            
+            reg_block_h.reset();
             reg_block_h.print();
             foreach(registers[i]) begin
                 value = registers[i].get_mirrored_value();

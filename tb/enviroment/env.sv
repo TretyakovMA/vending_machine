@@ -15,6 +15,7 @@ class env extends uvm_env;
 	user_coverage          user_coverage_h;
 	user_scoreboard        user_scoreboard_h;
 	
+	register_scoreboard	   register_scoreboard_h;
 	
 	register_env           register_env_h;
 	
@@ -40,11 +41,10 @@ class env extends uvm_env;
 		register_agent_h  = register_agent::type_id::create("register_agent_h", this);
 		register_env_h    = register_env::type_id::create("register_env_h", this);
 		
+		register_scoreboard_h = register_scoreboard::type_id::create("register_scoreboard_h", this);
 		
 		user_coverage_h   = user_coverage::type_id::create("coverage_h", this);
 		user_scoreboard_h = user_scoreboard::type_id::create("user_scoreboard_h", this);
-
-		end_work_dut      = new();
 	endfunction
 	
 	
@@ -54,6 +54,7 @@ class env extends uvm_env;
 		user_agent_h.ap.connect(user_scoreboard_h.a_imp);
 		user_agent_h.ap.connect(user_coverage_h.analysis_export);
 		
+		register_agent_h.ap.connect(register_scoreboard_h.a_imp);
 		
 		register_agent_h.ap.connect(register_env_h.predictor_h.bus_in);
 		register_env_h.reg_block_h.reg_map.set_sequencer(

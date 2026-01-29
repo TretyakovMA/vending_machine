@@ -1,6 +1,6 @@
 `ifndef ADMIN_TRANSACTION
 `define ADMIN_TRANSACTION
-class admin_transaction extends uvm_sequence_item;
+class admin_transaction extends base_transaction;
 	`uvm_object_utils(admin_transaction)
 	
 	

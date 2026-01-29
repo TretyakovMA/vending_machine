@@ -1,6 +1,6 @@
 `ifndef ERRORS_TRANSACTION
 `define ERRORS_TRANSACTION
-class errors_transaction extends uvm_sequence_item;
+class errors_transaction extends base_transaction;
 
     `uvm_object_utils(errors_transaction)
 

@@ -26,13 +26,14 @@ class base_driver #(
 
 
 
-	virtual task wait_start_work();
+	virtual task wait_for_active_clock();
 		@(posedge vif.clk iff vif.rst_n == 1);
 	endtask
 
-	virtual task wait_reset();
+	virtual task wait_for_reset_assert();
 		@(negedge vif.rst_n);
 	endtask
+	
 
 	virtual function bit condition_getting_start();
 		return (vif.rst_n == 1);
@@ -49,12 +50,14 @@ class base_driver #(
 	
 	virtual task main_phase(uvm_phase phase);
 		super.main_phase(phase);
-		wait_start_work();
+		wait_for_active_clock();
 		fork
 			forever begin
-				wait_reset();
+				wait_for_reset_assert();
+				`uvm_info(get_type_name(), "Reset detected", UVM_HIGH)
 				reset();
-				wait_start_work();
+				`uvm_info(get_type_name(), "Wait start work", UVM_HIGH)
+				wait_for_active_clock();
 			end
 			
 			forever begin
@@ -62,6 +65,7 @@ class base_driver #(
 					seq_item_port.get_next_item(tr);
 					`uvm_info(get_type_name(), "Start work", UVM_HIGH)
 					drive_transaction(tr);
+					`uvm_info(get_type_name(), "End work", UVM_HIGH)
 					seq_item_port.item_done();
 				end
 			end

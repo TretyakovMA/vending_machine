@@ -1,6 +1,6 @@
 `ifndef USER_TRANSACTION
 `define USER_TRANSACTION
-class user_transaction extends uvm_sequence_item;
+class user_transaction extends base_transaction;
 	`uvm_object_utils(user_transaction)
 	rand bit [8:0]        client_id;
 	rand bit [5:0]        coin_in_q[$];
@@ -24,8 +24,8 @@ class user_transaction extends uvm_sequence_item;
 	//Do-hooks
 	function string convert2string();
 		string s;
-		s = $sformatf("Client_id = %0d; coin_in = %p; currency_type = %p; item_num = %0d; item_out = %b; change_out = %0d; no_change = %b; client_points = %0d",
-			client_id, coin_in_q, currency_type_q, item_num, item_out, change_out, no_change, client_points);
+		s = $sformatf("Client_id = %0d; coin_in = %p; currency_type = %p; item_num = %0d; item_out = %b; change_out = %0d; no_change = %b; client_points = %0d, has_reset = %b",
+			client_id, coin_in_q, currency_type_q, item_num, item_out, change_out, no_change, client_points, has_reset);
 		return s;
 	endfunction: convert2string
 	

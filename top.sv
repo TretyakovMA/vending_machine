@@ -1,6 +1,6 @@
 module top;
 	timeunit 1ns;
-	timeprecision 1ps;
+	timeprecision 100ps;
 	
 	import uvm_pkg::*;
 	`include "uvm_macros.svh"
@@ -59,6 +59,11 @@ module top;
 	initial begin	
 		rst_n = 0;
 		#10; 
+		rst_n = 1;	
+
+		#520;
+		rst_n = 0;
+		#20; 
 		rst_n = 1;	
 	end
 	

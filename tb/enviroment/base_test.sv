@@ -1,8 +1,6 @@
 `ifndef BASE_TEST
 `define BASE_TEST
 
-
-
 virtual class base_test extends uvm_test;
 	`uvm_component_utils(base_test);
 	

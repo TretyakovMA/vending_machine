@@ -10,16 +10,13 @@ class user_monitor extends base_monitor #(
 		super.new(name, parent);
 	endfunction: new
 	
+
 	
-	function bit condition_start_monitoring ();
+	function bit should_start_monitoring ();
 		return (vif.id_valid == 1) && (vif.rst_n == 1);
-	endfunction: condition_start_monitoring
+	endfunction: should_start_monitoring
 
-	task reset();
-		user_scoreboard::reset_points();
-	endtask: reset
-
-	task monitoring_transaction (user_transaction tr);
+	task collect_transaction_data (user_transaction tr);
 		tr.client_id = vif.client_id;
 		`uvm_info(get_type_name(), $sformatf("Client %0d authorized", vif.client_id), UVM_HIGH)
 		@(posedge vif.clk iff vif.coin_insert);
@@ -37,21 +34,18 @@ class user_monitor extends base_monitor #(
 		`uvm_info(get_type_name(), $sformatf("Select item = %b", vif.item_select), UVM_HIGH)
 		
 		@(posedge vif.clk iff vif.confirm);
-		
-		`uvm_info(get_type_name(), `MUVC_SEND_TR_STR(tr), UVM_LOW)
+		`uvm_info(get_type_name(), `SEND_TR_STR(tr), UVM_LOW)
 		
 		repeat(3) @(posedge vif.clk);
 		
-		tr.item_out = vif.item_out;
+		tr.item_out      = vif.item_out;
 		`uvm_info(get_type_name(), $sformatf("Get item = %b", vif.item_out), UVM_HIGH)
 		@(posedge vif.clk);
 
-		tr.change_out = vif.change_out;
-		tr.no_change = vif.no_change;
+		tr.change_out    = vif.change_out;
+		tr.no_change     = vif.no_change;
 		tr.client_points = vif.client_points;
-		end_work_dut.trigger;
-	endtask: monitoring_transaction
-	
+	endtask: collect_transaction_data
 	
 endclass
 `endif
