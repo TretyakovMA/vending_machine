@@ -38,9 +38,6 @@ class user_coverage extends uvm_subscriber #(user_transaction);
 		coverpoint c_type;
 	endgroup
 	
-	
-	
-	
 	covergroup cg_no_change;
 		coverpoint tr.no_change;
 	endgroup
@@ -53,6 +50,8 @@ class user_coverage extends uvm_subscriber #(user_transaction);
 			ignore_bins zero = {0};
 		}
 	endgroup
+
+	
 	
 	function new(string name, uvm_component parent);
 		super.new(name, parent);
@@ -66,8 +65,8 @@ class user_coverage extends uvm_subscriber #(user_transaction);
 	endfunction: new
 	
 	function void write(user_transaction t);
-		tr = t;
-		`uvm_info("USER_COVERAGE", "start work", UVM_HIGH)
+		tr = t.clone_me();
+		`uvm_info(get_type_name(), "Start work", UVM_HIGH)
 		cg_client_id.sample();
 		cg_coin_in_q.sample();
 		cg_item_num.sample();
@@ -82,5 +81,4 @@ class user_coverage extends uvm_subscriber #(user_transaction);
 	endfunction: write
 	
 endclass
-
 `endif

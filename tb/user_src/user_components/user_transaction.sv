@@ -24,8 +24,8 @@ class user_transaction extends base_transaction;
 	//Do-hooks
 	function string convert2string();
 		string s;
-		s = $sformatf("Client_id = %0d; coin_in = %p; currency_type = %p; item_num = %0d; item_out = %b; change_out = %0d; no_change = %b; client_points = %0d, has_reset = %b",
-			client_id, coin_in_q, currency_type_q, item_num, item_out, change_out, no_change, client_points, has_reset);
+		s = $sformatf("Client_id = %0d; coin_in = %p; currency_type = %p; item_num = %0d; item_out = %b; change_out = %0d; no_change = %b; client_points = %0d",
+			client_id, coin_in_q, currency_type_q, item_num, item_out, change_out, no_change, client_points);
 		return s;
 	endfunction: convert2string
 	

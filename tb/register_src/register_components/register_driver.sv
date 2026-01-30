@@ -6,13 +6,13 @@ class register_driver extends base_driver #(
 );
 
 	`uvm_component_utils(register_driver)
-	
 
 	function new(string name, uvm_component parent);
 		super.new(name, parent);
 	endfunction: new
 
 	
+
 	virtual task reset();
 		vif.regs_data_in <= 0;
 		vif.regs_addr    <= 0;
@@ -26,9 +26,9 @@ class register_driver extends base_driver #(
 		
 		@(posedge vif.clk);
 		if (!tr.regs_we) tr.regs_data_out = vif.regs_data_out;
-		vif.regs_addr    <= 0;
+		/*vif.regs_addr    <= 0;
 		vif.regs_data_in <= 0;
-		vif.regs_we      <= 0;
+		vif.regs_we      <= 0;*/
 	endtask: drive_transaction
 
 endclass

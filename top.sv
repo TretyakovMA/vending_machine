@@ -61,10 +61,15 @@ module top;
 		#10; 
 		rst_n = 1;	
 
-		#520;
+		/*#470;
 		rst_n = 0;
 		#20; 
 		rst_n = 1;	
+
+		#470;
+		rst_n = 0;
+		#20; 
+		rst_n = 1;	*/
 	end
 	
 	initial begin

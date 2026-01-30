@@ -66,7 +66,7 @@ virtual class base_test extends uvm_test;
 		
 		uvm_report_server::set_server(my_server);
 		
-		uvm_top.set_timeout(10**9);
+		uvm_top.set_timeout(10**7);
 		
 		uvm_top.print_topology();
 	endfunction: start_of_simulation_phase
