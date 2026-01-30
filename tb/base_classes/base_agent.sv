@@ -4,7 +4,7 @@
 virtual class base_agent #(
 	type INTERFACE_TYPE,
 	type TRANSACTION_TYPE,
-	type DRIVER_TYPE    = base_driver   #(INTERFACE_TYPE, TRANSACTION_TYPE),
+	type DRIVER_TYPE    = void_driver   #(INTERFACE_TYPE, TRANSACTION_TYPE),
 	type MONITOR_TYPE   = void_monitor  #(INTERFACE_TYPE, TRANSACTION_TYPE),
 	type SEQUENCER_TYPE = uvm_sequencer #(TRANSACTION_TYPE)
 ) extends uvm_agent;
@@ -42,8 +42,8 @@ virtual class base_agent #(
 		end 
 		
 		if (config_h.has_monitor == 1) begin
-			monitor_h = MONITOR_TYPE::type_id::create("monitor_h", this);
-			ap = new("ap", this);
+			monitor_h   = MONITOR_TYPE::type_id::create("monitor_h", this);
+			ap          = new("ap", this);
 		end
 		
 	endfunction
@@ -52,7 +52,7 @@ virtual class base_agent #(
 		super.connect_phase(phase);
 		if (config_h.is_active == UVM_ACTIVE) begin
 			driver_h.seq_item_port.connect(sequencer_h.seq_item_export);
-			driver_h.vif = config_h.vif;
+			driver_h.vif  = config_h.vif;
 		end
 		if (config_h.has_monitor == 1) begin
 			monitor_h.ap.connect(ap);

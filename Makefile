@@ -111,13 +111,13 @@ clean:
 
 
 help:
-	@echo "Usage:"
-	@echo "  make all                - Compile and run all simulations"
-	@echo "  make compile            - Compile only"
-	@echo "  make run_sims           - Run simulations and merge coverage"
-	@echo "  make clean              - Clean generated files"
-	@echo "  make VERBOSITY=UVM_HIGH - Override verbosity"
-	@echo "  make QUESTASIM_DIR=path - Override QuestaSim path"
+	@echo Usage:
+	@echo "make all                             - Compile and run all simulations"
+	@echo "make compile                         - Compile only"
+	@echo "make run_sims                        - Run simulations and merge coverage"
+	@echo "make clean                           - Clean generated files"
+	@echo "make VERBOSITY=UVM_HIGH              - Override verbosity"
+	@echo "make TESTS=<test_name>:<test_count>  - Override test and run count"
 	
 
 .PHONY: all compile run_sims start_sim sim merge_coverage clean help $(SIM_TARGETS)

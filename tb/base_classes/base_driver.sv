@@ -1,6 +1,6 @@
 `ifndef BASE_DRIVER
 `define BASE_DRIVER
-class base_driver #(
+virtual class base_driver #(
 	type INTERFACE_TYPE,
 	type TRANSACTION_TYPE
 ) extends uvm_driver#(TRANSACTION_TYPE);
@@ -16,39 +16,32 @@ class base_driver #(
 	endfunction: new
 
 	
-	virtual task reset();
-		`uvm_fatal(get_type_name(), "Reset task is not implemented in the base_driver class.")
-	endtask: reset
 
-	virtual task drive_transaction (TRANSACTION_TYPE tr);
-		`uvm_fatal(get_type_name(), "drive_transaction task is not implemented in the base_driver class.")
-	endtask: drive_transaction
+	pure virtual task reset();
+	pure virtual task drive_transaction (TRANSACTION_TYPE tr);
+	
 
 
-
-	virtual task wait_for_active_clock();
+	protected virtual task wait_for_active_clock();
 		@(posedge vif.clk iff vif.rst_n == 1);
-	endtask
+	endtask: wait_for_active_clock
 
-	virtual task wait_for_reset_assert();
+	protected virtual task wait_for_reset_assert();
 		@(negedge vif.rst_n);
-	endtask
-	
+	endtask: wait_for_reset_assert
 
-	virtual function bit condition_getting_start();
+	protected virtual function bit should_start_driving();
 		return (vif.rst_n == 1);
-	endfunction
-
-
+	endfunction: should_start_driving
 
 
 	
-	virtual task reset_phase(uvm_phase phase);
+	task reset_phase(uvm_phase phase);
 		super.reset_phase(phase);
 		reset();
 	endtask: reset_phase
 	
-	virtual task main_phase(uvm_phase phase);
+	task main_phase(uvm_phase phase);
 		super.main_phase(phase);
 		wait_for_active_clock();
 		fork
@@ -56,12 +49,10 @@ class base_driver #(
 				wait_for_reset_assert();
 				`uvm_info(get_type_name(), "Reset detected", UVM_HIGH)
 				reset();
-				`uvm_info(get_type_name(), "Wait start work", UVM_HIGH)
-				wait_for_active_clock();
 			end
 			
 			forever begin
-				if (condition_getting_start()) begin
+				if (should_start_driving()) begin
 					seq_item_port.get_next_item(tr);
 					`uvm_info(get_type_name(), "Start work", UVM_HIGH)
 					drive_transaction(tr);

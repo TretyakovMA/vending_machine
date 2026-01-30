@@ -4,6 +4,7 @@
 	`include "my_report_server.sv"
 
 	`include "void_monitor.sv"
+	`include "void_driver.sv"
 
     `include "base_transaction.sv"
 	`include "base_agent_config.sv"
