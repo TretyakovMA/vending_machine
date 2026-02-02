@@ -8,7 +8,7 @@ class test_dollars_seq extends user_base_seq;
 	endfunction
     
 
-	virtual function void apply_constraints(user_transaction tr);
+	function void apply_constraints(user_transaction tr);
         assert(tr.randomize() with{
 			client_id          == 3;
 			coin_in_q.size()   == 1;

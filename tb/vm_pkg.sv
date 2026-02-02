@@ -5,9 +5,12 @@
 
 `ifndef VM_PKG
 `define VM_PKG
+
+`include "interfaces/full_interface.svh"
+
 package vm_pkg;
 	timeunit 1ns;
-	timeprecision 1ps;
+	timeprecision 100ps;
 	
 	typedef enum bit[1:0] {
 		RUB = 2'b00, 
@@ -40,13 +43,10 @@ package vm_pkg;
 
 
 
-	
 	//==============================================================================
 	//Registers
 	`include "register_src/registers/registers_inc.sv"
 	//==============================================================================
-
-
 
 
 
@@ -56,16 +56,19 @@ package vm_pkg;
 	//==============================================================================
 
 
+
 	//==============================================================================
 	// User Components
-	`include "user_src/user_components/user_components_inc.sv"
+	`include "user_src/included_files/user_components_inc.svh"
 	//==============================================================================
 	
 
+
 	//==============================================================================
-	// Admin Components
-	`include "admin_src/admin_src_inc.sv"
+	// Admin Components and sequences
+	`include "admin_src/admin_src_inc.svh"
 	//==============================================================================
+
 
 
 	//==============================================================================
@@ -77,28 +80,20 @@ package vm_pkg;
 
 	//==============================================================================
 	// Environment
-	`include "enviroment/env_config.sv"
-	`include "enviroment/env.sv"
-	`include "enviroment/base_test.sv"
-	`include "enviroment/stimulus_base_test.sv"
+	`include "enviroment/enviroment_inc.svh"
 	//==============================================================================
-
-
 
 
 
 	//==============================================================================
 	// User Sequences
-	`include "user_src/user_sequences/user_sequences_inc.sv"
+	`include "user_src/included_files/user_sequences_inc.svh"
 	//==============================================================================
 
 	//==============================================================================
 	// User Tests
-	`include "user_src/user_tests/user_tests_inc.sv"
+	`include "user_src/included_files/user_tests_inc.svh"
 	//==============================================================================
-
-
-
 
 
 
@@ -112,9 +107,6 @@ package vm_pkg;
 	`include "register_src/register_tests/register_tests_inc.sv"
 	//==============================================================================
 	
-
-
-
 
 
 	//==============================================================================

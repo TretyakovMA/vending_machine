@@ -44,7 +44,7 @@ class user_checker extends uvm_component;
 		//price и item_discount берутся из регистров vend_item
 		price         = reg_block_h.vend_item[item_num].item_price.get_mirrored_value();
 		item_discount = reg_block_h.vend_item[item_num].item_discount.get_mirrored_value();
-        `uvm_info(get_type_name(), $sformatf("Base price: %0f, item discount: %0f", price, item_discount), UVM_LOW)
+        `uvm_info(get_type_name(), $sformatf("Base price: %0f, item discount: %0f", price, item_discount), UVM_FULL)
 		//Расчет скидки
 		discount = (client_id % 3) * 10;
 		vip      = (client_id % 10 == 0);
@@ -86,7 +86,7 @@ class user_checker extends uvm_component;
 		item_price            = get_item_price(calc_tr.item_num, calc_tr.client_id);
 		balance               = calculate_balance(calc_tr.coin_in_q, calc_tr.currency_type_q);
 
-        `uvm_info(get_type_name(), $sformatf("Calculated balance: %0f, item price: %0f", balance, item_price), UVM_LOW)
+        `uvm_info(get_type_name(), $sformatf("Calculated balance: %0f, item price: %0f", balance, item_price), UVM_FULL)
 
 		//Заполнение полей ожидаемой транзакции
 		calc_tr.item_out      = (1 << calc_tr.item_num);

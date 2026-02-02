@@ -7,7 +7,7 @@ class simple_test_seq extends user_base_seq;
 		super.new(name);
 	endfunction
 
-	virtual function void apply_constraints(user_transaction tr);
+	function void apply_constraints(user_transaction tr);
 		tr.client_id       = 3;
 		tr.coin_in_q       = {25, 10};
 		tr.currency_type_q = {RUB, RUB};

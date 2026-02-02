@@ -2,7 +2,7 @@
 `define SUMMARY_BASE_TEST
 virtual class summary_base_test #(
     type SUMMARY_SEQUENCE_TYPE
-) extends stimulus_base_test #(
+) extends sequence_base_test #(
     .SEQUENCE_TYPE(SUMMARY_SEQUENCE_TYPE),
     .IS_VIRTUAL_SEQUENCE(1)
 );

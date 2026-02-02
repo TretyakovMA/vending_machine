@@ -2,7 +2,7 @@
 `define REGISTER_BASE_TEST
 virtual class register_base_test #(
     type REGISTER_SEQUENCE_TYPE
-) extends stimulus_base_test #(
+) extends sequence_base_test #(
     .SEQUENCE_TYPE(register_test_vseq #(REGISTER_SEQUENCE_TYPE)),
     .IS_VIRTUAL_SEQUENCE(1)
 );

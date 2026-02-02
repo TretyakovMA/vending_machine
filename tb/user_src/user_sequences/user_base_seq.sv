@@ -38,7 +38,7 @@ class user_base_seq #(
             `uvm_fatal (get_type_name(), "Failed to cast checker_h")
         
 		
-		repeat(NUMBER_OF_TESTS) begin
+		repeat(NUMBER_OF_TESTS) begin //Тело повторится NUMBER_OF_TESTS раз
 			tr         = user_transaction::type_id::create("tr");
 			count_test = 0;
             success    = 0;
@@ -47,15 +47,15 @@ class user_base_seq #(
 
 			do begin
 				count_test++;
-				apply_constraints(tr);
+				apply_constraints(tr); //Первичная рандомизация
 
-				exp_tr = checker_h.calculate_exp_transaction(tr);
+				exp_tr  = checker_h.calculate_exp_transaction(tr); //Расчет ожидаемой транзакции
 
-				success = check_success(exp_tr);
+				success = check_success(exp_tr); //Проверка корректности транзакции
 				`uvm_info("TEST", {"\n\n\nAttempt to send a transaction: ", exp_tr.convert2string(), "\n\n\n"}, UVM_FULL)
 			end while (success == 0 && count_test < NUMBER_OF_ATTEMPTS);
 
-            if (count_test == NUMBER_OF_ATTEMPTS)
+            if (count_test == NUMBER_OF_ATTEMPTS) //Если транзакция не была сгенерирована, то возникает фатальная ошибка
                 `uvm_fatal(get_type_name(), $sformatf("Failed to generate a valid transaction after %0d attempts", count_test))
             
             `uvm_info(get_type_name(), `START_TEST_STR, UVM_LOW)

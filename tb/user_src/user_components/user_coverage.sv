@@ -7,13 +7,13 @@ class user_coverage extends uvm_subscriber #(user_transaction);
 	
 	
 	
-	covergroup cg_client_id;
+	covergroup cg_client_id; //Проверка на то, какие client_id были пройдены
 		coverpoint tr.client_id {
 			bins clients[] = {[0:`MAX_CLIENTS-1]}; 
 		}
 	endgroup
 	
-	covergroup cg_coin_in_q;
+	covergroup cg_coin_in_q; //Проверка на количество внесенных монет
 		coverpoint tr.coin_in_q.size() {
 			bins single = {1};
 			bins few = {[2:29]};
@@ -22,7 +22,7 @@ class user_coverage extends uvm_subscriber #(user_transaction);
 		}
 	endgroup
 	
-	covergroup cg_item_num;
+	covergroup cg_item_num; //Проверка на то, какие товары были выбраны
 		coverpoint tr.item_num {
 			bins items[] = {[0:`NUM_ITEMS-1]};
 		}
@@ -30,19 +30,19 @@ class user_coverage extends uvm_subscriber #(user_transaction);
 	
 	covergroup cg_coin_nominal with function sample (bit [5:0] nominal);
 		coverpoint nominal {
-			bins noms[] = {1,5,10,25,50};
+			bins noms[] = {1,5,10,25,50}; //Проверка на то, какие номиеалы были выбраны
 		}
 	endgroup
 	
 	covergroup cg_currency_type with function sample (currency_type_t c_type);
-		coverpoint c_type;
+		coverpoint c_type; //проверка на то, какие типы монет были выбраны
 	endgroup
 	
 	covergroup cg_no_change;
 		coverpoint tr.no_change;
 	endgroup
 	
-	covergroup cg_change_out;
+	covergroup cg_change_out; //проверка на то, какие сдачи были выданы
 		coverpoint tr.change_out {
 			bins little = {[1:100]};
 			bins average = {[101:1000]};
@@ -55,16 +55,16 @@ class user_coverage extends uvm_subscriber #(user_transaction);
 	
 	function new(string name, uvm_component parent);
 		super.new(name, parent);
-		cg_client_id = new();
-		cg_coin_in_q = new();
-		cg_item_num = new();
-		cg_coin_nominal = new();
+		cg_client_id     = new();
+		cg_coin_in_q     = new();
+		cg_item_num      = new();
+		cg_coin_nominal  = new();
 		cg_currency_type = new();
-		cg_no_change = new();
-		cg_change_out = new();
+		cg_no_change     = new();
+		cg_change_out    = new();
 	endfunction: new
 	
-	function void write(user_transaction t);
+	function void write(user_transaction t); //Основная работа покрытия
 		tr = t.clone_me();
 		`uvm_info(get_type_name(), "Start work", UVM_HIGH)
 		cg_client_id.sample();

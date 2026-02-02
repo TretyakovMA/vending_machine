@@ -7,7 +7,7 @@ class test_lots_of_purchases_seq extends user_base_seq #(20);
 		super.new(name);
 	endfunction
 
-	virtual function void apply_constraints(user_transaction tr);
+	function void apply_constraints(user_transaction tr);
         assert(tr.randomize() with{
 			client_id          == 3;
 			coin_in_q.size()   == 2;

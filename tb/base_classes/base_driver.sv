@@ -40,9 +40,9 @@ virtual class base_driver #(
 	//Бесконечный поиск сигнала сброса
 	local task monitor_reset(); 
 		forever begin
-			wait_for_reset_assert(); //ожидание сигнала сброса
+			wait_for_reset_assert();       //ожидание сигнала сброса
 			`uvm_info(get_type_name(), "Reset detected", UVM_HIGH)
-			disable drive_process;   //остановка процесса
+			disable drive_process;         //остановка процесса
 			reset();
 
 			if(transaction != null) begin
@@ -68,7 +68,7 @@ virtual class base_driver #(
                 drive_transaction(transaction); //запись транзакции в интерфейс
                 
                 `uvm_info(get_type_name(), "End work", UVM_HIGH)
-				reset();
+
 				wait_for_active_clock();
                 seq_item_port.item_done();
 			end
@@ -87,8 +87,8 @@ virtual class base_driver #(
 		super.main_phase(phase);
 		wait_for_active_clock();
 		fork
-			monitor_reset();
-			drive_process();
+			drive_process(); //Параллельно идут процессы основной работы драйвера
+			monitor_reset(); //и поиска сигнала сброса
 		join_any
 	endtask: main_phase
 

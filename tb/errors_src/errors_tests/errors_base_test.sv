@@ -3,7 +3,7 @@
 
 virtual class errors_base_test #(
     type ERRORS_SEQUENCE_TYPE
-) extends stimulus_base_test #(
+) extends sequence_base_test #(
     .SEQUENCE_TYPE(ERRORS_SEQUENCE_TYPE),
     .IS_VIRTUAL_SEQUENCE(1)
 );

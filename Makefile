@@ -18,15 +18,15 @@ GCC           = $(QUESTASIM_DIR)/gcc-7.4.0-mingw64vc16/bin/gcc.exe
 # =============================================================================
 # Настройки симуляции
 # =============================================================================
-VERBOSITY = UVM_HIGH # (UVM_NONE, UVM_LOW, UVM_MEDIUM, UVM_HIGH, UVM_FULL, UVM_DEBUG)
+VERBOSITY = UVM_LOW # (UVM_NONE, UVM_LOW, UVM_MEDIUM, UVM_HIGH, UVM_FULL, UVM_DEBUG)
 
 SEED      = random
 
 
 # Определения тестов и количества запусков (<имя_теста>:<количество_запусков>)
-TESTS = test_lots_of_purchases:0 \
+TESTS = test_lots_of_purchases:1 \
 		read_after_reset_test:0 \
-		full_client_session_with_no_errors:1
+		full_client_session_with_no_errors:0
 
 
 
@@ -50,7 +50,6 @@ compile:
 
 	vlog -sv +acc -cover f +incdir+$(UVM_SRC) \
 		$(DUT_DIR)/vending_machine.sv \
-		$(TB_DIR)/full_interface.sv \
 		$(TB_DIR)/vm_pkg.sv \
 		$(PROJECT_DIR)/top.sv
 

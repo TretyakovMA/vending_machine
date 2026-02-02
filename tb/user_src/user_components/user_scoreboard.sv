@@ -9,7 +9,7 @@ class user_scoreboard extends uvm_scoreboard;
 	local user_transaction   exp_tr;
 	local int                client_points_db[int]; //БД накопленных очков клиентов
 
-	local user_checker             checker_h;
+	local user_checker       checker_h;
 
 
 	
@@ -45,7 +45,7 @@ class user_scoreboard extends uvm_scoreboard;
 	
 	
 	
-	//при получении ответа от монитора вызывается эта функция
+	//При получении ответа от монитора вызывается эта функция
 	function void write (user_transaction t);
 		if(t.has_reset) begin
 			`uvm_info(get_type_name(), "Reset detected", UVM_HIGH)

@@ -8,7 +8,7 @@ class buy_one_product_seq extends user_base_seq;
 	endfunction
     
 
-	virtual function void apply_constraints(user_transaction tr);
+	function void apply_constraints(user_transaction tr);
         assert(tr.randomize() with{
             coin_in_q.size() == 3; 
 		});
