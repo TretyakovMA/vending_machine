@@ -14,9 +14,9 @@ class env extends uvm_env;
 	
 	user_coverage          user_coverage_h;
 	user_scoreboard        user_scoreboard_h;
+	user_checker		   user_checker_h;
 	
 	register_scoreboard	   register_scoreboard_h;
-	
 	register_env           register_env_h;
 	
 	env_config             env_config_h;
@@ -43,8 +43,10 @@ class env extends uvm_env;
 		
 		register_scoreboard_h = register_scoreboard::type_id::create("register_scoreboard_h", this);
 		
-		user_coverage_h   = user_coverage::type_id::create("coverage_h", this);
+		user_coverage_h   = user_coverage::type_id::create("coverage_h", this);	
 		user_scoreboard_h = user_scoreboard::type_id::create("user_scoreboard_h", this);
+		user_checker_h	  = user_checker::type_id::create("user_checker_h", this);
+		uvm_config_db #(user_checker)::set(this, "user_scoreboard_h", "user_checker", user_checker_h);
 	endfunction
 	
 	
