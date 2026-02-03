@@ -39,6 +39,30 @@ class vm_reg_block extends uvm_reg_block;
 			vend_item[i].item_price.set_reset((i+1) * 10);
 			reg_map.add_reg(vend_item[i], 'h0C + (i*4), "RW");
 		end
+
+		set_hdl_path_root("top.DUT", "RTL");
+
+		// ===================== vend_cfg =====================
+		vend_cfg.add_hdl_path_slice("r_num_items",     0,  5, "RTL");
+    	vend_cfg.add_hdl_path_slice("r_max_coins",     5,  8, "RTL");
+    	vend_cfg.add_hdl_path_slice("r_idle_timeout", 13, 11, "RTL");
+    	vend_cfg.add_hdl_path_slice("r_exchange_rate",24,  8, "RTL");   // в DUT 8 бит, хотя в модели сейчас 2
+
+		
+		// ===================== vend_clients =====================
+		vend_clients.add_hdl_path_slice("r_max_clients", 0, 8, "RTL");
+
+		// ===================== vend_paswd =====================
+		vend_paswd.add_hdl_path_slice("r_current_admin_password", 0, 32, "RTL");
+
+		// ===================== vend_item[10] =====================
+		foreach (vend_item[i]) begin
+			vend_item[i].add_hdl_path_slice($sformatf("r_item_prices[%0d]",   i),  0, 8, "RTL");
+			vend_item[i].add_hdl_path_slice($sformatf("r_item_count[%0d]",    i),  8, 8, "RTL");
+			vend_item[i].add_hdl_path_slice($sformatf("r_item_discount[%0d]", i), 16, 8, "RTL");
+        // reserved [31:24] не хранится в DUT → оставляем unmapped (будет 0 при чтении)
+    	end
+
 		
 		lock_model();
 	endfunction

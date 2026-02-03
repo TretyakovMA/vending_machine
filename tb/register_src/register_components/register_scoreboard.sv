@@ -4,10 +4,13 @@ class register_scoreboard extends uvm_scoreboard;
 	`uvm_component_utils(register_scoreboard)
 
 	uvm_analysis_imp #(register_transaction, register_scoreboard) a_imp;
-	//register_transaction exp_tr;
-	vm_reg_block         reg_block_h;
 	
-	//bit[31:0] result;
+	local vm_reg_block     reg_block_h;
+	/*local uvm_status_e     status;
+	local uvm_reg_data_t   value;
+	local uvm_reg          registers[$];
+	
+	local bit[31:0]        mirrored_value;*/
 	
 	function new(string name, uvm_component parent);
 		super.new(name, parent);
@@ -27,8 +30,23 @@ class register_scoreboard extends uvm_scoreboard;
 	task reset_phase(uvm_phase phase);
 		super.reset_phase(phase);
 		reg_block_h.reset();
+		//check_registers();
+		//reg_block_h.print();
 	endtask: reset_phase
 	
+	/*task check_registers();
+		foreach(registers[i])begin
+			mirrored_value = registers[i].get_mirrored_value();
+			registers[i].peek(status, value);
+			if(value != mirrored_value) begin
+				`uvm_error(get_type_name(), $sformatf("Register %s mismatch: expected 0x%0h, got 0x%0h", registers[i].get_name(), mirrored_value, value))
+				registers[i].predict(mirrored_value);
+			end
+			else begin
+				`uvm_info(get_type_name(), $sformatf("Register %s match: value 0x%0h", registers[i].get_name(), value), UVM_HIGH)
+			end
+		end
+	endtask: check_registers*/
 	
 	function void write (register_transaction t);
 		if(t.has_reset) begin
@@ -36,6 +54,7 @@ class register_scoreboard extends uvm_scoreboard;
 			reg_block_h.reset();
 			return;
 		end
+
 		//if(t.regs_we == 0) begin
 			
 			/*uvm_reg rg;
@@ -52,8 +71,6 @@ class register_scoreboard extends uvm_scoreboard;
 			reg_block_h.print();*/
 		//end
 	endfunction: write
-	
-	
 	
 endclass
 `endif

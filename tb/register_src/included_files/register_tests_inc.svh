@@ -3,7 +3,7 @@
 
     `include "../register_tests/register_base_test.sv"
 
-    `include "../register_tests/read_after_reset_test.sv"
-    `include "../register_tests/read_after_write_test.sv"
-    
+    `include "../register_tests/check_after_reset_test.sv"
+    `include "../register_tests/check_after_write_test.sv"
+
 `endif

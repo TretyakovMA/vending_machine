@@ -24,8 +24,8 @@ SEED      = random
 
 
 # Определения тестов и количества запусков (<имя_теста>:<количество_запусков>)
-TESTS = test_lots_of_purchases:0 \
-		read_after_reset_test:1 \
+TESTS = check_after_write_test:1 \
+		check_after_reset_test:0 \
 		full_client_session_with_no_errors:0
 
 

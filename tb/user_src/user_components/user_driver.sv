@@ -50,7 +50,7 @@ class user_driver extends base_driver #(
 
 		vif.item_select <= 0;
 		vif.confirm     <= 0;
-		`uvm_info(get_type_name(), {"Send transaction ", tr.convert2string()}, UVM_HIGH)
+		`uvm_info(get_type_name(), {"Send transaction: ", tr.convert2string()}, UVM_HIGH)
 		repeat(4) @(posedge vif.clk); //Ожидание, пока автомат работает
 		reset();                      //На всякий случай все сигналы сбрасываются
 		wait_for_active_clock();

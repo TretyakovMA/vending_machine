@@ -21,6 +21,7 @@ class admin_driver extends base_driver #(
 	task drive_transaction(admin_transaction tr);
 		vif.admin_mode     <= tr.admin_mode;
 		vif.admin_password <= tr.admin_password;
+		`uvm_info(get_type_name(), {"Send transaction: ", tr.convert2string()}, UVM_HIGH)
 		wait_for_active_clock();
 	endtask: drive_transaction
 	

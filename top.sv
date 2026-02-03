@@ -80,5 +80,6 @@ module top;
 		uvm_config_db #(virtual interface register_interface)::set(null, "*", "register_vif", register_if);
 		uvm_config_db #(virtual interface errors_interface)::set(null, "*", "errors_vif", errors_if);
 		run_test();
+		
 	end
 endmodule

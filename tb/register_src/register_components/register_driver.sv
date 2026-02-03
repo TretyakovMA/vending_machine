@@ -25,6 +25,7 @@ class register_driver extends base_driver #(
 		else
 			read(tr);
 
+		`uvm_info(get_type_name(), {"Send transaction: ", tr.convert2string()}, UVM_HIGH)
 		reset();
 	endtask: drive_transaction
 
@@ -32,14 +33,16 @@ class register_driver extends base_driver #(
 		vif.regs_addr    <= tr.regs_addr;
 		vif.regs_we      <= 0;
 		
-		@(posedge vif.clk);
-		tr.regs_data_out = vif.regs_data_out;
+		wait_for_active_clock();
+		tr.regs_data_out <= vif.regs_data_out;
 	endtask: read
 
 	task write(register_transaction tr);
 		vif.regs_addr    <= tr.regs_addr;
 		vif.regs_data_in <= tr.regs_data_in;
 		vif.regs_we      <= 1;
+
+		wait_for_active_clock();
 	endtask: write
 
 endclass
