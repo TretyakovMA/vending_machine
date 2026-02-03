@@ -1,8 +1,8 @@
 `ifndef ADMIN_DRIVER
 `define ADMIN_DRIVER
 class admin_driver extends base_driver #(
-	virtual admin_interface, 
-	admin_transaction
+	.INTERFACE_TYPE   (virtual admin_interface), 
+	.TRANSACTION_TYPE (admin_transaction      )
 );
 	`uvm_component_utils(admin_driver)
 	
@@ -13,16 +13,15 @@ class admin_driver extends base_driver #(
 
 	
 	
-	virtual task reset();
-		vif.admin_mode <= 0;
+	task reset();
+		vif.admin_mode     <= 0;
 		vif.admin_password <= 0;
 	endtask: reset
 	
-	
-	virtual task drive_transaction(admin_transaction tr);
+	task drive_transaction(admin_transaction tr);
 		vif.admin_mode     <= tr.admin_mode;
 		vif.admin_password <= tr.admin_password;
-		@(posedge vif.clk);
+		wait_for_active_clock();
 	endtask: drive_transaction
 	
 endclass

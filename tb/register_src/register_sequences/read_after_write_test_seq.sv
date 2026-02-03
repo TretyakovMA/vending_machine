@@ -1,6 +1,6 @@
 `ifndef READ_AFTER_WRITE_TEST_SEQ
 `define READ_AFTER_WRITE_TEST_SEQ
-class read_after_write_test_seq extends base_reg_seq;
+class read_after_write_test_seq extends register_base_seq;
 	`uvm_object_utils(read_after_write_test_seq)
 
     

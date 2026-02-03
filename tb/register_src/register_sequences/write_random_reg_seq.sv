@@ -1,6 +1,6 @@
 `ifndef WRITE_RANDOM_REG_SEQ
 `define WRITE_RANDOM_REG_SEQ  
-class write_random_reg_seq extends base_reg_seq;
+class write_random_reg_seq extends register_base_seq;
     `uvm_object_utils(write_random_reg_seq)
 
     

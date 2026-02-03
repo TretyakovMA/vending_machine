@@ -69,7 +69,7 @@ virtual class base_driver #(
                 
                 `uvm_info(get_type_name(), "End work", UVM_HIGH)
 
-				wait_for_active_clock();
+				//wait_for_active_clock();
                 seq_item_port.item_done();
 			end
 		end

@@ -24,7 +24,7 @@ class user_driver extends base_driver #(
 	endtask: reset
 	
 	
-	virtual task drive_transaction(user_transaction tr);
+	task drive_transaction(user_transaction tr);
 		vif.id_valid    <= 1; //Сначала клиент совершает вход
 		vif.client_id   <= tr.client_id;
 		@(posedge vif.clk);
@@ -53,6 +53,7 @@ class user_driver extends base_driver #(
 		`uvm_info(get_type_name(), {"Send transaction ", tr.convert2string()}, UVM_HIGH)
 		repeat(4) @(posedge vif.clk); //Ожидание, пока автомат работает
 		reset();                      //На всякий случай все сигналы сбрасываются
+		wait_for_active_clock();
 	endtask: drive_transaction
 		
 endclass

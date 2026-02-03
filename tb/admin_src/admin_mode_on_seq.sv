@@ -14,7 +14,7 @@ class admin_mode_on_seq extends uvm_sequence #(admin_transaction);
 		tr = admin_transaction::type_id::create("tr");
 		start_item(tr);
 			
-		tr.admin_password = admin_password;
+		tr.admin_password = admin_password; //Пароль должен быть получен из внешнего источника
 		tr.admin_mode     = 1;
 			
 		finish_item(tr);

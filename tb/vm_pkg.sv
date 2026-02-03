@@ -45,14 +45,14 @@ package vm_pkg;
 
 	//==============================================================================
 	//Registers
-	`include "register_src/registers/registers_inc.sv"
+	`include "register_src/included_files/registers_inc.svh"
 	//==============================================================================
 
 
 
 	//==============================================================================
 	// Register Components
-	`include "register_src/register_components/register_components_inc.sv"
+	`include "register_src/included_files/register_components_inc.svh"
 	//==============================================================================
 
 
@@ -99,12 +99,12 @@ package vm_pkg;
 
 	//==============================================================================
 	// Register Sequences
-	`include "register_src/register_sequences/register_sequences_inc.sv"
+	`include "register_src/included_files/register_sequences_inc.svh"
 	//==============================================================================
 
 	//==============================================================================
 	// Register Tests
-	`include "register_src/register_tests/register_tests_inc.sv"
+	`include "register_src/included_files/register_tests_inc.svh"
 	//==============================================================================
 	
 

@@ -1,6 +1,6 @@
 `ifndef READ_AFTER_RESET_TEST_SEQ
 `define READ_AFTER_RESET_TEST_SEQ  
-class read_after_reset_test_seq extends base_reg_seq;
+class read_after_reset_test_seq extends register_base_seq;
     `uvm_object_utils(read_after_reset_test_seq)
 
     
@@ -12,7 +12,6 @@ class read_after_reset_test_seq extends base_reg_seq;
     
     task body();
         super.body();
-        
         
         repeat(1) begin
             reg_block_h.reset();

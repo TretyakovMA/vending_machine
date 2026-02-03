@@ -6,7 +6,7 @@ class client_session_after_write_reg_vseq extends summary_base_vseq;
 
     `define N 10
 
-    register_test_vseq #(write_random_reg_seq)   reg_test_vseq;
+    register_base_virtual_seq #(write_random_reg_seq)   reg_test_vseq;
     full_client_session_with_no_errors_seq #(`N) user_test_seq;
     
     function new(string name = "client_session_after_write_reg_vseq");
@@ -17,7 +17,7 @@ class client_session_after_write_reg_vseq extends summary_base_vseq;
         super.body();
         
         
-        reg_test_vseq = register_test_vseq #(write_random_reg_seq)::type_id::create("reg_test_vseq");
+        reg_test_vseq = register_base_virtual_seq #(write_random_reg_seq)::type_id::create("reg_test_vseq");
         user_test_seq = full_client_session_with_no_errors_seq #(`N)::type_id::create("user_test_seq");
 
         repeat (10) begin

@@ -1,8 +1,8 @@
 `ifndef REGISTER_DRIVER
 `define REGISTER_DRIVER
 class register_driver extends base_driver #(
-	virtual register_interface, 
-	register_transaction
+	.INTERFACE_TYPE   (virtual register_interface), 
+	.TRANSACTION_TYPE (register_transaction      )
 );
 
 	`uvm_component_utils(register_driver)
@@ -13,23 +13,34 @@ class register_driver extends base_driver #(
 
 	
 
-	virtual task reset();
+	task reset();
 		vif.regs_data_in <= 0;
 		vif.regs_addr    <= 0;
 		vif.regs_we      <= 0;
 	endtask: reset
 	
-	virtual task drive_transaction (register_transaction tr);
+	task drive_transaction (register_transaction tr);
+		if (tr.regs_we)
+			write(tr);
+		else
+			read(tr);
+
+		reset();
+	endtask: drive_transaction
+
+	task read(register_transaction tr);
 		vif.regs_addr    <= tr.regs_addr;
-		vif.regs_data_in <= tr.regs_data_in;
-		vif.regs_we      <= tr.regs_we;
+		vif.regs_we      <= 0;
 		
 		@(posedge vif.clk);
-		if (!tr.regs_we) tr.regs_data_out = vif.regs_data_out;
-		/*vif.regs_addr    <= 0;
-		vif.regs_data_in <= 0;
-		vif.regs_we      <= 0;*/
-	endtask: drive_transaction
+		tr.regs_data_out = vif.regs_data_out;
+	endtask: read
+
+	task write(register_transaction tr);
+		vif.regs_addr    <= tr.regs_addr;
+		vif.regs_data_in <= tr.regs_data_in;
+		vif.regs_we      <= 1;
+	endtask: write
 
 endclass
 `endif

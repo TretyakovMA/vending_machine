@@ -1,8 +1,8 @@
 `ifndef REGISTER_MONITOR
 `define REGISTER_MONITOR
 class register_monitor extends base_monitor #(
-	virtual register_interface, 
-	register_transaction
+	.INTERFACE_TYPE   (virtual register_interface), 
+	.TRANSACTION_TYPE (register_transaction      )
 );
 
 	`uvm_component_utils(register_monitor)
@@ -11,6 +11,7 @@ class register_monitor extends base_monitor #(
 		super.new(name, parent);
 	endfunction: new
 	
+
 
 
 	function bit should_start_monitoring ();

@@ -1,6 +1,6 @@
 `ifndef CHANGE_ITEM_PRICE_SEQ
 `define CHANGE_ITEM_PRICE_SEQ  
-class change_item_price_seq extends base_reg_seq;
+class change_item_price_seq extends register_base_seq;
     `uvm_object_utils(change_item_price_seq)
 
     

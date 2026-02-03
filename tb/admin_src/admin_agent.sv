@@ -2,8 +2,8 @@
 `define ADMIN_AGENT
 class admin_agent extends base_agent #(
 	.INTERFACE_TYPE   (virtual admin_interface), 
-	.TRANSACTION_TYPE (admin_transaction), 
-	.DRIVER_TYPE      (admin_driver)
+	.TRANSACTION_TYPE (admin_transaction      ), 
+	.DRIVER_TYPE      (admin_driver           )
 );
 	`uvm_component_utils(admin_agent);
 	

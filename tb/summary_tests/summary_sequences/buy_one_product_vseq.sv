@@ -4,7 +4,7 @@ class buy_one_product_vseq extends summary_base_vseq;
 
     `uvm_object_utils(buy_one_product_vseq)
 
-    register_test_vseq #(change_item_price_seq) reg_test_vseq;
+    register_base_virtual_seq #(change_item_price_seq) reg_test_vseq;
     buy_one_product_seq                         user_test_seq;
     
     function new(string name = "buy_one_product_vseq");
@@ -14,7 +14,7 @@ class buy_one_product_vseq extends summary_base_vseq;
     task body();
         super.body();
         
-        reg_test_vseq = register_test_vseq #(change_item_price_seq)::type_id::create("reg_test_vseq");
+        reg_test_vseq = register_base_virtual_seq #(change_item_price_seq)::type_id::create("reg_test_vseq");
         user_test_seq = buy_one_product_seq::type_id::create("user_test_seq");
 
         repeat (1) begin
