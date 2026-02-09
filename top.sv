@@ -1,5 +1,5 @@
 module top;
-	timeunit 1ns;
+	timeunit      1ns;
 	timeprecision 100ps;
 	
 	import uvm_pkg::*;
@@ -13,10 +13,10 @@ module top;
 	
 	
 	
-	user_interface user_if         (clk, rst_n);
-	admin_interface admin_if       (clk, rst_n);
+	user_interface     user_if     (clk, rst_n);
+	admin_interface    admin_if    (clk, rst_n);
 	register_interface register_if (clk, rst_n);
-	errors_interface errors_if     (clk, rst_n);
+	errors_interface   errors_if   (clk, rst_n);
 	
 	vending_machine DUT (
 		.clk(clk),
@@ -80,6 +80,5 @@ module top;
 		uvm_config_db #(virtual interface register_interface)::set(null, "*", "register_vif", register_if);
 		uvm_config_db #(virtual interface errors_interface)::set(null, "*", "errors_vif", errors_if);
 		run_test();
-		
 	end
 endmodule

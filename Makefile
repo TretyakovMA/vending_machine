@@ -18,14 +18,14 @@ GCC           = $(QUESTASIM_DIR)/gcc-7.4.0-mingw64vc16/bin/gcc.exe
 # =============================================================================
 # Настройки симуляции
 # =============================================================================
-VERBOSITY = UVM_HIGH # (UVM_NONE, UVM_LOW, UVM_MEDIUM, UVM_HIGH, UVM_FULL, UVM_DEBUG)
+VERBOSITY = UVM_LOW # (UVM_NONE, UVM_LOW, UVM_MEDIUM, UVM_HIGH, UVM_FULL, UVM_DEBUG)
 
 SEED      = random
 
 
 # Определения тестов и количества запусков (<имя_теста>:<количество_запусков>)
-TESTS = check_after_write_test:1 \
-		check_after_reset_test:0 \
+TESTS = client_session_after_change_all_registers_test:1 \
+		check_read_test:0 \
 		full_client_session_with_no_errors:0
 
 
@@ -78,17 +78,17 @@ sim:
 		vsim -c \
 		-cvgperinstance \
 		-wlf "vsim_$(strip $(TEST_NAME))_%%i.wlf" \
-		-do "set NoQuitOnFinish 1; \
-		log -r /*; \
-		vcd file \"vsim_$(strip $(TEST_NAME))_%%i.vcd\"; \
-		vcd add -r /*; \
-		run -all; \
-		coverage save \"ucdb_$(strip $(TEST_NAME))_%%i.ucdb\"; \
-		quit -f" \
+		-do \
+			"set NoQuitOnFinish 1; \
+			log -r /*; \
+			vcd file \"vsim_$(strip $(TEST_NAME))_%%i.vcd\"; \
+			vcd add -r /*; \
+			run -all; \
+			coverage save \"ucdb_$(strip $(TEST_NAME))_%%i.ucdb\"; \
+			quit -f" \
 		top \
 		-coverage \
 		-sv_seed $(SEED) \
-		-uvmtestname \
 		"+UVM_TESTNAME=$(strip $(TEST_NAME))" \
 		"+RUN_COUNT=%%i" \
 		"+UVM_VERBOSITY=$(strip $(VERBOSITY))" \
@@ -107,13 +107,13 @@ merge_coverage:
 
 # Очистка сгенерированных файлов
 clean:
-	del /Q /F transcript *.wlf *.ucdb *.txt *.log *.vstf vsim_*.vlf wlf* *.dll *.vcd 2>NUL
+	del /Q /F transcript *.wlf *.ucdb *.log *.vstf vsim_*.vlf wlf* *.dll *.vcd 2>NUL
 	rmdir /S /Q work 2>NUL
 
 
 help:
 	@echo Usage:
-	@echo "make all                             - Compile and run all simulations"
+	@echo "make [all]                             - Compile and run all simulations"
 	@echo "make compile                         - Compile only"
 	@echo "make run_sims                        - Run simulations and merge coverage"
 	@echo "make clean                           - Clean generated files"

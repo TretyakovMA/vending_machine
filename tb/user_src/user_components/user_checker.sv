@@ -11,8 +11,8 @@ class user_checker extends uvm_component;
 
     function void connect_phase(uvm_phase phase);
 		super.connect_phase(phase); //Получение указателя на reg_block_h
-		if(!uvm_config_db #(vm_reg_block)::get(this, "", "reg_block_h", reg_block_h))
-			`uvm_fatal(get_type_name(), "Faild to get reg_block_h")
+		if(!uvm_config_db #(vm_reg_block)::get(this, "", "reg_block", reg_block_h))
+			`uvm_fatal(get_type_name(), "Failed to get reg_block")
 	endfunction: connect_phase
 
 

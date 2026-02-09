@@ -1,9 +1,9 @@
-`ifndef BUY_ONE_PRODUCT_SEQ
-`define BUY_ONE_PRODUCT_SEQ
-class buy_one_product_seq extends user_base_seq;
-	`uvm_object_utils(buy_one_product_seq)
+`ifndef BUY_ONE_ITEM_SEQ
+`define BUY_ONE_ITEM_SEQ
+class buy_one_item_seq extends user_base_seq;
+	`uvm_object_utils(buy_one_item_seq)
     
-	function new(string name = "buy_one_product_seq");
+	function new(string name = "buy_one_item_seq");
 		super.new(name);
 	endfunction
     

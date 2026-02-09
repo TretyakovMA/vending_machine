@@ -9,7 +9,7 @@
 `include "interfaces/full_interface.svh"
 
 package vm_pkg;
-	timeunit 1ns;
+	timeunit      1ns;
 	timeprecision 100ps;
 	
 	typedef enum bit[1:0] {
@@ -123,13 +123,13 @@ package vm_pkg;
 
 
 	//==============================================================================
-	// Summary Sequences
-	`include "summary_tests/summary_sequences/summary_sequences_inc.sv"
+	// Integration Sequences
+	`include "integration_src/included_files/integration_sequences_inc.svh"
 	//==============================================================================
 
 	//==============================================================================
-	// Summary Tests
-	`include "summary_tests/summary_tests_inc.sv"
+	// Integration Tests
+	`include "integration_src/included_files/integration_tests_inc.svh"
 	//==============================================================================
 
 

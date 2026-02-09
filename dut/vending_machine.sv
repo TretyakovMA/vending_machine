@@ -122,11 +122,14 @@ module vending_machine #(
                 8'h00: regs_data_out = {r_exchange_rate, r_idle_timeout, r_max_coins, r_num_items};
                 8'h04: regs_data_out = {24'h0, r_max_clients};
                 8'h08: regs_data_out = r_current_admin_password;
-                default: if (regs_addr >= 8'h0C && regs_addr < 8'h0C + NUM_ITEMS*4) begin
-                    automatic int idx = (regs_addr - 8'h0C) / 4;
-                    regs_data_out[7:0]   = r_item_prices[idx];
-                    regs_data_out[15:8]  = r_item_count[idx];
-                    regs_data_out[23:16] = r_item_discount[idx];
+                default: if (regs_addr >= 8'h0C && regs_addr < 8'h0C + NUM_ITEMS*8) begin
+                    automatic int idx = (regs_addr - 8'h0C) / 8;
+                    automatic int field = (regs_addr - 8'h0C) % 8;
+                    case (field)
+                        0: regs_data_out = {24'h0, r_item_prices[idx]};
+                        4: regs_data_out = {24'h0, r_item_count[idx]};
+                        6: regs_data_out = {24'h0, r_item_discount[idx]};
+                    endcase
                 end
             endcase
         end else begin

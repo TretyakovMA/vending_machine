@@ -21,7 +21,7 @@ class register_env extends uvm_env;
 		adapter_h   = register_adapter::type_id::create("adapter_h", this);
 		reg_block_h = vm_reg_block::type_id::create("reg_block_h", this);
 		reg_block_h.build();
-		uvm_config_db #(vm_reg_block)::set(null, "*", "reg_block_h", reg_block_h);
+		uvm_config_db #(vm_reg_block)::set(null, "*", "reg_block", reg_block_h);
 	endfunction
 	
 	

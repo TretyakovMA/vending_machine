@@ -26,18 +26,19 @@ class register_driver extends base_driver #(
 			read(tr);
 
 		`uvm_info(get_type_name(), {"Send transaction: ", tr.convert2string()}, UVM_HIGH)
+		
 		reset();
 	endtask: drive_transaction
 
-	task read(register_transaction tr);
+	local task read(register_transaction tr);
 		vif.regs_addr    <= tr.regs_addr;
 		vif.regs_we      <= 0;
 		
 		wait_for_active_clock();
-		tr.regs_data_out <= vif.regs_data_out;
+		tr.regs_data_out  = vif.regs_data_out; //Транзакция дальше идет в адаптер, эту строчку убирать нельзя
 	endtask: read
 
-	task write(register_transaction tr);
+	local task write(register_transaction tr);
 		vif.regs_addr    <= tr.regs_addr;
 		vif.regs_data_in <= tr.regs_data_in;
 		vif.regs_we      <= 1;

@@ -1,0 +1,8 @@
+*.log
+*.txt
+*.ucdb
+*.vcd
+*.wlf
+*.dll
+transcript
+work/

@@ -6,11 +6,6 @@ class register_scoreboard extends uvm_scoreboard;
 	uvm_analysis_imp #(register_transaction, register_scoreboard) a_imp;
 	
 	local vm_reg_block     reg_block_h;
-	/*local uvm_status_e     status;
-	local uvm_reg_data_t   value;
-	local uvm_reg          registers[$];
-	
-	local bit[31:0]        mirrored_value;*/
 	
 	function new(string name, uvm_component parent);
 		super.new(name, parent);
@@ -23,15 +18,13 @@ class register_scoreboard extends uvm_scoreboard;
 	
 	function void connect_phase(uvm_phase phase);
 		super.connect_phase(phase);
-		if(!uvm_config_db #(vm_reg_block)::get(this, "", "reg_block_h", reg_block_h))
-			`uvm_fatal(get_type_name(), "Faild to get reg_block_h")
+		if(!uvm_config_db #(vm_reg_block)::get(this, "", "reg_block", reg_block_h))
+			`uvm_fatal(get_type_name(), "Failed to get reg_block")
 	endfunction: connect_phase
 
 	task reset_phase(uvm_phase phase);
 		super.reset_phase(phase);
 		reg_block_h.reset();
-		//check_registers();
-		//reg_block_h.print();
 	endtask: reset_phase
 	
 	/*task check_registers();

@@ -1,11 +1,11 @@
-`ifndef ADMIN_SRC_INC
-`define ADMIN_SRC_INC
+`include "admin_transaction.sv"
 
-    `include "admin_transaction.sv"
-    typedef uvm_sequencer #(admin_transaction) admin_sequencer;
-    `include "admin_driver.sv"
-    `include "admin_agent.sv"
-    `include "admin_mode_on_seq.sv"
-    `include "admin_mode_off_seq.sv"
-
+`ifndef ADMIN_SEQUENCER
+`define ADMIN_SEQUENCER
+typedef uvm_sequencer #(admin_transaction) admin_sequencer;
 `endif
+
+`include "admin_driver.sv"
+`include "admin_agent.sv"
+`include "admin_mode_on_seq.sv"
+`include "admin_mode_off_seq.sv"

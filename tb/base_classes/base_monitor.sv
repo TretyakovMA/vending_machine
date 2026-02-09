@@ -62,7 +62,7 @@ virtual class base_monitor #(
 
 				collect_transaction_data(transaction); //сбор данных транзакции
 
-				`uvm_info(get_type_name(), `GET_TR_STR(transaction), UVM_MEDIUM)
+				`uvm_info(get_type_name(), `GET_TR_STR(transaction), UVM_LOW)
 				ap.write(transaction); //отправка транзакции на анализ
 				`uvm_info(get_type_name(), "End work", UVM_HIGH)
 			end
