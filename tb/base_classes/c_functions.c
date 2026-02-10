@@ -1,3 +1,6 @@
+#ifndef C_FUNCTIONS
+#define C_FUNCTIONS
+
 #include <svdpi.h>
 #include <time.h>
 
@@ -11,3 +14,4 @@ const char* get_simulation_start_time() {
         
     return time_buffer;
 }
+#endif

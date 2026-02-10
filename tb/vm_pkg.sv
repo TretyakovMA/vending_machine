@@ -38,7 +38,7 @@ package vm_pkg;
 	typedef base_agent_config #(virtual user_interface)     user_agent_config;
 	typedef base_agent_config #(virtual admin_interface)    admin_agent_config;
 	typedef base_agent_config #(virtual register_interface) register_agent_config;
-	typedef base_agent_config #(virtual errors_interface)   errors_agent_config;
+	typedef base_agent_config #(virtual error_interface)   error_agent_config;
 	//==============================================================================
 
 
@@ -65,15 +65,15 @@ package vm_pkg;
 
 
 	//==============================================================================
-	// Admin Components and sequences
-	`include "admin_src/admin_src_inc.svh"
+	// Admin Components
+	`include "admin_src/included_files/admin_components_inc.svh"
 	//==============================================================================
 
 
 
 	//==============================================================================
-	// Errors Components
-	`include "errors_src/errors_components/errors_components_inc.sv"
+	// Error Components
+	`include "error_src/included_files/error_components_inc.svh"
 	//==============================================================================
 	
 	
@@ -98,6 +98,11 @@ package vm_pkg;
 
 
 	//==============================================================================
+	// Admin Sequences
+	`include "admin_src/included_files/admin_sequences_inc.svh"
+	//==============================================================================
+
+	//==============================================================================
 	// Register Sequences
 	`include "register_src/included_files/register_sequences_inc.svh"
 	//==============================================================================
@@ -110,13 +115,13 @@ package vm_pkg;
 
 
 	//==============================================================================
-	// Errors Sequences
-	`include "errors_src/errors_sequences/errors_sequences_inc.sv"
+	// Error Sequences
+	`include "error_src/included_files/error_sequences_inc.svh"
 	//==============================================================================
 
 	//==============================================================================
-	// Errors Tests
-	`include "errors_src/errors_tests/errors_tests_inc.sv"
+	// Error Tests
+	`include "error_src/included_files/error_tests_inc.svh"
 	//==============================================================================
 
 

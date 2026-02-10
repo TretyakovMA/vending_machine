@@ -1,8 +1,7 @@
 # =============================================================================
 # Переменные путей
 # =============================================================================
-
-QUESTASIM_DIR ?= $(QUESTA_HOME)
+QUESTASIM_DIR  = $(QUESTA_HOME)
 PROJECT_DIR    = $(CURDIR)
 TB_DIR         = $(PROJECT_DIR)/tb
 DUT_DIR	       = $(PROJECT_DIR)/dut
@@ -12,20 +11,36 @@ DUT_DIR	       = $(PROJECT_DIR)/dut
 # =============================================================================
 UVM_SRC       = $(QUESTASIM_DIR)/verilog_src/uvm-1.2/src
 UVM_DPI       = $(QUESTASIM_DIR)/uvm-1.2/win64/uvm_dpi
-GCC           = $(QUESTASIM_DIR)/gcc-7.4.0-mingw64vc16/bin/gcc.exe
+
+GCC_DIR       = $(wildcard $(QUESTASIM_DIR)/gcc-*/bin/gcc.exe)
+
+#Если не нашли — берём любой gcc из PATH
+ifeq ($(GCC_DIR),)
+    GCC = gcc.exe
+    $(info GCC not found in QuestaSim → using gcc from PATH)
+else
+    GCC = $(firstword $(GCC_DIR))
+    $(info Using bundled GCC: $(GCC))
+endif
 
 
 # =============================================================================
 # Настройки симуляции
 # =============================================================================
-VERBOSITY = UVM_LOW # (UVM_NONE, UVM_LOW, UVM_MEDIUM, UVM_HIGH, UVM_FULL, UVM_DEBUG)
+TOP_MODULE = top.sv
+DUT_MODULE = vending_machine.sv
+TB_PKG     = vm_pkg.sv
 
-SEED      = random
+VERBOSITY  = UVM_LOW # (UVM_NONE, UVM_LOW, UVM_MEDIUM, UVM_HIGH, UVM_FULL, UVM_DEBUG)
+SEED       = random
+
+DEFINE_C_FUNCTIONS   = +define+USE_C_FUNCTIONS
+DEFINE_REPORT_SERVER = +define+USE_CUSTOM_REPORT_SERVER
 
 
 # Определения тестов и количества запусков (<имя_теста>:<количество_запусков>)
-TESTS = client_session_after_change_all_registers_test:1 \
-		check_read_test:0 \
+TESTS = client_session_after_change_all_registers_test:0 \
+		check_alarm_test:1 \
 		full_client_session_with_no_errors:0
 
 
@@ -39,6 +54,10 @@ all: compile run_sims
 
 # Компиляция
 compile:
+	@echo "QUESTASIM_DIR = $(QUESTASIM_DIR)"
+	@echo "GCC           = $(GCC)"
+	@echo "UVM_DPI       = $(UVM_DPI)"
+	@echo "------------------------------------"
 	vlib work
 	vmap work work 
 
@@ -46,15 +65,14 @@ compile:
 		$(PROJECT_DIR)/c_functions.dll \
 		$(PROJECT_DIR)/tb/base_classes/c_functions.c \
 		-I"$(QUESTASIM_DIR)/include"
-		
 
 	vlog -sv +acc -cover f +incdir+$(UVM_SRC) \
-		$(DUT_DIR)/vending_machine.sv \
-		$(TB_DIR)/vm_pkg.sv \
-		$(PROJECT_DIR)/top.sv
-
-
-
+		$(DUT_DIR)/$(DUT_MODULE) \
+		$(TB_DIR)/$(TB_PKG) \
+		$(PROJECT_DIR)/$(TOP_MODULE) \
+		$(DEFINE_C_FUNCTIONS) \
+		$(DEFINE_REPORT_SERVER)
+		
 
 # Цели для симуляции
 
@@ -86,7 +104,7 @@ sim:
 			run -all; \
 			coverage save \"ucdb_$(strip $(TEST_NAME))_%%i.ucdb\"; \
 			quit -f" \
-		top \
+		$(basename $(TOP_MODULE)) \
 		-coverage \
 		-sv_seed $(SEED) \
 		"+UVM_TESTNAME=$(strip $(TEST_NAME))" \
@@ -117,7 +135,7 @@ help:
 	@echo "make compile                         - Compile only"
 	@echo "make run_sims                        - Run simulations and merge coverage"
 	@echo "make clean                           - Clean generated files"
-	@echo "make VERBOSITY=UVM_HIGH              - Override verbosity"
+	@echo "make VERBOSITY=<UVM_HIGH>            - Override verbosity"
 	@echo "make TESTS=<test_name>:<test_count>  - Override test and run count"
 	@echo "make SEED=<seed_value>               - Override seed value"
 	

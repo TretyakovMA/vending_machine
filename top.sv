@@ -16,7 +16,7 @@ module top;
 	user_interface     user_if     (clk, rst_n);
 	admin_interface    admin_if    (clk, rst_n);
 	register_interface register_if (clk, rst_n);
-	errors_interface   errors_if   (clk, rst_n);
+	error_interface    error_if    (clk, rst_n);
 	
 	vending_machine DUT (
 		.clk(clk),
@@ -38,17 +38,17 @@ module top;
 		.regs_we(register_if.regs_we),
 		.regs_addr(register_if.regs_addr),
 
-		.tamper_detect(errors_if.tamper_detect),
-		.jam_detect(errors_if.jam_detect),
-		.power_loss(errors_if.power_loss),
+		.tamper_detect(error_if.tamper_detect),
+		.jam_detect(error_if.jam_detect),
+		.power_loss(error_if.power_loss),
         
-		.access_error(errors_if.access_error),
+		.access_error(error_if.access_error),
 		.item_out(user_if.item_out),
 		.change_out(user_if.change_out),
 		.no_change(user_if.no_change),
-		.item_empty(errors_if.item_empty),
+		.item_empty(error_if.item_empty),
 		.client_points(user_if.client_points),
-		.alarm(errors_if.alarm)
+		.alarm(error_if.alarm)
 	);
 	
 	initial begin
@@ -78,7 +78,7 @@ module top;
 		uvm_config_db #(virtual interface user_interface)::set(null, "*", "user_vif", user_if);
 		uvm_config_db #(virtual interface admin_interface)::set(null, "*", "admin_vif", admin_if);
 		uvm_config_db #(virtual interface register_interface)::set(null, "*", "register_vif", register_if);
-		uvm_config_db #(virtual interface errors_interface)::set(null, "*", "errors_vif", errors_if);
+		uvm_config_db #(virtual interface error_interface)::set(null, "*", "error_vif", error_if);
 		run_test();
 	end
 endmodule

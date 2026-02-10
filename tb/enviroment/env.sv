@@ -10,7 +10,7 @@ class env extends uvm_env;
 	user_agent             user_agent_h;
 	admin_agent            admin_agent_h;
 	register_agent         register_agent_h;
-	errors_agent           errors_agent_h;
+	error_agent            error_agent_h;
 	
 	user_coverage          user_coverage_h;
 	user_scoreboard        user_scoreboard_h;
@@ -18,6 +18,8 @@ class env extends uvm_env;
 	
 	register_scoreboard	   register_scoreboard_h;
 	register_env           register_env_h;
+
+	error_scoreboard	   error_scoreboard_h;
 	
 	env_config             env_config_h;
 	
@@ -31,17 +33,19 @@ class env extends uvm_env;
 		uvm_config_db #(user_agent_config)::set(this, "user_agent_h*", "agent_config", env_config_h.user_agent_config_h);
 		uvm_config_db #(admin_agent_config)::set(this, "admin_agent_h*", "agent_config", env_config_h.admin_agent_config_h);
 		uvm_config_db #(register_agent_config)::set(this, "register_agent_h*", "agent_config", env_config_h.register_agent_config_h);
-		uvm_config_db #(errors_agent_config)::set(this, "errors_agent_h*", "agent_config", env_config_h.errors_agent_config_h);
+		uvm_config_db #(error_agent_config)::set(this, "error_agent_h*", "agent_config", env_config_h.error_agent_config_h);
 
 		user_agent_h      = user_agent::type_id::create("user_agent_h", this);
 		admin_agent_h     = admin_agent::type_id::create("admin_agent_h", this);
-		errors_agent_h    = errors_agent::type_id::create("errors_agent_h", this);
+		error_agent_h     = error_agent::type_id::create("error_agent_h", this);
 		
 		
 		register_agent_h  = register_agent::type_id::create("register_agent_h", this);
 		register_env_h    = register_env::type_id::create("register_env_h", this);
 		
 		register_scoreboard_h = register_scoreboard::type_id::create("register_scoreboard_h", this);
+
+		error_scoreboard_h    = error_scoreboard::type_id::create("error_scoreboard_h", this);
 		
 		user_coverage_h   = user_coverage::type_id::create("coverage_h", this);	
 		user_scoreboard_h = user_scoreboard::type_id::create("user_scoreboard_h", this);
@@ -55,6 +59,8 @@ class env extends uvm_env;
 		
 		user_agent_h.ap.connect(user_scoreboard_h.a_imp);
 		user_agent_h.ap.connect(user_coverage_h.analysis_export);
+
+		error_agent_h.ap.connect(error_scoreboard_h.a_imp);
 		
 		register_agent_h.ap.connect(register_scoreboard_h.a_imp);
 		

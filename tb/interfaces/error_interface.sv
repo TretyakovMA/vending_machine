@@ -1,6 +1,6 @@
-`ifndef ERRORS_INTERFACE 
-`define ERRORS_INTERFACE
-interface errors_interface(input logic clk, logic rst_n);
+`ifndef ERROR_INTERFACE 
+`define ERROR_INTERFACE
+interface error_interface(input logic clk, logic rst_n);
 
 	logic tamper_detect;
 	logic jam_detect;

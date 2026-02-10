@@ -1,11 +1,11 @@
-`ifndef ERRORS_DRIVER
-`define ERRORS_DRIVER
-class errors_driver extends base_driver #(
-    .INTERFACE_TYPE  (virtual errors_interface),
-    .TRANSACTION_TYPE(errors_transaction)
+`ifndef ERROR_DRIVER
+`define ERROR_DRIVER
+class error_driver extends base_driver #(
+    .INTERFACE_TYPE  (virtual error_interface),
+    .TRANSACTION_TYPE(error_transaction      )
 );
 
-    `uvm_component_utils(errors_driver)
+    `uvm_component_utils(error_driver)
 
     function new(string name, uvm_component parent);
 		super.new(name, parent);
@@ -17,14 +17,14 @@ class errors_driver extends base_driver #(
 		vif.power_loss     <= 0;
 	endtask: reset
 
-    task drive_transaction (errors_transaction tr);
-        `uvm_info(get_type_name(), "Start work", UVM_LOW)
+    task drive_transaction (error_transaction tr);
+        
         #(tr.time_delay);
         `uvm_info(get_type_name(), tr.convert2string(), UVM_LOW)
         vif.tamper_detect  <= tr.tamper_detect;
 		vif.jam_detect     <= tr.jam_detect;
 		vif.power_loss     <= tr.power_loss;
-        #500;
+        repeat (3) wait_for_active_clock();
     endtask
 
 endclass

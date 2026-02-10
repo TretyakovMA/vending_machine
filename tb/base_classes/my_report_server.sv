@@ -1,58 +1,54 @@
 `ifndef MY_REPORT_SERVER
 `define MY_REPORT_SERVER
 
-
+`ifdef USE_C_FUNCTIONS
 import "DPI-C" function string get_simulation_start_time();
+`endif
 
 class my_report_server extends uvm_default_report_server;
 
     // ANSI-коды цветов для терминала
-    localparam string RED             = "\033[31;0m";
-    localparam string RED_BOLD        = "\033[31;1m";
-    localparam string RED_BACKGROUND  = "\033[30;41m";
-    localparam string YELLOW_BOLD     = "\033[33;1m";
-    localparam string CYAN            = "\033[36m";
-    localparam string CYAN_UNDERLINED = "\033[36;4m";
-    localparam string BLACK           = "\033[30m";
-    localparam string PURPLE          = "\033[35m";
-    localparam string BLUE            = "\033[34m";
-    localparam string BLUE_ITALIC     = "\033[34;3m";
-    localparam string BLUE_BOLD       = "\033[34;1m";
-    localparam string BRIGHT_CYAN     = "\033[96m";
+    local string RED             = "\033[31;0m";
+    local string RED_BOLD        = "\033[31;1m";
+    local string RED_BACKGROUND  = "\033[30;41m";
+    local string YELLOW_BOLD     = "\033[33;1m";
+    local string CYAN            = "\033[36m";
+    local string CYAN_UNDERLINED = "\033[36;4m";
+    local string BLACK           = "\033[30m";
+    local string PURPLE          = "\033[35m";
+    local string BLUE            = "\033[34m";
+    local string BLUE_ITALIC     = "\033[34;3m";
+    local string BLUE_BOLD       = "\033[34;1m";
+    local string BRIGHT_CYAN     = "\033[96m";
 
-    localparam string DEFAULT         = "\033[0m";
+    local string DEFAULT         = "\033[0m";
 
     
 
 
     // Переменные для цветов 
-    string info_color    = BLUE_BOLD;
-    string warning_color = YELLOW_BOLD;
-    string error_color   = RED_BOLD;
-    string fatal_color   = RED_BACKGROUND;
+    local string info_color    = BLUE_BOLD;
+    local string warning_color = YELLOW_BOLD;
+    local string error_color   = RED_BOLD;
+    local string fatal_color   = RED_BACKGROUND;
     
-    string time_color    = CYAN;
-    string id_color      = CYAN_UNDERLINED;
-    string msg_color     = DEFAULT;
-    string reset         = DEFAULT;
+    local string time_color    = CYAN;
+    local string id_color      = CYAN_UNDERLINED;
+    local string msg_color     = DEFAULT;
+    local string reset         = DEFAULT;
 
+    local bit    no_color      = 0;      // Флаг отключения цветов
 
-
-
-    bit    no_color      = 0;      // Флаг отключения цветов
-
-
-
-    protected int errors_fd;       // Дескриптор файла для логирования
+    protected int errors_fd;       // Дескриптор файла ошибок
     protected int sim_log_fd;      // Дескриптор файла для sim_log
 
-    string test_name = "UNKNOWN";  // Имя теста
-    string run_count = "0";        // Номер запуска
-    string sim_log_file;           // Имя файла sim_log
-    string start_time_sim;         // Время старта симуляции
-    string log_header;
-    int    seed;
-    bit    has_errors = 0;
+    local string  test_name = "UNKNOWN";  // Имя теста
+    local string  run_count = "0";        // Номер запуска
+    local string  sim_log_file;           // Имя файла sim_log
+    local string  start_time_sim;         // Время старта симуляции
+    local string  log_header;
+    local int     seed;
+    local bit     has_errors = 0;
     
 
     function new();
@@ -78,8 +74,11 @@ class my_report_server extends uvm_default_report_server;
         seed = $get_initial_random_seed();
 
         // Получаем время старта симуляции из C-функции
+`ifdef USE_C_FUNCTIONS
         start_time_sim = get_simulation_start_time();
-        
+`else
+        start_time_sim = "N/A";
+`endif        
 
         // Формируем имя файла sim_log
         sim_log_file = $sformatf("sim_log_%s_%s.log", test_name, run_count);
@@ -131,7 +130,7 @@ class my_report_server extends uvm_default_report_server;
     
 
     // Вспомогательная функция для удаления ANSI-кодов (чтобы лог в файле был без "мусора")
-    protected function string remove_ansi_codes(string s);
+    local function string remove_ansi_codes(string s);
         string result = "";
         bit in_ansi = 0;
         foreach (s[i]) begin
