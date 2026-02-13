@@ -1,8 +1,7 @@
 `include "base_macros.svh"
 `include "my_report_server.sv"
 
-`include "void_monitor.sv"
-`include "void_driver.sv"
+`include "void_classes.svh"
 
 `include "base_transaction.sv"
 `include "base_agent_config.sv"

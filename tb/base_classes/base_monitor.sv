@@ -76,7 +76,7 @@ virtual class base_monitor #(
 		ap = new("ap", this);
 	endfunction: build_phase    
 
-	task main_phase(uvm_phase phase);
+	virtual task main_phase(uvm_phase phase);
 		super.main_phase(phase);
 		fork
 			monitor_reset();

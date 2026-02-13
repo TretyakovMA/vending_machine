@@ -38,7 +38,7 @@ package vm_pkg;
 	typedef base_agent_config #(virtual user_interface)     user_agent_config;
 	typedef base_agent_config #(virtual admin_interface)    admin_agent_config;
 	typedef base_agent_config #(virtual register_interface) register_agent_config;
-	typedef base_agent_config #(virtual error_interface)   error_agent_config;
+	typedef base_agent_config #(virtual error_interface)    error_agent_config;
 	//==============================================================================
 
 
@@ -58,6 +58,13 @@ package vm_pkg;
 
 
 	//==============================================================================
+	// Error Components
+	`include "error_src/included_files/error_components_inc.svh"
+	//==============================================================================
+	
+
+
+	//==============================================================================
 	// User Components
 	`include "user_src/included_files/user_components_inc.svh"
 	//==============================================================================
@@ -69,13 +76,6 @@ package vm_pkg;
 	`include "admin_src/included_files/admin_components_inc.svh"
 	//==============================================================================
 
-
-
-	//==============================================================================
-	// Error Components
-	`include "error_src/included_files/error_components_inc.svh"
-	//==============================================================================
-	
 	
 
 	//==============================================================================

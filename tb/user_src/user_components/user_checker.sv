@@ -90,8 +90,8 @@ class user_checker extends uvm_component;
 
 		//Заполнение полей ожидаемой транзакции
 		calc_tr.item_out      = (1 << calc_tr.item_num);
-		calc_tr.change_out    = balance - item_price;
-		calc_tr.no_change     = (balance - item_price == 0) ? 1 : 0;
+		calc_tr.change_out    = $ceil(balance - item_price); //Формат округления пока не определен в спецификации
+		calc_tr.no_change     = ($ceil(balance - item_price) == 0) ? 1 : 0;
 		calc_tr.client_points = client_points + $floor(item_price / 20);
 
 		return calc_tr;

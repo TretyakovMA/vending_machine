@@ -18,14 +18,14 @@ class error_driver extends base_driver #(
 	endtask: reset
 
     task drive_transaction (error_transaction tr);
-        
         #(tr.time_delay);
-        `uvm_info(get_type_name(), tr.convert2string(), UVM_LOW)
+
         vif.tamper_detect  <= tr.tamper_detect;
 		vif.jam_detect     <= tr.jam_detect;
 		vif.power_loss     <= tr.power_loss;
+        `uvm_info(get_type_name(), {"Send transaction: ", tr.convert2string()}, UVM_LOW)
         repeat (3) wait_for_active_clock();
-    endtask
+    endtask: drive_transaction
 
 endclass
 `endif

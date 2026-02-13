@@ -32,5 +32,9 @@ class error_transaction extends base_transaction;
         time_delay > 0;
         time_delay < 100;
     }
+
+    constraint at_least_one_error {
+        int'(tamper_detect) + int'(jam_detect) + int'(power_loss) > 0;
+    }
 endclass
 `endif

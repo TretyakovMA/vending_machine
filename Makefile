@@ -14,10 +14,10 @@ UVM_DPI       = $(QUESTASIM_DIR)/uvm-1.2/win64/uvm_dpi
 
 GCC_DIR       = $(wildcard $(QUESTASIM_DIR)/gcc-*/bin/gcc.exe)
 
-#Если не нашли — берём любой gcc из PATH
+# Если не нашли — берём любой gcc из PATH
 ifeq ($(GCC_DIR),)
-    GCC = gcc.exe
-    $(info GCC not found in QuestaSim → using gcc from PATH)
+    GCC = gcc.exe                                            # В теории оно не должно так работать
+    $(info GCC not found in QuestaSim → using gcc from PATH) # Ладно, и так сойдет
 else
     GCC = $(firstword $(GCC_DIR))
     $(info Using bundled GCC: $(GCC))
@@ -25,22 +25,25 @@ endif
 
 
 # =============================================================================
-# Настройки симуляции
+# Настройки симуляции (важное)
 # =============================================================================
+
+# Основные модули и пакеты
 TOP_MODULE = top.sv
 DUT_MODULE = vending_machine.sv
 TB_PKG     = vm_pkg.sv
 
-VERBOSITY  = UVM_LOW # (UVM_NONE, UVM_LOW, UVM_MEDIUM, UVM_HIGH, UVM_FULL, UVM_DEBUG)
+# Дополнительный настройки
+VERBOSITY  = UVM_HIGH # (UVM_NONE, UVM_LOW, UVM_MEDIUM, UVM_HIGH, UVM_FULL, UVM_DEBUG)
 SEED       = random
 
+# Флаги для компиляции
 DEFINE_C_FUNCTIONS   = +define+USE_C_FUNCTIONS
 DEFINE_REPORT_SERVER = +define+USE_CUSTOM_REPORT_SERVER
 
-
 # Определения тестов и количества запусков (<имя_теста>:<количество_запусков>)
-TESTS = client_session_after_change_all_registers_test:0 \
-		check_alarm_test:1 \
+TESTS = client_session_after_change_price_test:0 \
+		client_session_with_interrupt_test:1 \
 		full_client_session_with_no_errors:0
 
 
@@ -131,7 +134,7 @@ clean:
 
 help:
 	@echo Usage:
-	@echo "make [all]                             - Compile and run all simulations"
+	@echo "make [all]                           - Compile and run all simulations"
 	@echo "make compile                         - Compile only"
 	@echo "make run_sims                        - Run simulations and merge coverage"
 	@echo "make clean                           - Clean generated files"
