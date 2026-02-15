@@ -14,7 +14,6 @@ class register_base_virtual_seq #(
     REG_TEST_SEQ         reg_seq_h;
 	admin_mode_off_seq   admin_mode_off_h;
 
-    uvm_component        component_h;
     admin_sequencer      admin_sequencer_h;
     register_sequencer   register_sequencer_h;
 
@@ -23,18 +22,11 @@ class register_base_virtual_seq #(
 	
 	task body();
 		// Получение секвенсеров
-        component_h = uvm_top.find("*env_h.admin_agent_h.sequencer_h");
-        if(component_h == null)
-            `uvm_fatal (get_type_name(), "Failed to get admin_sequencer")
-        if(!$cast(admin_sequencer_h, component_h))
-             `uvm_fatal (get_type_name(), "Failed to cast: component_h -> admin_sequencer_h")
-
-        component_h = uvm_top.find("*env_h.register_agent_h.sequencer_h");
-        if(component_h == null)
-            `uvm_fatal (get_type_name(), "Failed to get register_sequencer")
-        if(!$cast(register_sequencer_h, component_h))
-            `uvm_fatal (get_type_name(), "Failed to cast: component_h -> register_sequencer_h")
-
+        if (!uvm_config_db #(admin_sequencer)::get(null, "", "admin_sequencer", admin_sequencer_h))
+            `uvm_fatal(get_type_name(), "Failed to get admin_sequencer from config_db");
+        if (!uvm_config_db #(register_sequencer)::get(null, "", "register_sequencer", register_sequencer_h))
+            `uvm_fatal(get_type_name(), "Failed to get register_sequencer from config_db");
+        
         // Создание секвенсов
         admin_mode_on_h  = admin_mode_on_seq::type_id::create("admin_mode_on_h");
         reg_seq_h        = REG_TEST_SEQ::type_id::create("reg_seq_h");

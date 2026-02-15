@@ -1,5 +1,4 @@
 `include "../user_components/user_transaction.sv"
-`include "../user_components/user_coverage.sv"
 `include "../user_components/user_checker.sv"
 
 `ifndef USER_SEQUENCER

@@ -4,5 +4,6 @@
 *.vcd
 *.wlf
 *.dll
+*.vstf
 transcript
 work/

@@ -1,7 +1,7 @@
 `ifndef TEST_LOTS_OF_PURCHASES
 `define TEST_LOTS_OF_PURCHASES
 class test_lots_of_purchases extends user_base_test #(
-	test_lots_of_purchases_seq
+	lots_of_purchases_seq
 );
 	`uvm_component_utils(test_lots_of_purchases)
 	

@@ -4,42 +4,50 @@
 virtual class sequence_base_test #(
     type   SEQUENCE_TYPE,
     type   SEQUENCER_TYPE      = uvm_sequencer #(uvm_sequence_item),
-    bit    IS_VIRTUAL_SEQUENCE = 1,
-    string PATH_TO_SEQUENCER   = "virtual sequence don't use this"
+    bit    IS_VIRTUAL_SEQUENCE = 1
 ) extends base_test;
 
     `uvm_component_param_utils(sequence_base_test #(
         SEQUENCE_TYPE,
         SEQUENCER_TYPE,
-        IS_VIRTUAL_SEQUENCE,
-        PATH_TO_SEQUENCER
+        IS_VIRTUAL_SEQUENCE
         )
     );
 
     SEQUENCE_TYPE  sequence_h;
     SEQUENCER_TYPE sequencer_h = null;
-    uvm_component  component_h;
     
 
 
     function new(string name, uvm_component parent);
         super.new(name, parent);
     endfunction: new
+
+
+    //Функция для получения имения секвенсера 
+    //(используется для тестов с не виртуальными последовательностями)
+    virtual function string get_sequencer_name();
+        return "";  
+    endfunction: get_sequencer_name
     
     function void connect_phase(uvm_phase phase);
 		super.connect_phase(phase);
+        //Если последовательность не виртуальная
         if (!IS_VIRTUAL_SEQUENCE) begin
-            component_h = uvm_top.find(PATH_TO_SEQUENCER);
+            string sequencer_name = get_sequencer_name();
+            if (sequencer_name == "") //Проверка, что имя секвенсера указано
+                `uvm_fatal(get_type_name(), "Sequencer name not provided via get_sequencer_name()");
 
-            if(component_h == null)
-                `uvm_fatal (get_type_name(), $sformatf("Failed to get sequencer from path: %s", PATH_TO_SEQUENCER))
-            if(!$cast(sequencer_h, component_h))
-                `uvm_fatal (get_type_name(), $sformatf("Failed to cast: component_h -> sequencer_h, path: %s", PATH_TO_SEQUENCER))
+            //Поиск секвенсера в uvm_config_db
+            if (!uvm_config_db #(SEQUENCER_TYPE)::get(this, "", sequencer_name, sequencer_h))
+                `uvm_fatal(get_type_name(), $sformatf("Failed to get sequencer from config_db: field_name=%s", sequencer_name));
         end
     endfunction: connect_phase
     
     task main_phase(uvm_phase phase);
         super.main_phase(phase);
+
+        //Создание и запуск последовательности
         sequence_h = SEQUENCE_TYPE::type_id::create("sequence_h");
         
         sequence_h.set_starting_phase(phase);

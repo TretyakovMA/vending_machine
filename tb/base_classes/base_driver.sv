@@ -22,7 +22,7 @@ virtual class base_driver #(
 	
 
 
-	//Вспомогательные функции (меняются в других проектах)
+	//Вспомогательные функции
 	protected virtual task wait_for_active_clock();
 		@(posedge vif.clk iff vif.rst_n == 1);
 	endtask: wait_for_active_clock
@@ -69,7 +69,6 @@ virtual class base_driver #(
                 
                 `uvm_info(get_type_name(), "End work", UVM_HIGH)
 
-				//wait_for_active_clock();
                 seq_item_port.item_done();
 			end
 		end

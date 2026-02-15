@@ -3,17 +3,11 @@
 class user_checker extends uvm_component;
     `uvm_component_utils(user_checker)
 
-    local vm_reg_block	     reg_block_h;  //информация о товарах хранится в регистрах vend_item
+    vm_reg_block reg_block_h;  //информация о товарах хранится в регистрах vend_item
 
     function new(string name, uvm_component parent);
 		super.new(name, parent);
 	endfunction: new
-
-    function void connect_phase(uvm_phase phase);
-		super.connect_phase(phase); //Получение указателя на reg_block_h
-		if(!uvm_config_db #(vm_reg_block)::get(this, "", "reg_block", reg_block_h))
-			`uvm_fatal(get_type_name(), "Failed to get reg_block")
-	endfunction: connect_phase
 
 
 

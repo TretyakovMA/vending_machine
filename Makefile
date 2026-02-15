@@ -34,7 +34,7 @@ DUT_MODULE = vending_machine.sv
 TB_PKG     = vm_pkg.sv
 
 # Дополнительный настройки
-VERBOSITY  = UVM_HIGH # (UVM_NONE, UVM_LOW, UVM_MEDIUM, UVM_HIGH, UVM_FULL, UVM_DEBUG)
+VERBOSITY  = UVM_LOW # (UVM_NONE, UVM_LOW, UVM_MEDIUM, UVM_HIGH, UVM_FULL, UVM_DEBUG)
 SEED       = random
 
 # Флаги для компиляции
@@ -42,9 +42,9 @@ DEFINE_C_FUNCTIONS   = +define+USE_C_FUNCTIONS
 DEFINE_REPORT_SERVER = +define+USE_CUSTOM_REPORT_SERVER
 
 # Определения тестов и количества запусков (<имя_теста>:<количество_запусков>)
-TESTS = client_session_after_change_price_test:0 \
-		client_session_with_interrupt_test:1 \
-		full_client_session_with_no_errors:0
+TESTS = client_session_with_interrupt_test:0 \
+		test_dollars:1 \
+		check_read_test:0
 
 
 

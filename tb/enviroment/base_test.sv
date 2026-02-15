@@ -8,54 +8,61 @@ virtual class base_test extends uvm_test;
 		super.new(name, parent);
 	endfunction: new
 	
-	env                    env_h;
-	env_config             env_config_h;
-	
-	user_agent_config      user_agent_config_h;
-	admin_agent_config     admin_agent_config_h;
-	register_agent_config  register_agent_config_h;
-	error_agent_config     error_agent_config_h;
+	env               env_h;
+	env_config        env_config_h;
 
-`ifdef USE_CUSTOM_REPORT_SERVER
-	my_report_server       my_server;
-`endif
 	
+`ifdef USE_CUSTOM_REPORT_SERVER
+	my_report_server  my_server; 
+`endif
+
+
+	//Функция для выбора конфигурации env (выбор необходимых агентов)
+	virtual function void adjust_config;
+		return; //По умолчанию все включено
+	endfunction: adjust_config
+	
+
+
 	function void build_phase(uvm_phase phase);
 		super.build_phase(phase);
+
+		//Создание конфигурации среды, с ней создаются все agent_config
 		env_config_h = env_config::type_id::create("env_config_h", this);
+		
+		//Получение интерфейсов от top
+		if(!uvm_config_db #(virtual interface user_interface)::get(
+			this, "", "user_vif", env_config_h.user_agent_config_h.vif
+		)) `uvm_fatal(get_type_name(), "Faild to get user interface")
+			
+		if(!uvm_config_db #(virtual interface admin_interface)::get(
+			this, "", "admin_vif", env_config_h.admin_agent_config_h.vif
+		)) `uvm_fatal(get_type_name(), "Faild to get admin interface")
+			
+		if(!uvm_config_db #(virtual interface register_interface)::get(
+			this, "", "register_vif", env_config_h.register_agent_config_h.vif
+		)) `uvm_fatal(get_type_name(), "Faild to get register interface")
+			
+		if(!uvm_config_db #(virtual interface error_interface)::get(
+			this, "", "error_vif", env_config_h.error_agent_config_h.vif
+		)) `uvm_fatal(get_type_name(), "Faild to get error interface")
+			
+		//Определение необходимых мониторов
+		env_config_h.user_agent_config_h.has_monitor      = 1;
+		env_config_h.admin_agent_config_h.has_monitor     = 0;
+		env_config_h.register_agent_config_h.has_monitor  = 1;
+		env_config_h.error_agent_config_h.has_monitor     = 1;
 
-		user_agent_config_h     = user_agent_config::type_id::create("user_agent_config_h", this);
-		admin_agent_config_h    = admin_agent_config::type_id::create("admin_agent_config_h", this);
-		register_agent_config_h = register_agent_config::type_id::create("register_agent_config_h", this);
-		error_agent_config_h    = error_agent_config::type_id::create("error_agent_config_h", this);
-
+		//Определение необходимых для теста агентов
+		adjust_config();
 		
-		
-		if(!uvm_config_db #(virtual interface user_interface)::get(this, "", "user_vif", user_agent_config_h.vif))
-			`uvm_fatal(get_type_name(), "Faild to get user interface")
-		if(!uvm_config_db #(virtual interface admin_interface)::get(this, "", "admin_vif", admin_agent_config_h.vif))
-			`uvm_fatal(get_type_name(), "Faild to get admin interface")
-		if(!uvm_config_db #(virtual interface register_interface)::get(this, "", "register_vif", register_agent_config_h.vif))
-			`uvm_fatal(get_type_name(), "Faild to get register interface")
-		if(!uvm_config_db #(virtual interface error_interface)::get(this, "", "error_vif", error_agent_config_h.vif))
-			`uvm_fatal(get_type_name(), "Faild to get error interface")
-		
-
-		user_agent_config_h.has_monitor      = 1;
-		admin_agent_config_h.has_monitor     = 0;
-		register_agent_config_h.has_monitor  = 1;
-		error_agent_config_h.has_monitor     = 1;
-		
-		env_config_h.user_agent_config_h     = user_agent_config_h;
-		env_config_h.admin_agent_config_h    = admin_agent_config_h;
-		env_config_h.register_agent_config_h = register_agent_config_h;
-		env_config_h.error_agent_config_h    = error_agent_config_h;
-
-		
-		uvm_config_db #(env_config)::set(this, "env_h*", "env_config", env_config_h);
-		
+		//Готовый env_config отправляется к env
+		uvm_config_db #(env_config)::set(
+			this, "env_h", "env_config", env_config_h
+		);
 		env_h     = env::type_id::create("env_h", this);
 
+		//Мой report_server создается только если симуляция запустилась с флагом
 `ifdef USE_CUSTOM_REPORT_SERVER
 		my_server = new();
 `endif
@@ -66,11 +73,16 @@ virtual class base_test extends uvm_test;
 	function void start_of_simulation_phase(uvm_phase phase);
 		super.start_of_simulation_phase(phase);
 
+		//Установка report_server
 `ifdef USE_CUSTOM_REPORT_SERVER
 		uvm_report_server::set_server(my_server);
 `endif
 
+		//Установка максимального времени симуляции
+		//(если симуляция дойдет до 1 секунды, то она завершится)
 		uvm_top.set_timeout(10**9);
+
+		//На всякий случай выводится топология проекта
 		uvm_top.print_topology();
 	endfunction: start_of_simulation_phase
 

@@ -1,7 +1,8 @@
-`ifndef USER_COVERAGE
-`define USER_COVERAGE
-class user_coverage extends uvm_subscriber #(user_transaction);
-	`uvm_component_utils(user_coverage);
+`ifndef VM_COVERAGE
+`define VM_COVERAGE
+// Когда-нибудь я тебя доделаю
+class vm_coverage extends uvm_subscriber #(user_transaction);
+	`uvm_component_utils(vm_coverage);
 	
 	user_transaction tr;
 	

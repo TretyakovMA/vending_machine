@@ -1,9 +1,9 @@
-`ifndef TEST_DOLLARS_SEQ
-`define TEST_DOLLARS_SEQ
-class test_dollars_seq extends user_base_seq;
-	`uvm_object_utils(test_dollars_seq)
+`ifndef DOLLARS_SEQ
+`define DOLLARS_SEQ
+class dollars_seq extends user_base_seq;
+	`uvm_object_utils(dollars_seq)
     
-	function new(string name = "test_dollars_seq");
+	function new(string name = "dollars_seq");
 		super.new(name);
 	endfunction
     

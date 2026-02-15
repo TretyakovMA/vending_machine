@@ -1,9 +1,9 @@
-`ifndef TEST_FEW_COIN_SEQ
-`define TEST_FEW_COIN_SEQ
-class test_few_coin_seq extends user_base_seq;
-	`uvm_object_utils(test_few_coin_seq)
+`ifndef FEW_COIN_SEQ
+`define FEW_COIN_SEQ
+class few_coin_seq extends user_base_seq;
+	`uvm_object_utils(few_coin_seq)
     
-	function new(string name = "test_few_coin_seq");
+	function new(string name = "few_coin_seq");
 		super.new(name);
 	endfunction
 

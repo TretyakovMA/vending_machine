@@ -5,6 +5,7 @@
 import "DPI-C" function string get_simulation_start_time();
 `endif
 
+`ifdef USE_CUSTOM_REPORT_SERVER
 class my_report_server extends uvm_default_report_server;
 
     // ANSI-коды цветов для терминала
@@ -100,9 +101,6 @@ class my_report_server extends uvm_default_report_server;
                               test_name, run_count, seed, start_time_sim);
         $fdisplay(sim_log_fd, "%s", log_header);
         $fflush(sim_log_fd);
-
-        //$fdisplay(errors_fd, "%s", log_header);
-        //$fflush(errors_fd);
         
     endfunction
 
@@ -216,4 +214,6 @@ class my_report_server extends uvm_default_report_server;
     endfunction: report_summarize
 
 endclass
+`endif
+
 `endif

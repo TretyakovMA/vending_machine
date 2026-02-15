@@ -1,7 +1,7 @@
 `ifndef TEST_EUROS
 `define TEST_EUROS
 class test_euros extends user_base_test #(
-	test_euros_seq
+	euros_seq
 );
 	`uvm_component_utils(test_euros)
 	

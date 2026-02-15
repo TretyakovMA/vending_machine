@@ -1,9 +1,9 @@
-`ifndef TEST_LOTS_OF_PURCHASES_SEQ
-`define TEST_LOTS_OF_PURCHASES_SEQ
-class test_lots_of_purchases_seq extends user_base_seq #(20);
-	`uvm_object_utils(test_lots_of_purchases_seq)
+`ifndef LOTS_OF_PURCHASES_SEQ
+`define LOTS_OF_PURCHASES_SEQ
+class lots_of_purchases_seq extends user_base_seq #(20);
+	`uvm_object_utils(lots_of_purchases_seq)
     
-	function new(string name = "test_lots_of_purchases_seq");
+	function new(string name = "lots_of_purchases_seq");
 		super.new(name);
 	endfunction
 

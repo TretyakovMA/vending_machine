@@ -1,5 +1,4 @@
 `include "env_config.sv"
-`include "vm_scoreboard.sv"
 `include "env.sv"
 `include "base_test.sv"
 `include "sequence_base_test.sv"

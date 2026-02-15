@@ -16,7 +16,6 @@ class integration_base_virtual_seq #(
         )
     )
 
-    local uvm_component        component_h;
     protected user_sequencer   user_sequencer_h;
     protected error_sequencer  error_sequencer_h;
     
@@ -26,7 +25,7 @@ class integration_base_virtual_seq #(
 
     register_base_virtual_seq #(REGISTER_SEQ) reg_vseq;
     USER_SEQ                                  user_seq;
-    activate_error_signals_seq                error_seq;
+    ERROR_SEQ                                 error_seq;
     
 
     function new(string name = "integration_base_virtual_seq");
@@ -34,27 +33,23 @@ class integration_base_virtual_seq #(
     endfunction: new
 
 
-
+    //Функция получения секвенсеров и создания последовательностей
     virtual function void create_body();
         if (USER_SEQ::type_name != "void_sequence") begin
-            component_h = uvm_top.find("*env_h.user_agent_h.sequencer_h");
-            if(component_h == null)
-                `uvm_fatal (get_type_name(), "Failed to get user_sequencer")
-            if(!$cast(user_sequencer_h, component_h))
-                `uvm_fatal (get_type_name(), "Failed to cast: component_h -> user_sequencer_h")
+        
+            if (!uvm_config_db #(user_sequencer)::get(null, "", "user_sequencer", user_sequencer_h))
+                `uvm_fatal(get_type_name(), "Failed to get user_sequencer from config_db");
 
             user_seq = USER_SEQ::type_id::create("user_seq");
             user_seq_created = 1;
         end
 
         if (ERROR_SEQ::type_name != "void_sequence") begin
-            component_h = uvm_top.find("*env_h.error_agent_h.sequencer_h");
-            if(component_h == null)
-                `uvm_fatal (get_type_name(), "Failed to get error_sequencer")
-            if(!$cast(error_sequencer_h, component_h))
-                `uvm_fatal (get_type_name(), "Failed to cast: component_h -> error_sequencer_h")
 
-            error_seq = activate_error_signals_seq::type_id::create("error_seq");
+            if (!uvm_config_db #(error_sequencer)::get(null, "", "error_sequencer", error_sequencer_h))
+                `uvm_fatal(get_type_name(), "Failed to get error_sequencer from config_db");
+
+            error_seq = ERROR_SEQ::type_id::create("error_seq");
             error_seq_created = 1;
         end
         
@@ -65,7 +60,7 @@ class integration_base_virtual_seq #(
     endfunction: create_body
 
 
-
+    //Задачи для body
     task main_body_without_error_seq();
         if(reg_vseq_created)
             reg_vseq.start(null);

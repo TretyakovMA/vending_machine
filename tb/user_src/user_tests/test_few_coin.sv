@@ -1,7 +1,7 @@
 `ifndef TEST_FEW_COIN
 `define TEST_FEW_COIN
 class test_few_coin extends user_base_test #(
-	test_few_coin_seq
+	few_coin_seq
 );
 	`uvm_component_utils(test_few_coin)
 	

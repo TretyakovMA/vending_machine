@@ -12,14 +12,23 @@ class vm_scoreboard extends uvm_scoreboard;
 	uvm_analysis_imp_ERROR #(error_transaction, vm_scoreboard) error_imp;
 	uvm_analysis_imp_REGISTER #(register_transaction, vm_scoreboard) register_imp;
 
+	//Класс для проверки пользовательской транзакции
+	local user_checker       checker_h;
+
 	local user_transaction   tr;
 	local user_transaction   exp_tr;
-	local int                client_points_db[int]; //БД накопленных очков клиентов
 
-	local user_checker       checker_h;
+	//БД накопленных очков клиентов
+	local int                client_points_db[int]; 
+
+	//Регистровая модель
 	local vm_reg_block       reg_block_h;
 
-	local bit                error_occurred = 0;
+	//Флаг наличия сигнала прерывания в время пользовательской сессии
+	local bit                error_occurred = 0; 
+
+	//Флаг того, что в тесте используется регистровая модель (устанавливается в env)
+	bit                      has_reg_model; 
 
 
 	
@@ -37,19 +46,26 @@ class vm_scoreboard extends uvm_scoreboard;
 
 	function void connect_phase(uvm_phase phase);
 		super.connect_phase(phase);
-
+		
+		//Поиск чекера
 		if(!uvm_config_db #(user_checker)::get(this, "", "user_checker", checker_h))
 			`uvm_fatal(get_type_name(), "Faild to get user_checker_h")
 		
-		if(!uvm_config_db #(vm_reg_block)::get(this, "", "reg_block", reg_block_h))
-			`uvm_fatal(get_type_name(), "Failed to get reg_block")
-
+		//Поиск регистровой модели 
+		if(has_reg_model) begin
+			if(!uvm_config_db #(vm_reg_block)::get(this, "", "reg_block", reg_block_h))
+				`uvm_fatal(get_type_name(), "Failed to get reg_block")
+			
+			checker_h.reg_block_h = reg_block_h;//Чекер получает регистровую модель
+		end
 	endfunction: connect_phase
 
 	task reset_phase(uvm_phase phase);
 		super.reset_phase(phase);
+		//Сброс очков и регистровой модели
 		reset_points();
-		reg_block_h.reset();
+		if(has_reg_model)
+			reg_block_h.reset();
 	endtask: reset_phase
 
 	
@@ -64,7 +80,9 @@ class vm_scoreboard extends uvm_scoreboard;
 	
 
 
-	// Функции обработки транзакций от мониторов
+	//==========================  Обработка транзакций  ============================= 
+
+	//Обработка регистровых транзакций
 	function void write_REGISTER (register_transaction t);
 		if(t.has_reset) begin
 			`uvm_info(get_type_name(), "Reset detected", UVM_HIGH)
@@ -72,6 +90,7 @@ class vm_scoreboard extends uvm_scoreboard;
 		end
 	endfunction: write_REGISTER
 
+	//Обработка транзакций сигналов прерывания
 	function void write_ERROR (error_transaction t);
 		if ((t.tamper_detect || t.jam_detect || t.power_loss) && !error_occurred) begin
 			error_occurred = 1;
@@ -83,9 +102,11 @@ class vm_scoreboard extends uvm_scoreboard;
 		end
 	endfunction: write_ERROR
 	
+	//Обработка пользовательских транзакций
 	function void write_USER (user_transaction t);
-		if(t.has_reset) begin   //если приходит транзакция с флагом rst,
-			reset_points();     //сбрасываем очки и не продолжаем обработку
+		//если приходит транзакция с флагом rst, сбрасываем очки и не продолжаем обработку
+		if(t.has_reset) begin   
+			reset_points(); 
 			error_occurred = 0; 
 			return;         
 		end
@@ -118,14 +139,16 @@ class vm_scoreboard extends uvm_scoreboard;
 		exp_tr = checker_h.calculate_exp_transaction(tr, client_points_db[tr.client_id]);
 		`uvm_info(get_type_name(), `EXP_TR_STR(exp_tr), UVM_LOW)
 		
-		if(exp_tr.compare(tr)) begin //Сравнение транзакций
+		//Сравнение транзакций
+		if(exp_tr.compare(tr)) begin 
 			`uvm_info(get_type_name(), `RES_SUC_STR, UVM_LOW)
 		end
 		else begin
 			`uvm_info(get_type_name(), `RES_FAILD_STR, UVM_LOW)
 		end
 
-		client_points_db[tr.client_id] = exp_tr.client_points; //обновление БД очков
+		//обновление БД очков
+		client_points_db[tr.client_id] = exp_tr.client_points; 
 
 		`uvm_info(get_type_name(), `END_TEST_STR, UVM_LOW)
 	endfunction: write_USER
