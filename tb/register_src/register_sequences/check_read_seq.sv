@@ -15,9 +15,7 @@ class check_read_seq extends register_base_seq;
             reg_block_h.print();
             
             foreach(registers[i]) begin
-				assert (registers[i].randomize());
-				value = registers[i].get();
-				write_reg(registers[i], status, value);
+				write_random_value(registers[i]);
 			end	
             
             reg_block_h.print();

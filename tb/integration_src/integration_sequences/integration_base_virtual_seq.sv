@@ -4,28 +4,28 @@
 class integration_base_virtual_seq #(
     type REGISTER_SEQ  = register_base_seq,
     type USER_SEQ      = void_sequence,
-    type ERROR_SEQ     = void_sequence,
+    type EMERGENCY_SEQ = void_sequence,
     int  REPEAT_BODY   = 1
 ) extends uvm_sequence #(uvm_sequence_item);
 
     `uvm_object_param_utils(integration_base_virtual_seq #(
         REGISTER_SEQ, 
         USER_SEQ, 
-        ERROR_SEQ, 
+        EMERGENCY_SEQ, 
         REPEAT_BODY
         )
     )
 
-    protected user_sequencer   user_sequencer_h;
-    protected error_sequencer  error_sequencer_h;
+    protected user_sequencer      user_sequencer_h;
+    protected emergency_sequencer emergency_sequencer_h;
     
-    local bit                  reg_vseq_created  = 0;
-    local bit                  user_seq_created  = 0;
-    local bit                  error_seq_created = 0;
+    local bit                  register_vseq_created = 0;
+    local bit                  user_seq_created      = 0;
+    local bit                  emergency_seq_created = 0;
 
-    register_base_virtual_seq #(REGISTER_SEQ) reg_vseq;
+    register_base_virtual_seq #(REGISTER_SEQ) register_vseq;
     USER_SEQ                                  user_seq;
-    ERROR_SEQ                                 error_seq;
+    EMERGENCY_SEQ                             emergency_seq;
     
 
     function new(string name = "integration_base_virtual_seq");
@@ -44,50 +44,51 @@ class integration_base_virtual_seq #(
             user_seq_created = 1;
         end
 
-        if (ERROR_SEQ::type_name != "void_sequence") begin
+        if (EMERGENCY_SEQ::type_name != "void_sequence") begin
 
-            if (!uvm_config_db #(error_sequencer)::get(null, "", "error_sequencer", error_sequencer_h))
-                `uvm_fatal(get_type_name(), "Failed to get error_sequencer from config_db");
+            if (!uvm_config_db #(emergency_sequencer)::get(null, "", "emergency_sequencer", emergency_sequencer_h))
+                `uvm_fatal(get_type_name(), "Failed to get emergency_sequencer from config_db");
 
-            error_seq = ERROR_SEQ::type_id::create("error_seq");
-            error_seq_created = 1;
+            emergency_seq = EMERGENCY_SEQ::type_id::create("emergency_seq");
+            emergency_seq_created = 1;
         end
         
         if (REGISTER_SEQ::type_name != "register_base_seq") begin
-            reg_vseq = register_base_virtual_seq #(REGISTER_SEQ)::type_id::create("reg_vseq");
-            reg_vseq_created = 1;
+            register_vseq = register_base_virtual_seq #(REGISTER_SEQ)::type_id::create("register_vseq");
+            register_vseq_created = 1;
         end
     endfunction: create_body
 
 
-    //Задачи для body
-    task main_body_without_error_seq();
-        if(reg_vseq_created)
-            reg_vseq.start(null);
+    // Вспомогательные задачи для body
+    virtual task main_body_without_emergency_seq();
+        if(register_vseq_created)
+            register_vseq.start(null);
         if(user_seq_created)
             user_seq.start(user_sequencer_h);
-    endtask: main_body_without_error_seq
+    endtask: main_body_without_emergency_seq
 
-    task main_body_with_error_seq();
+    virtual task main_body_with_emergency_seq();
         fork
-            error_seq.start(error_sequencer_h);
-            main_body_without_error_seq();
+            emergency_seq.start(emergency_sequencer_h);
+            main_body_without_emergency_seq();
         join
-    endtask: main_body_with_error_seq
+    endtask: main_body_with_emergency_seq
 
 
-
+    // Задача body по умолчанию
     virtual task main_body();
         repeat (REPEAT_BODY) begin
-            if (error_seq_created) 
-                main_body_with_error_seq();
+            if (emergency_seq_created) 
+                main_body_with_emergency_seq();
             else
-                main_body_without_error_seq();
+                main_body_without_emergency_seq();
         end
     endtask: main_body
 
 
 
+    // Основная задача
     virtual task body();
         create_body();
         main_body();

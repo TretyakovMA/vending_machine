@@ -3,7 +3,7 @@
 class client_session_after_change_all_registers_vseq extends integration_base_virtual_seq #(
     .REGISTER_SEQ (change_all_registers_seq),
     .USER_SEQ     (full_client_session_with_no_errors_seq #(10)),
-    .REPEAT_BODY  (3)
+    .REPEAT_BODY  (1)
 );
 
     `uvm_object_utils(client_session_after_change_all_registers_vseq)

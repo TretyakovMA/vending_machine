@@ -8,7 +8,8 @@ class register_base_seq extends uvm_reg_sequence;
 	protected uvm_reg_data_t   value;
     protected uvm_reg_data_t   mirrored_value;
 	protected uvm_reg          registers[$];
-    local     bit              has_registers = 0;
+
+    local     bit              registers_received = 0;
     
     function new(string name = "base_reg_seq");
         super.new(name);
@@ -22,11 +23,11 @@ class register_base_seq extends uvm_reg_sequence;
 			`uvm_fatal(get_type_name(), "Failed to get reg_block")
         
         reg_block_h.get_registers(registers);
-        has_registers = 1;
+        registers_received = 1;
     endfunction: get_registers
 
     //Функция проверки регистров в DUT с помощью backdoor доступа
-    task check_registers();
+    protected task check_registers();
 		foreach(registers[i])begin
 			mirrored_value = registers[i].get_mirrored_value();
             mirror_reg(registers[i], status, UVM_CHECK, UVM_BACKDOOR);
@@ -36,8 +37,15 @@ class register_base_seq extends uvm_reg_sequence;
 		end
 	endtask: check_registers
 
+    // Задача для записи случайного значения в регистр
+    protected task write_random_value(uvm_reg register);
+        assert (register.randomize());
+        value = register.get();
+        write_reg(register, status, value);
+    endtask: write_random_value
+
     task body();
-        if (!has_registers)
+        if (!registers_received)
             get_registers();
         
     endtask: body

@@ -12,27 +12,29 @@ class vend_clients_reg extends uvm_reg;
 	
 	virtual function void build();
 		reserved = uvm_reg_field::type_id::create("reserved");
-		reserved.configure(.parent              (this),
-                        .size                   (24),
-                        .lsb_pos                (8),
-                        .access                 ("RO"),
-                        .volatile               (0),
-                        .reset                  ('h0),
-                        .has_reset              (1),
-                        .is_rand                (0),
-                        .individually_accessible(0)
+		reserved.configure(
+            .parent                 (this),
+            .size                   (24),
+            .lsb_pos                (8),
+            .access                 ("RO"),
+            .volatile               (0),
+            .reset                  ('h0),
+            .has_reset              (1),
+            .is_rand                (0),
+            .individually_accessible(0)
 		);
 		
 		max_clients = uvm_reg_field::type_id::create("max_clients");
-		max_clients.configure(.parent           (this),
-                        .size                   (8),
-                        .lsb_pos                (0),
-                        .access                 ("RW"),
-                        .volatile               (0),
-                        .reset                  ('h64),
-                        .has_reset              (1),
-                        .is_rand                (0),
-                        .individually_accessible(0)
+		max_clients.configure(
+            .parent                 (this),
+            .size                   (8),
+            .lsb_pos                (0),
+            .access                 ("RW"),
+            .volatile               (0),
+            .reset                  ('h64),
+            .has_reset              (1),
+            .is_rand                (0),
+            .individually_accessible(0)
 		);
 	endfunction
 endclass

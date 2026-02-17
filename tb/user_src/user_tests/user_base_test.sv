@@ -19,12 +19,12 @@ virtual class user_base_test #(
     endfunction: get_sequencer_name
 
     function void adjust_config();
-        env_config_h.has_user_agent     = 1;      
-        env_config_h.has_admin_agent    = 0;
-        env_config_h.has_register_agent = 0;
-        env_config_h.has_error_agent    = 0; 
+        env_config_h.has_user_agent      = 1;      
+        env_config_h.has_admin_agent     = 0;
+        env_config_h.has_register_agent  = 0;
+        env_config_h.has_emergency_agent = 0; 
 
-        env_config_h.has_register_env   = 1;  
+        env_config_h.has_register_env    = 1;  
     endfunction: adjust_config
     
 endclass

@@ -9,3 +9,5 @@
 `include "../register_sequences/change_item_discount_seq.sv"
 `include "../register_sequences/change_exchange_rate_seq.sv"
 `include "../register_sequences/change_all_registers_seq.sv"
+
+`include "../register_sequences/write_registers_with_emergency_seq.sv"

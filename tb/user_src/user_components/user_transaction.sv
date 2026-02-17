@@ -12,6 +12,8 @@ class user_transaction extends base_transaction;
 	bit [31:0]            change_out;
 	bit                   no_change;
 	bit [7:0]             client_points;
+
+	bit [`NUM_ITEMS-1:0]  item_empty;
 	
 	
 	function new(string name = "");
@@ -25,8 +27,8 @@ class user_transaction extends base_transaction;
 	//Do-hooks
 	function string convert2string();
 		string s;
-		s = $sformatf("Client_id = %0d; coin_in = %p; currency_type = %p; item_num = %0d; item_out = %b; change_out = %0d; no_change = %b; client_points = %0d",
-			client_id, coin_in_q, currency_type_q, item_num, item_out, change_out, no_change, client_points);
+		s = $sformatf("Client_id = %0d; coin_in = %p; currency_type = %p; item_num = %0d; item_out = %b; change_out = %0d; no_change = %b; client_points = %0d; item_empty = %b",
+			client_id, coin_in_q, currency_type_q, item_num, item_out, change_out, no_change, client_points, item_empty);
 		return s;
 	endfunction: convert2string
 	
@@ -49,6 +51,8 @@ class user_transaction extends base_transaction;
 		this.change_out      = copied_tr.change_out;
 		this.no_change       = copied_tr.no_change;
 		this.client_points   = copied_tr.client_points;
+		
+		this.item_empty      = copied_tr.item_empty;
 	endfunction: do_copy
 	
 	function user_transaction clone_me();

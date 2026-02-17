@@ -1,15 +1,17 @@
-`ifndef ERROR_DRIVER
-`define ERROR_DRIVER
-class error_driver extends base_driver #(
-    .INTERFACE_TYPE  (virtual error_interface),
-    .TRANSACTION_TYPE(error_transaction      )
+`ifndef EMERGENCY_DRIVER
+`define EMERGENCY_DRIVER
+class emergency_driver extends base_driver #(
+    .INTERFACE_TYPE   (virtual emergency_interface), 
+	.TRANSACTION_TYPE (emergency_transaction      ) 
 );
 
-    `uvm_component_utils(error_driver)
+    `uvm_component_utils(emergency_driver)
 
     function new(string name, uvm_component parent);
 		super.new(name, parent);
 	endfunction: new
+
+
 
     task reset();
 		vif.tamper_detect  <= 0;
@@ -17,7 +19,7 @@ class error_driver extends base_driver #(
 		vif.power_loss     <= 0;
 	endtask: reset
 
-    task drive_transaction (error_transaction tr);
+    task drive_transaction (emergency_transaction tr);
         #(tr.time_delay);
 
         vif.tamper_detect  <= tr.tamper_detect;

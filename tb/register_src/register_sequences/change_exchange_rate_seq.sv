@@ -14,11 +14,10 @@ class change_exchange_rate_seq extends register_base_seq;
         reg_block_h.vend_cfg.idle_timeout.rand_mode(0);
         reg_block_h.vend_cfg.max_coins.rand_mode(0);
 
-        assert (reg_block_h.vend_cfg.randomize());
-        value = reg_block_h.vend_cfg.get();
-        write_reg(reg_block_h.vend_cfg, status, value);
+        write_random_value(reg_block_h.vend_cfg);
+
         value = reg_block_h.vend_cfg.exchange_rate.get();
-        `uvm_info(get_type_name(), $sformatf("Set exchange rate to %0d\n\n", value), UVM_LOW)
+        `uvm_info(get_type_name(), $sformatf("Set exchange rate to %0d", value), UVM_HIGH)
 
         reg_block_h.print();
     endtask: body

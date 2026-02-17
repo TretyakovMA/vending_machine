@@ -12,13 +12,16 @@ class env extends uvm_env;
 	user_agent             user_agent_h;
 	admin_agent            admin_agent_h;
 	register_agent         register_agent_h;
-	error_agent            error_agent_h;
+	emergency_agent        emergency_agent_h;
 	
 	user_checker		   user_checker_h;
 	vm_coverage            coverage_h;
 	vm_scoreboard          scoreboard_h;
 
 	register_env           register_env_h;
+
+	//Событие для взаимодействия register_sequence и emergency_sequence
+	event                  emergency_event; 
 	
 	function void build_phase(uvm_phase phase);
 		super.build_phase(phase);
@@ -47,17 +50,20 @@ class env extends uvm_env;
 			uvm_config_db #(register_agent_config)::set(this, "register_agent_h", "agent_config", env_config_h.register_agent_config_h);
 			register_agent_h  = register_agent::type_id::create("register_agent_h", this);
 		end
-		if(env_config_h.has_error_agent) begin
-			uvm_config_db #(error_agent_config)::set(this, "error_agent_h", "agent_config", env_config_h.error_agent_config_h);
-			error_agent_h     = error_agent::type_id::create("error_agent_h", this);
+		if(env_config_h.has_emergency_agent) begin
+			uvm_config_db #(emergency_agent_config)::set(this, "emergency_agent_h", "agent_config", env_config_h.emergency_agent_config_h);
+			emergency_agent_h = emergency_agent::type_id::create("emergency_agent_h", this);
 		end
 
 		//Регистры и необходимые им компоненты создаются по флагу has_register_env
 		if(env_config_h.has_register_env) begin
 			register_env_h    = register_env::type_id::create("register_env_h", this);
 			
-			scoreboard_h.has_reg_model = 1; //Разрешаем доступ scoreboard к регистровой
+			scoreboard_h.has_reg_model = 1; //Разрешаем доступ scoreboard к регистровой модели
 		end
+
+		// Отправка события в последовательности
+		uvm_config_db #(event)::set(null, "*", "emergency_event", emergency_event);
 		
 	endfunction: build_phase
 	
@@ -70,8 +76,8 @@ class env extends uvm_env;
 			user_agent_h.ap.connect(scoreboard_h.user_imp);
 		end
 
-		if(env_config_h.has_error_agent)
-			error_agent_h.ap.connect(scoreboard_h.error_imp);
+		if(env_config_h.has_emergency_agent)
+			emergency_agent_h.ap.connect(scoreboard_h.emergency_imp);
 		
 		if(env_config_h.has_register_agent) begin
 			register_agent_h.ap.connect(scoreboard_h.register_imp);

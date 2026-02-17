@@ -5,4 +5,6 @@
 `include "../integration_tests/c_s_after_change_discount_test.sv"
 `include "../integration_tests/c_s_after_change_exchange_rate_test.sv"
 `include "../integration_tests/c_s_after_change_all_registers_test.sv"
-`include "../integration_tests/c_s_with_interrupt_test.sv"
+
+`include "../integration_tests/c_s_with_emergency_test.sv"
+`include "../integration_tests/write_registers_with_emergency_test.sv"

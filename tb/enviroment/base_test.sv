@@ -43,15 +43,15 @@ virtual class base_test extends uvm_test;
 			this, "", "register_vif", env_config_h.register_agent_config_h.vif
 		)) `uvm_fatal(get_type_name(), "Faild to get register interface")
 			
-		if(!uvm_config_db #(virtual interface error_interface)::get(
-			this, "", "error_vif", env_config_h.error_agent_config_h.vif
-		)) `uvm_fatal(get_type_name(), "Faild to get error interface")
+		if(!uvm_config_db #(virtual interface emergency_interface)::get(
+			this, "", "emergency_vif", env_config_h.emergency_agent_config_h.vif
+		)) `uvm_fatal(get_type_name(), "Faild to get emergency interface")
 			
 		//Определение необходимых мониторов
 		env_config_h.user_agent_config_h.has_monitor      = 1;
 		env_config_h.admin_agent_config_h.has_monitor     = 0;
 		env_config_h.register_agent_config_h.has_monitor  = 1;
-		env_config_h.error_agent_config_h.has_monitor     = 1;
+		env_config_h.emergency_agent_config_h.has_monitor     = 1;
 
 		//Определение необходимых для теста агентов
 		adjust_config();

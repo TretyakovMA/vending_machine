@@ -13,42 +13,42 @@ module top;
 	
 	
 	
-	user_interface     user_if     (clk, rst_n);
-	admin_interface    admin_if    (clk, rst_n);
-	register_interface register_if (clk, rst_n);
-	error_interface    error_if    (clk, rst_n);
+	user_interface      user_if      (clk, rst_n);
+	admin_interface     admin_if     (clk, rst_n);
+	register_interface  register_if  (clk, rst_n);
+	emergency_interface emergency_if (clk, rst_n);
 	
 	vending_machine DUT (
-		.clk(clk),
+		.clk  (clk),
 		.rst_n(rst_n),
         
-		.id_valid(user_if.id_valid),
-		.client_id(user_if.client_id),
-		.coin_in(user_if.coin_in),
+		.id_valid     (user_if.id_valid),
+		.client_id    (user_if.client_id),
+		.coin_in      (user_if.coin_in),
 		.currency_type(user_if.currency_type),
-		.coin_insert(user_if.coin_insert),
-		.item_select(user_if.item_select),
-		.confirm(user_if.confirm),
+		.coin_insert  (user_if.coin_insert),
+		.item_select  (user_if.item_select),
+		.confirm      (user_if.confirm),
 
-		.admin_mode(admin_if.admin_mode),
+		.admin_mode    (admin_if.admin_mode),
 		.admin_password(admin_if.admin_password),
 
-		.regs_data_in(register_if.regs_data_in),
+		.regs_data_in (register_if.regs_data_in),
 		.regs_data_out(register_if.regs_data_out),
-		.regs_we(register_if.regs_we),
-		.regs_addr(register_if.regs_addr),
+		.regs_we      (register_if.regs_we),
+		.regs_addr    (register_if.regs_addr),
 
-		.tamper_detect(error_if.tamper_detect),
-		.jam_detect(error_if.jam_detect),
-		.power_loss(error_if.power_loss),
+		.tamper_detect(emergency_if.tamper_detect),
+		.jam_detect   (emergency_if.jam_detect),
+		.power_loss   (emergency_if.power_loss),
         
-		.access_error(error_if.access_error),
-		.item_out(user_if.item_out),
-		.change_out(user_if.change_out),
-		.no_change(user_if.no_change),
-		.item_empty(error_if.item_empty),
+		.access_error (register_if.access_error),
+		.item_out     (user_if.item_out),
+		.change_out   (user_if.change_out),
+		.no_change    (user_if.no_change),
+		.item_empty   (user_if.item_empty),
 		.client_points(user_if.client_points),
-		.alarm(error_if.alarm)
+		.alarm        (emergency_if.alarm)
 	);
 	
 	initial begin
@@ -78,7 +78,7 @@ module top;
 		uvm_config_db #(virtual interface user_interface)::set(null, "*", "user_vif", user_if);
 		uvm_config_db #(virtual interface admin_interface)::set(null, "*", "admin_vif", admin_if);
 		uvm_config_db #(virtual interface register_interface)::set(null, "*", "register_vif", register_if);
-		uvm_config_db #(virtual interface error_interface)::set(null, "*", "error_vif", error_if);
+		uvm_config_db #(virtual interface emergency_interface)::set(null, "*", "emergency_vif", emergency_if);
 		run_test();
 	end
 endmodule

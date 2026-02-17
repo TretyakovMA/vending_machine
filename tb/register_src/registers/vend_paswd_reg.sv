@@ -11,15 +11,16 @@ class vend_paswd_reg extends uvm_reg;
 	
 	virtual function void build();
 		paswd = uvm_reg_field::type_id::create("paswd");
-		paswd.configure(.parent                 (this),
-                        .size                   (32),
-                        .lsb_pos                (0),
-                        .access                 ("RW"),
-                        .volatile               (0),
-                        .reset                  ('hA5A5F00D),
-                        .has_reset              (1),
-                        .is_rand                (1),
-                        .individually_accessible(0)
+		paswd.configure(
+			.parent                 (this),
+        	.size                   (32),
+            .lsb_pos                (0),
+            .access                 ("RW"),
+            .volatile               (0),
+            .reset                  ('hA5A5F00D),
+            .has_reset              (1),
+            .is_rand                (1),
+            .individually_accessible(0)
 		);
 	endfunction
 endclass

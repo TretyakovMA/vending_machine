@@ -13,15 +13,10 @@ class change_all_registers_seq extends register_base_seq;
     task body();
         super.body();
         
-        foreach (reg_block_h.vend_item[i]) begin //В будущем это нужно удалить
-            reg_block_h.vend_item[i].item_discount.rand_mode(0);
-        end
-        
         registers.shuffle();
+        
         foreach (registers[i]) begin
-            assert (registers[i].randomize());
-			value = registers[i].get();
-			write_reg(registers[i], status, value);
+            write_random_value(registers[i]);
         end
         reg_block_h.print();
     endtask: body

@@ -1,21 +1,19 @@
-`ifndef ERROR_TRANSACTION
-`define ERROR_TRANSACTION
-class error_transaction extends base_transaction;
+`ifndef EMERGENCY_TRANSACTION
+`define EMERGENCY_TRANSACTION
+class emergency_transaction extends base_transaction;
 
-    `uvm_object_utils(error_transaction)
+    `uvm_object_utils(emergency_transaction)
 
     rand bit             tamper_detect;
     rand bit             jam_detect;
     rand bit             power_loss;
 
-    bit                  access_error;
-	bit [`NUM_ITEMS-1:0] item_empty;
-	bit                  alarm;
-
     rand time            time_delay;
 
+	bit                  alarm;
 
-    function new(string name = "error_transaction");
+
+    function new(string name = "emergency_transaction");
 		super.new(name);
 	endfunction: new
 

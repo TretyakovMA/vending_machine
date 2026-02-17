@@ -16,9 +16,8 @@ class change_item_discount_seq extends register_base_seq;
         foreach (reg_block_h.vend_item[i]) begin
             reg_block_h.vend_item[i].item_price.rand_mode(0);
             reg_block_h.vend_item[i].item_count.rand_mode(0);
-            assert (reg_block_h.vend_item[i].randomize());
-            value = reg_block_h.vend_item[i].get();
-            write_reg(reg_block_h.vend_item[i], status, value);
+            
+            write_random_value(reg_block_h.vend_item[i]);
         end
         reg_block_h.print();
     endtask: body

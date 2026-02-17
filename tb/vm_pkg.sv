@@ -35,10 +35,10 @@ package vm_pkg;
 
 	//==============================================================================
 	//Config Classes
-	typedef base_agent_config #(virtual user_interface)     user_agent_config;
-	typedef base_agent_config #(virtual admin_interface)    admin_agent_config;
-	typedef base_agent_config #(virtual register_interface) register_agent_config;
-	typedef base_agent_config #(virtual error_interface)    error_agent_config;
+	typedef base_agent_config #(virtual user_interface)      user_agent_config;
+	typedef base_agent_config #(virtual admin_interface)     admin_agent_config;
+	typedef base_agent_config #(virtual register_interface)  register_agent_config;
+	typedef base_agent_config #(virtual emergency_interface) emergency_agent_config;
 	//==============================================================================
 
 
@@ -58,8 +58,8 @@ package vm_pkg;
 
 
 	//==============================================================================
-	// Error Components
-	`include "error_src/included_files/error_components_inc.svh"
+	// Emergency Components
+	`include "emergency_src/included_files/emergency_components_inc.svh"
 	//==============================================================================
 	
 
@@ -122,13 +122,13 @@ package vm_pkg;
 
 
 	//==============================================================================
-	// Error Sequences
-	`include "error_src/included_files/error_sequences_inc.svh"
+	// Emergency Sequences
+	`include "emergency_src/included_files/emergency_sequences_inc.svh"
 	//==============================================================================
 
 	//==============================================================================
-	// Error Tests
-	`include "error_src/included_files/error_tests_inc.svh"
+	// Emergency Tests
+	`include "emergency_src/included_files/emergency_tests_inc.svh"
 	//==============================================================================
 
 

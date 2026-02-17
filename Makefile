@@ -43,8 +43,8 @@ DEFINE_REPORT_SERVER = +define+USE_CUSTOM_REPORT_SERVER
 
 # Определения тестов и количества запусков (<имя_теста>:<количество_запусков>)
 TESTS = client_session_with_interrupt_test:0 \
-		test_dollars:1 \
-		check_read_test:0
+		client_session_after_change_exchange_rate_test:0 \
+		write_registers_with_emergency_test:1
 
 
 

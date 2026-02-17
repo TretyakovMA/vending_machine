@@ -1,0 +1,1 @@
+`include "../emergency_tests/check_alarm_test.sv"
