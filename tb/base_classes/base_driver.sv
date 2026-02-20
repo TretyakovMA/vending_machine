@@ -3,12 +3,16 @@
 virtual class base_driver #(
 	type INTERFACE_TYPE,
 	type TRANSACTION_TYPE
-) extends uvm_driver#(TRANSACTION_TYPE);
+) extends uvm_driver #(TRANSACTION_TYPE);
 
 	`uvm_component_param_utils(base_driver #(INTERFACE_TYPE, TRANSACTION_TYPE))
 	
-	INTERFACE_TYPE   vif;
+	INTERFACE_TYPE   vif; // Интерфейс будет получен в агенте
 	TRANSACTION_TYPE transaction;
+
+	// Флаг, определяющий, нужно ли драйверу реагировать на сброс
+	// настраивается агентом
+	bit termination_after_reset = 1;
 
 	function new(string name, uvm_component parent);
 		super.new(name, parent);
@@ -16,56 +20,76 @@ virtual class base_driver #(
 
 	
 
-	//Основные задачи драйвера
+	//========================= Основные задачи драйвера =======================
 	pure virtual task reset();
 	pure virtual task drive_transaction (TRANSACTION_TYPE tr);
 	
 
 
-	//Вспомогательные функции
-	protected virtual task wait_for_active_clock();
-		@(posedge vif.clk iff vif.rst_n == 1);
-	endtask: wait_for_active_clock
+	//========================= Вспомогательные функции ========================
 
+	// Задача для ожидания, пока не опустится сигнала сброса
+	protected virtual task wait_for_reset_deassert();
+		@(posedge vif.clk iff vif.rst_n == 1);
+	endtask: wait_for_reset_deassert
+
+	// Задача для ожидания сигнала сброса
 	protected virtual task wait_for_reset_assert();
 		@(negedge vif.rst_n);
 	endtask: wait_for_reset_assert
 
+	// Функция, определяющая, нужно ли драйверу начинать работу
 	protected virtual function bit should_start_driving();
 		return (vif.rst_n == 1);
 	endfunction: should_start_driving
 
 
 
-	//Бесконечный поиск сигнала сброса
-	local task monitor_reset(); 
+	//======================== Основная функциональность ========================
+
+	// Бесконечный поиск сигнала сброса
+	local task monitor_reset_process(); 
 		forever begin
-			wait_for_reset_assert();       //ожидание сигнала сброса
+			// Ожидание сигнала сброса
+			wait_for_reset_assert();       
 			`uvm_info(get_type_name(), "Reset detected", UVM_HIGH)
-			disable drive_process;         //остановка процесса
+
+			// Остановка процесса драйвера
+			disable drive_process;
+
+			// Сброс         
 			reset();
 
+			// Завершение текущей транзакции
 			if(transaction != null) begin
-				seq_item_port.item_done(); //завершение текущей 
-				transaction = null;        //транзакции
+				seq_item_port.item_done();  
+				transaction = null; 
 			end
 
-			wait_for_active_clock();
+			// Ожидание, пока сигнал сброса не опустится
+			wait_for_reset_deassert();
 
+			// Перезапуск процесса
 			fork
-                drive_process(); //перезапуск процесса
+                drive_process(); 
 			join_none
 		end
-	endtask: monitor_reset
+	endtask: monitor_reset_process
 
-	//Основная задача в main_phase
+	// Основная задача в main_phase
 	local task drive_process();
+
+		// Ожидание, пока сигнал сброса не опустится
+		wait_for_reset_deassert();
+
+		// Начало бесконечной работы
 		forever begin
 			if (should_start_driving()) begin
+				`uvm_info(get_type_name(), "Start work", UVM_HIGH)
 				seq_item_port.get_next_item(transaction);
-                `uvm_info(get_type_name(), "Start work", UVM_HIGH)
 
-                drive_transaction(transaction); //запись транзакции в интерфейс
+				// Запись транзакции в интерфейс
+                drive_transaction(transaction); 
                 
                 `uvm_info(get_type_name(), "End work", UVM_HIGH)
 
@@ -76,19 +100,25 @@ virtual class base_driver #(
 	
 
 
-	//Фазы UVM
-	task reset_phase(uvm_phase phase);
+	//=========================== Фазы UVM ================================
+	virtual task reset_phase(uvm_phase phase);
 		super.reset_phase(phase);
 		reset();
 	endtask: reset_phase
 	
-	task main_phase(uvm_phase phase);
+	virtual task main_phase(uvm_phase phase);
 		super.main_phase(phase);
-		wait_for_active_clock();
-		fork
+
+		// Если установлен termination_after_reset, то драйвер реагирует на сброс
+		if (termination_after_reset) fork
 			drive_process(); //Параллельно идут процессы основной работы драйвера
-			monitor_reset(); //и поиска сигнала сброса
+			monitor_reset_process(); //и поиска сигнала сброса
 		join_any
+
+		// Если termination_after_reset = 0, то драйвер игнорирует сброс
+		else begin
+			drive_process(); 
+		end
 	endtask: main_phase
 
 endclass

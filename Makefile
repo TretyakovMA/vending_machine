@@ -12,16 +12,6 @@ DUT_DIR	       = $(PROJECT_DIR)/dut
 UVM_SRC       = $(QUESTASIM_DIR)/verilog_src/uvm-1.2/src
 UVM_DPI       = $(QUESTASIM_DIR)/uvm-1.2/win64/uvm_dpi
 
-GCC_DIR       = $(wildcard $(QUESTASIM_DIR)/gcc-*/bin/gcc.exe)
-
-# Если не нашли — берём любой gcc из PATH
-ifeq ($(GCC_DIR),)
-    GCC = gcc.exe                                            # В теории оно не должно так работать
-    $(info GCC not found in QuestaSim → using gcc from PATH) # Ладно, и так сойдет
-else
-    GCC = $(firstword $(GCC_DIR))
-    $(info Using bundled GCC: $(GCC))
-endif
 
 
 # =============================================================================
@@ -34,7 +24,7 @@ DUT_MODULE = vending_machine.sv
 TB_PKG     = vm_pkg.sv
 
 # Дополнительный настройки
-VERBOSITY  = UVM_LOW # (UVM_NONE, UVM_LOW, UVM_MEDIUM, UVM_HIGH, UVM_FULL, UVM_DEBUG)
+VERBOSITY  = UVM_HIGH # (UVM_NONE, UVM_LOW, UVM_MEDIUM, UVM_HIGH, UVM_FULL, UVM_DEBUG)
 SEED       = random
 
 # Флаги для компиляции
@@ -42,9 +32,9 @@ DEFINE_C_FUNCTIONS   = +define+USE_C_FUNCTIONS
 DEFINE_REPORT_SERVER = +define+USE_CUSTOM_REPORT_SERVER
 
 # Определения тестов и количества запусков (<имя_теста>:<количество_запусков>)
-TESTS = client_session_with_interrupt_test:0 \
-		client_session_after_change_exchange_rate_test:0 \
-		write_registers_with_emergency_test:1
+TESTS = client_session_with_reset_test:1 \
+		check_write_test:0 \
+		test_dollars:0
 
 
 
@@ -58,13 +48,12 @@ all: compile run_sims
 # Компиляция
 compile:
 	@echo "QUESTASIM_DIR = $(QUESTASIM_DIR)"
-	@echo "GCC           = $(GCC)"
 	@echo "UVM_DPI       = $(UVM_DPI)"
 	@echo "------------------------------------"
 	vlib work
 	vmap work work 
 
-	$(GCC) -shared -o \
+	gcc -shared -o \
 		$(PROJECT_DIR)/c_functions.dll \
 		$(PROJECT_DIR)/tb/base_classes/c_functions.c \
 		-I"$(QUESTASIM_DIR)/include"
@@ -115,7 +104,6 @@ sim:
 		"+UVM_VERBOSITY=$(strip $(VERBOSITY))" \
 		-sv_lib $(PROJECT_DIR)/c_functions \
 		-sv_lib $(UVM_DPI) \
-		-cpppath $(GCC) \
 	)
 	@echo "All simulations completed for $(TEST_NAME)"
 

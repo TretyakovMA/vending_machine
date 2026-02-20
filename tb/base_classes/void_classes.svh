@@ -17,6 +17,7 @@ class void_driver #(
     endfunction
 
     INTERFACE_TYPE    vif;
+    bit termination_after_reset;
 endclass
 
 
@@ -33,6 +34,8 @@ class void_monitor #(
 
     uvm_analysis_port #(TRANSACTION_TYPE) ap;
     INTERFACE_TYPE    vif;
+    
+    bit termination_after_reset;
 endclass
 
 class void_sequence extends uvm_sequence #(uvm_sequence_item);

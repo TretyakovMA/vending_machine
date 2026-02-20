@@ -8,3 +8,5 @@
 
 `include "../integration_tests/c_s_with_emergency_test.sv"
 `include "../integration_tests/write_registers_with_emergency_test.sv"
+
+`include "../integration_tests/c_s_with_reset_test.sv"

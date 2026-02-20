@@ -8,6 +8,7 @@ class base_agent_config #(
 	INTERFACE_TYPE          vif;
 	uvm_active_passive_enum is_active = UVM_ACTIVE;
 	bit                     has_monitor;
+	bit                     termination_after_reset = 1;
 	
 	function new(string name = "base_agent_config");
 		super.new(name);

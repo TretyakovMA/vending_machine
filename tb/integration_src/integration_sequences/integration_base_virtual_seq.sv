@@ -26,6 +26,7 @@ class integration_base_virtual_seq #(
     register_base_virtual_seq #(REGISTER_SEQ) register_vseq;
     USER_SEQ                                  user_seq;
     EMERGENCY_SEQ                             emergency_seq;
+
     
 
     function new(string name = "integration_base_virtual_seq");

@@ -38,10 +38,10 @@ class my_report_server extends uvm_default_report_server;
     local string msg_color     = DEFAULT;
     local string reset         = DEFAULT;
 
-    local bit    no_color      = 0;      // Флаг отключения цветов
+    local bit    no_color      = 0;       // Флаг отключения цветов
 
-    protected int errors_fd;       // Дескриптор файла ошибок
-    protected int sim_log_fd;      // Дескриптор файла для sim_log
+    protected int errors_fd;              // Дескриптор файла ошибок
+    protected int sim_log_fd;             // Дескриптор файла для sim_log
 
     local string  test_name = "UNKNOWN";  // Имя теста
     local string  run_count = "0";        // Номер запуска
@@ -87,13 +87,13 @@ class my_report_server extends uvm_default_report_server;
         
         errors_fd = $fopen("errors.log", "a");
         if (errors_fd == 0) begin
-            uvm_report_fatal("REPORT_SERVER", "Failed to open errors.log for logging!");
+            `uvm_fatal(get_type_name(), "Failed to open errors.log for logging!");
         end
 
         // Открываем файл sim_log
         sim_log_fd = $fopen(sim_log_file, "w");
         if (sim_log_fd == 0) begin
-            uvm_report_fatal("REPORT_SERVER", $sformatf("Failed to open %s for logging!", sim_log_file));
+            `uvm_fatal("get_type_name()", $sformatf("Failed to open %s for logging!", sim_log_file));
         end
 
         
@@ -108,7 +108,7 @@ class my_report_server extends uvm_default_report_server;
         // Убираем ANSI-коды цветов для файла
         string plain_message = remove_ansi_codes(composed_message);
         
-        // Запись в sim_log_*.txt для всех сообщений
+        // Запись в sim_log_*.log для всех сообщений
         $fdisplay(sim_log_fd, "%s", plain_message);
         $fflush(sim_log_fd);
 

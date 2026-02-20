@@ -21,7 +21,7 @@ class emergency_monitor extends base_monitor #(
         tr.tamper_detect = vif.tamper_detect;
         tr.jam_detect    = vif.jam_detect;
         tr.power_loss    = vif.power_loss;
-        wait_for_active_clock();
+        @(posedge vif.clk);
         tr.alarm         = vif.alarm;
     endtask: collect_transaction_data
 endclass

@@ -35,10 +35,19 @@ package vm_pkg;
 
 	//==============================================================================
 	//Config Classes
+	typedef base_agent_config #(virtual reset_interface)     reset_agent_config;
+
 	typedef base_agent_config #(virtual user_interface)      user_agent_config;
 	typedef base_agent_config #(virtual admin_interface)     admin_agent_config;
 	typedef base_agent_config #(virtual register_interface)  register_agent_config;
 	typedef base_agent_config #(virtual emergency_interface) emergency_agent_config;
+	//==============================================================================
+
+
+
+	//==============================================================================
+	// Reset_components
+	`include "reset_src/included_files/reset_components_inc.svh"
 	//==============================================================================
 
 
@@ -83,6 +92,13 @@ package vm_pkg;
 	`include "vm_classes/vm_classes_inc.svh"
 	//==============================================================================
 
+
+
+	//==============================================================================
+	// Reset sequences
+	`include "reset_src/included_files/reset_sequences_inc.svh"
+	//==============================================================================
+
 	
 
 	//==============================================================================
@@ -108,7 +124,7 @@ package vm_pkg;
 	// Admin Sequences
 	`include "admin_src/included_files/admin_sequences_inc.svh"
 	//==============================================================================
-
+	
 	//==============================================================================
 	// Register Sequences
 	`include "register_src/included_files/register_sequences_inc.svh"

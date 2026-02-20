@@ -26,7 +26,7 @@ class emergency_driver extends base_driver #(
 		vif.jam_detect     <= tr.jam_detect;
 		vif.power_loss     <= tr.power_loss;
         `uvm_info(get_type_name(), {"Send transaction: ", tr.convert2string()}, UVM_LOW)
-        repeat (3) wait_for_active_clock();
+        repeat (3) @(posedge vif.clk);
     endtask: drive_transaction
 
 endclass

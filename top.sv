@@ -9,46 +9,47 @@ module top;
 	
 	
 	logic clk;
-	logic rst_n;
+	//logic rst_n;
 	
 	
-	
-	user_interface      user_if      (clk, rst_n);
-	admin_interface     admin_if     (clk, rst_n);
-	register_interface  register_if  (clk, rst_n);
-	emergency_interface emergency_if (clk, rst_n);
+	reset_interface     reset_if     (clk);
+
+	user_interface      user_if      (clk, reset_if.rst_n);
+	admin_interface     admin_if     (clk, reset_if.rst_n);
+	register_interface  register_if  (clk, reset_if.rst_n);
+	emergency_interface emergency_if (clk, reset_if.rst_n);
 	
 	vending_machine DUT (
-		.clk  (clk),
-		.rst_n(rst_n),
+		.clk           (clk),
+		.rst_n         (reset_if.rst_n),
         
-		.id_valid     (user_if.id_valid),
-		.client_id    (user_if.client_id),
-		.coin_in      (user_if.coin_in),
-		.currency_type(user_if.currency_type),
-		.coin_insert  (user_if.coin_insert),
-		.item_select  (user_if.item_select),
-		.confirm      (user_if.confirm),
+		.id_valid      (user_if.id_valid),
+		.client_id     (user_if.client_id),
+		.coin_in       (user_if.coin_in),
+		.currency_type (user_if.currency_type),
+		.coin_insert   (user_if.coin_insert),
+		.item_select   (user_if.item_select),
+		.confirm       (user_if.confirm),
 
 		.admin_mode    (admin_if.admin_mode),
 		.admin_password(admin_if.admin_password),
 
-		.regs_data_in (register_if.regs_data_in),
-		.regs_data_out(register_if.regs_data_out),
-		.regs_we      (register_if.regs_we),
-		.regs_addr    (register_if.regs_addr),
+		.regs_data_in  (register_if.regs_data_in),
+		.regs_data_out (register_if.regs_data_out),
+		.regs_we       (register_if.regs_we),
+		.regs_addr     (register_if.regs_addr),
 
-		.tamper_detect(emergency_if.tamper_detect),
-		.jam_detect   (emergency_if.jam_detect),
-		.power_loss   (emergency_if.power_loss),
+		.tamper_detect (emergency_if.tamper_detect),
+		.jam_detect    (emergency_if.jam_detect),
+		.power_loss    (emergency_if.power_loss),
         
-		.access_error (register_if.access_error),
-		.item_out     (user_if.item_out),
-		.change_out   (user_if.change_out),
-		.no_change    (user_if.no_change),
-		.item_empty   (user_if.item_empty),
-		.client_points(user_if.client_points),
-		.alarm        (emergency_if.alarm)
+		.access_error  (register_if.access_error),
+		.item_out      (user_if.item_out),
+		.change_out    (user_if.change_out),
+		.no_change     (user_if.no_change),
+		.item_empty    (user_if.item_empty),
+		.client_points (user_if.client_points),
+		.alarm         (emergency_if.alarm)
 	);
 	
 	initial begin
@@ -57,9 +58,9 @@ module top;
 	end
 	
 	initial begin	
-		rst_n = 0;
-		#10; 
-		rst_n = 1;	
+		//reset_if.rst_n = 0;
+		//#10; 
+		//reset_if.rst_n = 1;	
 
 		/*#470;
 		rst_n = 0;
@@ -69,11 +70,13 @@ module top;
 		#470;
 		rst_n = 0;
 		#20; 
-		rst_n = 1;	*/
+		rst_n = 1;*/
 	end
 	
 	initial begin
 		$timeformat(-9, 0, " ns", 5);
+
+		uvm_config_db #(virtual interface reset_interface)::set(null, "*", "reset_vif", reset_if);
 		
 		uvm_config_db #(virtual interface user_interface)::set(null, "*", "user_vif", user_if);
 		uvm_config_db #(virtual interface admin_interface)::set(null, "*", "admin_vif", admin_if);

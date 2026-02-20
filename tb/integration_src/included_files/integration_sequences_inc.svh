@@ -8,3 +8,5 @@
 
 `include "../integration_sequences/c_s_with_emergency_vseq.sv"  
 `include "../integration_sequences/write_registers_with_emergency_vseq.sv"  
+
+`include "../integration_sequences/c_s_with_reset_vseq.sv"

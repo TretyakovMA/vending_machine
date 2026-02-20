@@ -34,7 +34,7 @@ class register_driver extends base_driver #(
 		vif.regs_addr    <= tr.regs_addr;
 		vif.regs_we      <= 0;
 		
-		wait_for_active_clock();
+		@(posedge vif.clk);
 		tr.regs_data_out  = vif.regs_data_out; //Транзакция дальше идет в адаптер, эту строчку убирать нельзя
 	endtask: read
 
@@ -43,7 +43,7 @@ class register_driver extends base_driver #(
 		vif.regs_data_in <= tr.regs_data_in;
 		vif.regs_we      <= 1;
 
-		wait_for_active_clock();
+		@(posedge vif.clk);
 	endtask: write
 
 endclass

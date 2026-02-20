@@ -3,6 +3,8 @@
 class env_config extends uvm_object;
 	`uvm_object_utils(env_config)
 
+	reset_agent_config     reset_agent_config_h;
+
 	user_agent_config      user_agent_config_h;
 	admin_agent_config     admin_agent_config_h;
 	register_agent_config  register_agent_config_h;
@@ -17,6 +19,9 @@ class env_config extends uvm_object;
 	
 	function new(string name = "env_config");
 		super.new(name);
+		
+		reset_agent_config_h         = reset_agent_config::type_id::create("reset_agent_config_h");
+
 		if(has_user_agent)
 			user_agent_config_h      = user_agent_config::type_id::create("user_agent_config_h");
 		if(has_admin_agent)

@@ -1,15 +1,15 @@
 `ifndef VM_SCOREBOARD
 `define VM_SCOREBOARD
 
+`uvm_analysis_imp_decl(_RESET)
 `uvm_analysis_imp_decl(_USER)
-`uvm_analysis_imp_decl(_REGISTER)
 `uvm_analysis_imp_decl(_EMERGENCY)
 
 class vm_scoreboard extends uvm_scoreboard;
 	`uvm_component_utils(vm_scoreboard)
 
+	uvm_analysis_imp_RESET #(reset_transaction, vm_scoreboard) reset_imp;
 	uvm_analysis_imp_USER #(user_transaction, vm_scoreboard) user_imp;
-	uvm_analysis_imp_REGISTER #(register_transaction, vm_scoreboard) register_imp;
 	uvm_analysis_imp_EMERGENCY #(emergency_transaction, vm_scoreboard) emergency_imp;
 
 	//Класс для проверки пользовательской транзакции
@@ -30,6 +30,7 @@ class vm_scoreboard extends uvm_scoreboard;
 	//Флаг того, что в тесте используется регистровая модель (устанавливается в env)
 	bit                      has_reg_model; 
 
+	// Переменные для изменения количества товаров после покупки
 	local int                item_count;
 	local int                item_id;
 
@@ -41,9 +42,9 @@ class vm_scoreboard extends uvm_scoreboard;
 	//Фазы UVM
 	function void build_phase(uvm_phase phase);
 		super.build_phase(phase);
+		reset_imp     = new("reset_imp", this);
 		user_imp      = new("user_imp", this);
 		emergency_imp = new("emergency_imp", this);
-		register_imp  = new("register_imp", this);
 	endfunction: build_phase
 
 	function void connect_phase(uvm_phase phase);
@@ -84,22 +85,17 @@ class vm_scoreboard extends uvm_scoreboard;
 
 	//==========================  Обработка транзакций  ============================= 
 
-	// Обработка регистровых транзакций
-	function void write_REGISTER (register_transaction t);
-		if(t.has_reset) begin
-			`uvm_info(get_type_name(), "Reset reg_model", UVM_LOW)
-			reg_block_h.reset();
-			return;
-		end
-	endfunction: write_REGISTER
+	// Реакция на сигнал сброса
+	function void write_RESET (reset_transaction t); 
+		`uvm_info(get_type_name(), "Reset detected", UVM_HIGH)
+		reg_block_h.reset();
+		reset_points();
+		emergency_occurred = 0;
+	endfunction: write_RESET
+	
 
 	// Обработка транзакций сигналов прерывания
 	function void write_EMERGENCY (emergency_transaction t);
-		if(t.has_reset) begin
-			`uvm_info(get_type_name(), "Reset detected", UVM_HIGH)
-			emergency_occurred = 0;
-			return;
-		end
 		
 		if ((t.tamper_detect || t.jam_detect || t.power_loss) && !emergency_occurred) begin
 			emergency_occurred = 1;
@@ -113,15 +109,8 @@ class vm_scoreboard extends uvm_scoreboard;
 	
 	// Обработка пользовательских транзакций
 	function void write_USER (user_transaction t);
-		//Если приходит транзакция с флагом rst, сбрасываем очки и не продолжаем обработку
-		if(t.has_reset) begin   
-			`uvm_info(get_type_name(), "Reset client_points_db", UVM_LOW)
-			reset_points(); 
-			return;         
-		end
 
 		tr = t.clone_me(); //Работаем с копией транзакции
-
 
 		// Если за время пользовательской сессии появлялся
 		// сигнал сбоя, то устройство должно перестать работать

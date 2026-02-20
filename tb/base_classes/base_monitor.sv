@@ -10,6 +10,10 @@ virtual class base_monitor #(
 	INTERFACE_TYPE   vif;
     TRANSACTION_TYPE transaction;
 
+	// Флаг, определяющий, нужно ли монитору реагировать на сброс
+	// настраивается агентом
+	bit termination_after_reset = 1;
+
     uvm_analysis_port #(TRANSACTION_TYPE) ap;
 	
 	function new(string name, uvm_component parent);
@@ -18,16 +22,16 @@ virtual class base_monitor #(
 
 
 
-	//Основные задачи монитора
+	// Основные задачи монитора
 	pure virtual function bit should_start_monitoring (); 
     pure virtual task collect_transaction_data (TRANSACTION_TYPE tr); 
 
 	
 
-	//Вспомогательные функции (меняются в других проектах)
-	protected virtual task wait_for_active_clock(); 
+	// Вспомогательные функции (меняются в других проектах)
+	protected virtual task wait_for_sampling_event(); 
 		@(posedge vif.clk iff vif.rst_n == 1);
-	endtask: wait_for_active_clock
+	endtask: wait_for_sampling_event
 
 	protected virtual task wait_for_reset_assert(); 
 		@(negedge vif.rst_n);
@@ -35,35 +39,36 @@ virtual class base_monitor #(
 
 
 
-	//Бесконечный поиск сигнала сброса
+	// Бесконечный поиск сигнала сброса
 	local task monitor_reset(); 
 		forever begin
 			wait_for_reset_assert();
 			`uvm_info(get_type_name(), "Reset detected", UVM_HIGH)
-			disable monitor_transaction; //остановка процесса мониторинга
-			transaction = TRANSACTION_TYPE::type_id::create("tr");
-			transaction.has_reset = 1; //создается транзакция с сигналом
-			ap.write(transaction);     //сброса и отправляется в scoreboard
-
+			// Остановка процесса мониторинга
+			disable monitor_transaction; 
+			
+			// Перезапуск процесса мониторинга
 			fork
-            	monitor_transaction(); //перезапуск процесса мониторинга
+            	monitor_transaction(); 
 			join_none
 		end
 	endtask: monitor_reset
 
-	//Основная задача мониторинга
+	// Основная задача мониторинга
 	local task monitor_transaction(); 
 		forever begin
-			wait_for_active_clock();
+			wait_for_sampling_event();
 
 			if (should_start_monitoring()) begin
 				transaction = TRANSACTION_TYPE::type_id::create("tr");
 				`uvm_info(get_type_name(), "Start work", UVM_HIGH)
 
-				collect_transaction_data(transaction); //сбор данных транзакции
+				// Сбор данных транзакции
+				collect_transaction_data(transaction); 
 
 				`uvm_info(get_type_name(), `GET_TR_STR(transaction), UVM_LOW)
-				ap.write(transaction); //отправка транзакции на анализ
+				// Отправка транзакции на анализ
+				ap.write(transaction); 
 				`uvm_info(get_type_name(), "End work", UVM_HIGH)
 			end
 		end
@@ -78,10 +83,17 @@ virtual class base_monitor #(
 
 	virtual task main_phase(uvm_phase phase);
 		super.main_phase(phase);
-		fork
+
+		// Если установлен termination_after_reset, то монитор реагирует на сброс
+		if(termination_after_reset) fork
 			monitor_reset();
 			monitor_transaction();
 		join
+		
+		// Если termination_after_reset = 0, то монитор игнорирует сброс
+		else begin
+			monitor_transaction();
+		end
 	endtask: main_phase
 	
 endclass

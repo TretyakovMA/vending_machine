@@ -59,10 +59,12 @@ virtual class base_agent #(
 		if (config_h.is_active == UVM_ACTIVE) begin
 			driver_h.seq_item_port.connect(sequencer_h.seq_item_export);
 			driver_h.vif  = config_h.vif;
+			driver_h.termination_after_reset = config_h.termination_after_reset;
 		end
 		if (config_h.has_monitor == 1) begin
 			monitor_h.ap.connect(ap);
 			monitor_h.vif = config_h.vif;
+			driver_h.termination_after_reset = config_h.termination_after_reset;
 		end
 		
 	endfunction 

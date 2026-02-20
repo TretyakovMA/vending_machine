@@ -53,7 +53,7 @@ class user_driver extends base_driver #(
 		`uvm_info(get_type_name(), {"Send transaction: ", tr.convert2string()}, UVM_HIGH)
 		repeat(4) @(posedge vif.clk); //Ожидание, пока автомат работает
 		reset();                      //На всякий случай все сигналы сбрасываются
-		wait_for_active_clock();
+		@(posedge vif.clk);
 	endtask: drive_transaction
 		
 endclass

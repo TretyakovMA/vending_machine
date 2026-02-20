@@ -13,7 +13,8 @@ class admin_mode_on_seq extends uvm_sequence #(admin_transaction);
 	task body();
 		tr = admin_transaction::type_id::create("tr");
 		start_item(tr);
-			
+		
+		`uvm_info(get_type_name(), "Starting sequence", UVM_HIGH);
 		tr.admin_password = admin_password; //Пароль должен быть получен из внешнего источника
 		tr.admin_mode     = 1;
 			

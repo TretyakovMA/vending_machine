@@ -16,14 +16,14 @@ class check_alarm_test extends sequence_base_test #(
         return "emergency_sequencer";
     endfunction: get_sequencer_name
 
-    function void adjust_config();
+    function void adjust_env_config();
         env_config_h.has_user_agent      = 0;      
         env_config_h.has_admin_agent     = 0;
         env_config_h.has_register_agent  = 0;
         env_config_h.has_emergency_agent = 1; 
 
         env_config_h.has_register_env    = 0;  
-    endfunction: adjust_config
+    endfunction: adjust_env_config
     
 endclass
 `endif

@@ -8,7 +8,5 @@ virtual class base_transaction extends uvm_sequence_item;
         super.new(name);
     endfunction: new
 
-    bit has_reset = 0;
-
 endclass : base_transaction
 `endif

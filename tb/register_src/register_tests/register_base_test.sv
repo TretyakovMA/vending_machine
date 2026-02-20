@@ -15,14 +15,14 @@ virtual class register_base_test #(
         super.new(name, parent);
     endfunction: new
 
-    function void adjust_config();
+    function void adjust_env_config();
         env_config_h.has_user_agent      = 0;      
         env_config_h.has_admin_agent     = 1;
         env_config_h.has_register_agent  = 1;
         env_config_h.has_emergency_agent = 0; 
 
         env_config_h.has_register_env    = 1;  
-    endfunction: adjust_config
+    endfunction: adjust_env_config
     
 endclass
 `endif
