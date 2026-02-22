@@ -34,9 +34,15 @@ package vm_pkg;
 
 
 	//==============================================================================
-	//Config Classes
-	typedef base_agent_config #(virtual reset_interface)     reset_agent_config;
+	// VM_base_classes
+	`include "vm_classes/base/base_inc.svh"
+	//==============================================================================
 
+
+
+	//==============================================================================
+	// Agent_config classes
+	typedef base_agent_config #(virtual reset_interface)     reset_agent_config;
 	typedef base_agent_config #(virtual user_interface)      user_agent_config;
 	typedef base_agent_config #(virtual admin_interface)     admin_agent_config;
 	typedef base_agent_config #(virtual register_interface)  register_agent_config;
@@ -47,56 +53,56 @@ package vm_pkg;
 
 	//==============================================================================
 	// Reset_components
-	`include "reset_src/included_files/reset_components_inc.svh"
+	`include "src/reset_src/included_files/reset_components_inc.svh"
 	//==============================================================================
 
 
 
 	//==============================================================================
 	//Registers
-	`include "register_src/included_files/registers_inc.svh"
+	`include "src/register_src/included_files/registers_inc.svh"
 	//==============================================================================
 
 
 
 	//==============================================================================
 	// Register Components
-	`include "register_src/included_files/register_components_inc.svh"
+	`include "src/register_src/included_files/register_components_inc.svh"
 	//==============================================================================
 
 
 
 	//==============================================================================
 	// Emergency Components
-	`include "emergency_src/included_files/emergency_components_inc.svh"
+	`include "src/emergency_src/included_files/emergency_components_inc.svh"
 	//==============================================================================
 	
 
 
 	//==============================================================================
 	// User Components
-	`include "user_src/included_files/user_components_inc.svh"
+	`include "src/user_src/included_files/user_components_inc.svh"
 	//==============================================================================
 	
 
 
 	//==============================================================================
 	// Admin Components
-	`include "admin_src/included_files/admin_components_inc.svh"
+	`include "src/admin_src/included_files/admin_components_inc.svh"
 	//==============================================================================
 
 
 
 	//==============================================================================
-	// Common project classes
-	`include "vm_classes/vm_classes_inc.svh"
+	// VM_verification_classes
+	`include "vm_classes/verification/verification_inc.svh"
 	//==============================================================================
 
 
 
 	//==============================================================================
 	// Reset sequences
-	`include "reset_src/included_files/reset_sequences_inc.svh"
+	`include "src/reset_src/included_files/reset_sequences_inc.svh"
 	//==============================================================================
 
 	
@@ -110,41 +116,41 @@ package vm_pkg;
 
 	//==============================================================================
 	// User Sequences
-	`include "user_src/included_files/user_sequences_inc.svh"
+	`include "src/user_src/included_files/user_sequences_inc.svh"
 	//==============================================================================
 
 	//==============================================================================
 	// User Tests
-	`include "user_src/included_files/user_tests_inc.svh"
+	`include "src/user_src/included_files/user_tests_inc.svh"
 	//==============================================================================
 
 
 
 	//==============================================================================
 	// Admin Sequences
-	`include "admin_src/included_files/admin_sequences_inc.svh"
+	`include "src/admin_src/included_files/admin_sequences_inc.svh"
 	//==============================================================================
 	
 	//==============================================================================
 	// Register Sequences
-	`include "register_src/included_files/register_sequences_inc.svh"
+	`include "src/register_src/included_files/register_sequences_inc.svh"
 	//==============================================================================
 
 	//==============================================================================
 	// Register Tests
-	`include "register_src/included_files/register_tests_inc.svh"
+	`include "src/register_src/included_files/register_tests_inc.svh"
 	//==============================================================================
 	
 
 
 	//==============================================================================
 	// Emergency Sequences
-	`include "emergency_src/included_files/emergency_sequences_inc.svh"
+	`include "src/emergency_src/included_files/emergency_sequences_inc.svh"
 	//==============================================================================
 
 	//==============================================================================
 	// Emergency Tests
-	`include "emergency_src/included_files/emergency_tests_inc.svh"
+	`include "src/emergency_src/included_files/emergency_tests_inc.svh"
 	//==============================================================================
 
 
@@ -152,12 +158,12 @@ package vm_pkg;
 
 	//==============================================================================
 	// Integration Sequences
-	`include "integration_src/included_files/integration_sequences_inc.svh"
+	`include "src/integration_src/included_files/integration_sequences_inc.svh"
 	//==============================================================================
 
 	//==============================================================================
 	// Integration Tests
-	`include "integration_src/included_files/integration_tests_inc.svh"
+	`include "src/integration_src/included_files/integration_tests_inc.svh"
 	//==============================================================================
 
 

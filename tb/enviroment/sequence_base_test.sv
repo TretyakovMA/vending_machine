@@ -1,16 +1,20 @@
 `ifndef SEQUENCE_BASE_TEST
 `define SEQUENCE_BASE_TEST
 
+typedef class base_test;
+
 virtual class sequence_base_test #(
     type   SEQUENCE_TYPE,
     type   SEQUENCER_TYPE      = uvm_sequencer #(uvm_sequence_item),
-    bit    IS_VIRTUAL_SEQUENCE = 1
-) extends base_test;
+    bit    IS_VIRTUAL_SEQUENCE = 1,
+    type   PARENT_TYPE         = base_test
+) extends PARENT_TYPE;
 
     `uvm_component_param_utils(sequence_base_test #(
         SEQUENCE_TYPE,
         SEQUENCER_TYPE,
-        IS_VIRTUAL_SEQUENCE
+        IS_VIRTUAL_SEQUENCE,
+        PARENT_TYPE
         )
     );
 

@@ -9,16 +9,15 @@ module top;
 	
 	
 	logic clk;
-	//logic rst_n;
 	
-	
+	// Интерфейсы
 	reset_interface     reset_if     (clk);
-
 	user_interface      user_if      (clk, reset_if.rst_n);
 	admin_interface     admin_if     (clk, reset_if.rst_n);
 	register_interface  register_if  (clk, reset_if.rst_n);
 	emergency_interface emergency_if (clk, reset_if.rst_n);
 	
+	// Тестируемое устройство
 	vending_machine DUT (
 		.clk           (clk),
 		.rst_n         (reset_if.rst_n),
@@ -52,36 +51,22 @@ module top;
 		.alarm         (emergency_if.alarm)
 	);
 	
+	// Clock
 	initial begin
 		clk = 0;
 		forever #5 clk = ~clk;
 	end
 	
-	initial begin	
-		//reset_if.rst_n = 0;
-		//#10; 
-		//reset_if.rst_n = 1;	
-
-		/*#470;
-		rst_n = 0;
-		#20; 
-		rst_n = 1;	
-
-		#470;
-		rst_n = 0;
-		#20; 
-		rst_n = 1;*/
-	end
-	
+	// Начало теста
 	initial begin
 		$timeformat(-9, 0, " ns", 5);
 
 		uvm_config_db #(virtual interface reset_interface)::set(null, "*", "reset_vif", reset_if);
-		
 		uvm_config_db #(virtual interface user_interface)::set(null, "*", "user_vif", user_if);
 		uvm_config_db #(virtual interface admin_interface)::set(null, "*", "admin_vif", admin_if);
 		uvm_config_db #(virtual interface register_interface)::set(null, "*", "register_vif", register_if);
 		uvm_config_db #(virtual interface emergency_interface)::set(null, "*", "emergency_vif", emergency_if);
+
 		run_test();
 	end
 endmodule

@@ -40,6 +40,10 @@
         {114{"*"}}\
     }
 
+    `define EXP_TR_PRINT(TR, VERBOSITY) \
+        `uvm_info(get_type_name(), {"\n", {44{"*"}},"   Expected transaction   ",{44{"*"}}}, VERBOSITY) \
+        TR.print();
+
     `define RES_STR_1 {"\n", {51{"!"}}, "   Result   ", {51{"!"}}, "\n"}
     `define RES_STR_2 {"\n", {114{"!"}}}
 
@@ -52,7 +56,7 @@
 
     `define RES_FAILD_STR{\
         `RES_STR_1, \
-        {51{" "}}, \
+        {52{" "}}, \
         "\033[31mTest faild\033[0m", \
         `RES_STR_2\
     }

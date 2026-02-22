@@ -27,11 +27,11 @@ virtual class base_test extends uvm_test;
 		env_config_h.register_agent_config_h.has_monitor  = 1;
 		env_config_h.emergency_agent_config_h.has_monitor = 1;
 
-		env_config_h.reset_agent_config_h.termination_after_reset     = 0;
-		env_config_h.user_agent_config_h.termination_after_reset      = 1;
-		env_config_h.admin_agent_config_h.termination_after_reset     = 1;
-		env_config_h.register_agent_config_h.termination_after_reset  = 1;
-		env_config_h.emergency_agent_config_h.termination_after_reset = 1;
+		env_config_h.reset_agent_config_h.reset_sensitive     = 0;
+		env_config_h.user_agent_config_h.reset_sensitive      = 1;
+		env_config_h.admin_agent_config_h.reset_sensitive     = 1;
+		env_config_h.register_agent_config_h.reset_sensitive  = 1;
+		env_config_h.emergency_agent_config_h.reset_sensitive = 1;
 	endfunction: adjust_agent_configs
 
 	// Функция для выбора конфигурации env (выбор необходимых агентов)
@@ -85,7 +85,7 @@ virtual class base_test extends uvm_test;
 		my_server = new();
 `endif
 
-		// СОздается компонент для запуска последовательности инициализации устройства
+		// Создается компонент для запуска последовательности инициализации устройства
 		initiator_h = initiator::type_id::create("initiator_h", this);
 
 	endfunction: build_phase
