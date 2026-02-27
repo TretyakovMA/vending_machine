@@ -12,7 +12,8 @@ DUT_DIR	       = $(PROJECT_DIR)/dut
 UVM_SRC       = $(QUESTASIM_DIR)/verilog_src/uvm-1.2/src
 UVM_DPI       = $(QUESTASIM_DIR)/uvm-1.2/win64/uvm_dpi
 
-
+C_DLL         = $(PROJECT_DIR)/work/c_functions.dll
+C_SRC         = $(PROJECT_DIR)/tb/base_classes/c_functions.c
 
 # =============================================================================
 # Настройки симуляции (важное)
@@ -24,7 +25,7 @@ DUT_MODULE = vending_machine.sv
 TB_PKG     = vm_pkg.sv
 
 # Дополнительный настройки
-VERBOSITY  = UVM_LOW # (UVM_NONE, UVM_LOW, UVM_MEDIUM, UVM_HIGH, UVM_FULL, UVM_DEBUG)
+VERBOSITY  = UVM_HIGH # (UVM_NONE, UVM_LOW, UVM_MEDIUM, UVM_HIGH, UVM_FULL, UVM_DEBUG)
 SEED       = random
 
 # Флаги для компиляции
@@ -32,11 +33,9 @@ DEFINE_C_FUNCTIONS   = +define+USE_C_FUNCTIONS
 DEFINE_REPORT_SERVER = +define+USE_CUSTOM_REPORT_SERVER
 
 # Определения тестов и количества запусков (<имя_теста>:<количество_запусков>)
-TESTS = client_session_with_reset_test:0 \
-		full_client_session_with_no_errors:1 \
-		simple_test:0
-
-
+TESTS = check_alarm_test:1 \
+		test_coin_timeout_refund:0 \
+		client_session_with_emergency_test:0
 
 # =============================================================================
 # Собираем все цели для симуляции
@@ -44,20 +43,19 @@ TESTS = client_session_with_reset_test:0 \
 
 all: compile run_sims 
 
+# Правило для компиляции DLL
+$(C_DLL): $(C_SRC)
+	gcc -shared -o $@ $< -I"$(QUESTASIM_DIR)/include"
 
-# Компиляция
-compile:
+pre_compile:
 	@echo "QUESTASIM_DIR = $(QUESTASIM_DIR)"
 	@echo "UVM_DPI       = $(UVM_DPI)"
 	@echo "------------------------------------"
 	vlib work
 	vmap work work 
 
-	gcc -shared -o \
-		$(PROJECT_DIR)/c_functions.dll \
-		$(PROJECT_DIR)/tb/base_classes/c_functions.c \
-		-I"$(QUESTASIM_DIR)/include"
-
+# Компиляция 
+compile: pre_compile $(C_DLL)
 	vlog -sv +acc -cover f +incdir+$(UVM_SRC) \
 		$(DUT_DIR)/$(DUT_MODULE) \
 		$(TB_DIR)/$(TB_PKG) \
@@ -67,19 +65,15 @@ compile:
 		
 
 # Цели для симуляции
-
 SIM_TARGETS =
 $(foreach test,$(TESTS),$(eval SIM_TARGETS += sim_$(word 1,$(subst :, ,$(test)))))
 $(foreach test,$(TESTS),$(eval sim_$(word 1,$(subst :, ,$(test))): ; @$(MAKE) sim TEST_NAME=$(word 1,$(subst :, ,$(test))) RUN_COUNT=$(word 2,$(subst :, ,$(test)))))
 
-
 run_sims: start_sim $(SIM_TARGETS) merge_coverage
-
 
 start_sim: 
 	@echo. > errors.log
 	
-
 # Основная цель симуляции
 sim:
 	@for /L %%i in (1,1,$(RUN_COUNT)) do @( \
@@ -102,23 +96,22 @@ sim:
 		"+UVM_TESTNAME=$(strip $(TEST_NAME))" \
 		"+RUN_COUNT=%%i" \
 		"+UVM_VERBOSITY=$(strip $(VERBOSITY))" \
-		-sv_lib $(PROJECT_DIR)/c_functions \
+		-sv_lib $(PROJECT_DIR)/work/c_functions \
 		-sv_lib $(UVM_DPI) \
 	)
 	@echo "All simulations completed for $(TEST_NAME)"
-
 
 # Слияние файлов покрытия
 UCDB_FILES = $(wildcard ucdb_*.ucdb)
 merge_coverage:
 	vcover merge -testassociated -verbose -out total.ucdb $(foreach f,$(UCDB_FILES),"$(f)")
 
-
 # Очистка сгенерированных файлов
 clean:
-	del /Q /F transcript *.wlf *.ucdb *.log *.vstf vsim_*.vlf wlf* *.dll *.vcd 2>NUL
-	rmdir /S /Q work 2>NUL
+	del /Q /F transcript *.wlf *.ucdb *.log *.vstf wlf* *.vcd 2>NUL
 
+clean_all: clean
+	rmdir /S /Q work 2>NUL
 
 help:
 	@echo Usage:

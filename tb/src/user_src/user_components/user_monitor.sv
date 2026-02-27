@@ -11,7 +11,7 @@ class user_monitor extends vm_base_monitor #(
 	endfunction: new
 	
 
-	//Начинаем мониторинг, когда клиент вошел в систему
+	// Начинаем мониторинг, когда клиент вошел в систему
 	task wait_for_sampling_event(); 
         @(posedge vif.clk iff vif.id_valid == 1);
     endtask: wait_for_sampling_event

@@ -98,10 +98,11 @@ class vm_scoreboard extends uvm_scoreboard;
 	// Обработка транзакций сигналов прерывания
 	function void write_EMERGENCY (emergency_transaction t);
 		
-		if ((t.tamper_detect || t.jam_detect || t.power_loss) && !emergency_occurred) begin
+		if (t.tamper_detect || t.jam_detect || t.power_loss) begin
 			emergency_occurred = 1;
 			`uvm_info(get_type_name(), "Emergency event detected (tamper/jam/power_loss)", UVM_LOW)
 		end
+		else emergency_occurred = 0;
 
 		if ((t.alarm != 1) && (t.tamper_detect || t.jam_detect || t.power_loss)) begin
 			`uvm_error(get_type_name(), "Alarm is not set to 1")
@@ -125,6 +126,7 @@ class vm_scoreboard extends uvm_scoreboard;
 			if(tr.no_change != 0)
 				`uvm_error(get_type_name(), $sformatf("Error occurred but no_change = %b", tr.no_change))
 
+			`uvm_info(get_type_name(), `END_TEST_STR, UVM_LOW)
 			return;
 		end
 
@@ -158,7 +160,7 @@ class vm_scoreboard extends uvm_scoreboard;
 		// Расчет ожидаемой транзакции
 		exp_tr = checker_h.calculate_exp_transaction(tr, client_points_db[tr.client_id]);
 		
-		`uvm_info(get_type_name(), `EXP_TR_STR(exp_tr), UVM_LOW)
+		`uvm_info(get_type_name(), `EXP_TR_STR(exp_tr), UVM_MEDIUM)
 		
 
 		// Сравнение транзакций

@@ -11,11 +11,15 @@ class emergency_monitor extends vm_base_monitor #(
 		super.new(name, parent);
 	endfunction: new
 
-    
 
 
     task wait_for_sampling_event(); 
-        @(posedge vif.clk iff (vif.tamper_detect || vif.jam_detect || vif.power_loss));
+        fork
+            @(edge vif.tamper_detect);
+            @(edge vif.jam_detect);
+            @(edge vif.power_loss);
+        join_any
+        @(posedge vif.clk);
     endtask: wait_for_sampling_event
     
     task collect_transaction_data (emergency_transaction tr);

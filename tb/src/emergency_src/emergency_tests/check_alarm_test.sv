@@ -24,6 +24,20 @@ class check_alarm_test extends sequence_base_test #(
 
         env_config_h.has_register_env    = 0;  
     endfunction: adjust_env_config
+
+    function void create_callbacks(); 
+        emergency_driver driver_h;
+        delay_after_alarm_test_cb cb;
+
+        if (!uvm_config_db #(emergency_driver)::get(this, "", "emergency_driver", driver_h))
+            `uvm_fatal(get_type_name(), "Failed to get emergency driver from config_db")
+        
+        
+        cb = delay_after_alarm_test_cb::type_id::create("cb");
+
+        uvm_callbacks#(emergency_driver, emergency_driver_cb)::add(driver_h, cb);
+
+	endfunction: create_callbacks
     
 endclass
 `endif

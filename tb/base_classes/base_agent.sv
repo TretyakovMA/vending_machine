@@ -79,9 +79,12 @@ virtual class base_agent #(
 			sequencer_name = set_sequencer_name();
 			// Проверка, что имя секвенсера указано
 			if (sequencer_name == "") 
-                `uvm_fatal(get_type_name(), "Sequencer name not provided via set_sequencer_name()");
+                `uvm_warning(get_type_name(), "Sequencer name not provided via set_sequencer_name()");
 			// Запись секвенсера в uvm_config_db
 			uvm_config_db #(SEQUENCER_TYPE)::set(null, "*", sequencer_name, sequencer_h);
+
+			// Запись драйвера в uvm_config_db
+			uvm_config_db #(DRIVER_TYPE)::set(null, "*", driver_h.get_type_name(), driver_h);
 		end 
 		
 		// Монитор создается, если так указано в конфигурации

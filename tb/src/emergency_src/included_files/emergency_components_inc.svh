@@ -1,3 +1,6 @@
+`include "../emergency_callbacks/emergency_driver_cb.sv"
+`include "../emergency_callbacks/delay_after_alarm_test_cb.sv"
+
 `include "../emergency_components/emergency_transaction.sv"
 `include "../emergency_components/emergency_driver.sv"
 

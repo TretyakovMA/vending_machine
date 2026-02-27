@@ -27,8 +27,8 @@ class emergency_transaction extends uvm_sequence_item;
 
 
     constraint valid_time_delay {
-        time_delay > 0;
-        time_delay < 100;
+        time_delay > 10;
+        time_delay < 200;
     }
 
     constraint at_least_one_error {

@@ -8,3 +8,5 @@
 `include "../user_tests/test_random_client_with_no_change.sv"
 `include "../user_tests/full_client_session_with_no_errors.sv"
 `include "../user_tests/test_lots_of_purchases.sv"
+
+`include "../user_tests/test_coin_timeout_refund.sv"

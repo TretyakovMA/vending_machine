@@ -57,7 +57,7 @@ virtual class vm_base_monitor #(
     protected virtual task _wait_for_reset_deassert_(); 
         // Все мониторы, кроме reset_monitor ждут снятия rst_n
         if(get_type_name() != "reset_monitor")
-		    wait (vif.rst_n == 1);
+            @(posedge vif.clk iff vif.rst_n == 1);
     endtask: _wait_for_reset_deassert_
 
 endclass

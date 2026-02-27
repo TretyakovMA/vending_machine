@@ -25,7 +25,7 @@ class activate_emergency_signals_seq extends uvm_sequence #(emergency_transactio
 				#(tr.time_delay);
 				-> emergency_event;
 				uvm_config_db #(bit)::set(null, "*", "emergency_flag", 1);
-				`uvm_info(get_type_name(), "Emergency event done", UVM_LOW)
+				`uvm_info(get_type_name(), "Emergency event done", UVM_HIGH)
 			end
 		join_none
 

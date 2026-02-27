@@ -60,8 +60,8 @@ class user_transaction extends uvm_sequence_item;
 		string line;
 
 		string s = "-------------------- Input -------------------\n";
-		s = {s, $sformatf("  Client_id = %0d\n", client_id)};
-		s = {s, $sformatf("  item_num  = %0d\n", item_num)};
+		s = {s, $sformatf("  Client_id     = %0d\n", client_id)};
+		s = {s, $sformatf("  item_num      = %0d\n", item_num)};
 		s = {s, "  Coins in:\n"};
 		
 		size = coin_in_q.size();
@@ -85,7 +85,8 @@ class user_transaction extends uvm_sequence_item;
 		s = {s, $sformatf("  change_out    = %0d\n", change_out)};
 		s = {s, $sformatf("  no_change     = %b\n", no_change)};
 		s = {s, $sformatf("  client_points = %0d\n", client_points)};
-		s = {s, $sformatf("  item_empty    = %b", item_empty)};
+		s = {s, $sformatf("  item_empty    = %b\n", item_empty)};
+		s = {s, "----------------------------------------------"};
 		
 		return s;
 	endfunction: convert2string
@@ -132,7 +133,7 @@ class user_transaction extends uvm_sequence_item;
 		
 		if (this.item_out != compared_tr.item_out) begin
 			same = 0;
-			`uvm_error(get_type_name(), $sformatf("Item issuance error: item_out = %b, expected = %b", compared_tr.item_out, this.item_out))
+			`uvm_error(get_type_name(), {"Item issuance error:\nGet transaction:\n", compared_tr.convert2string(), "\nExpected:\n", this.convert2string()})
 		end
 		else begin
 			`uvm_info(get_type_name(), "Item issued correctly", UVM_HIGH)
@@ -140,7 +141,7 @@ class user_transaction extends uvm_sequence_item;
 		
 		if (this.change_out != compared_tr.change_out) begin
 			same = 0;
-			`uvm_error(get_type_name(), $sformatf("Change issued error: change_out = %0d, expected = %0d", compared_tr.change_out, this.change_out))
+			`uvm_error(get_type_name(), {"Change issued error:\nGet transaction:\n", compared_tr.convert2string(), "\nExpected:\n", this.convert2string()})
 		end
 		else begin
 			`uvm_info(get_type_name(), "Change issued correctly", UVM_HIGH)
@@ -148,7 +149,7 @@ class user_transaction extends uvm_sequence_item;
 		
 		if (this.no_change != compared_tr.no_change) begin
 			same = 0;
-			`uvm_error(get_type_name(), $sformatf("No_change signal error: no_change = %b, expected = %b", compared_tr.no_change, this.no_change))
+			`uvm_error(get_type_name(), {"No_change signal error:\nGet transaction:\n", compared_tr.convert2string(), "\nExpected:\n", this.convert2string()})
 		end
 		else begin
 			`uvm_info(get_type_name(), "No_change signal correctly", UVM_HIGH)
@@ -156,7 +157,7 @@ class user_transaction extends uvm_sequence_item;
 		
 		if (this.client_points != compared_tr.client_points) begin
 			same = 0;
-			`uvm_error(get_type_name(), $sformatf("Points accrual error: client_points = %0d, expected = %0d", compared_tr.client_points, this.client_points))
+			`uvm_error(get_type_name(), {"Points accrual error:\nGet transaction:\n", compared_tr.convert2string(), "\nExpected:\n", this.convert2string()})
 		end
 		else begin
 			`uvm_info(get_type_name(), "Points accrued correctly", UVM_HIGH)

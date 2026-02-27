@@ -35,10 +35,20 @@ virtual class sequence_base_test #(
         return "";  
     endfunction: get_sequencer_name
 
+
+    // Функция для создания callback
+	// Настраивается в производных тестах
+	virtual function void create_callbacks(); 
+
+	endfunction: create_callbacks
+
     
     
     virtual function void connect_phase(uvm_phase phase);
 		super.connect_phase(phase);
+
+        // Создание callback
+		create_callbacks();
         
         // Если последовательность не виртуальная
         if (!IS_VIRTUAL_SEQUENCE) begin

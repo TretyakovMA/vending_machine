@@ -1,11 +1,11 @@
-`ifndef RESET_SEQ
-`define RESET_SEQ
-class reset_seq extends uvm_sequence #(reset_transaction);
-	`uvm_object_utils(reset_seq)
+`ifndef ACTIVATE_RESET_SEQ
+`define ACTIVATE_RESET_SEQ
+class activate_reset_seq extends uvm_sequence #(reset_transaction);
+	`uvm_object_utils(activate_reset_seq)
 
 	reset_transaction tr;
     
-	function new(string name = "reset_seq");
+	function new(string name = "activate_reset_seq");
 		super.new(name);
 	endfunction
     

@@ -12,12 +12,16 @@ class reset_transaction extends uvm_sequence_item;
         duration < 30;
     }  
 
+    constraint valid_time_delay { 
+        time_delay < 1000;
+    }
+
     function new(string name = "reset_transaction");
         super.new(name);
     endfunction: new
     
     function string convert2string();
-        return $sformatf("time_delay = %0t, duration = %0t", time_delay, duration);
+        return $sformatf("rst_n = %b", rst_n);
     endfunction: convert2string
 endclass
 `endif
