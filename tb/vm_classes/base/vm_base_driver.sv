@@ -15,8 +15,8 @@
 //   2. Конкретные драйверы: admin_driver, emergency_driver, register_driver,
 //      user_driver, reset_driver <- vm_base_driver.
 //      Наследники должны реализовать только две чистые виртуальные задачи:
-//          pure virtual task reset();
-//          pure virtual task drive_transaction(TRANSACTION_TYPE tr);
+//          pure virtual task _reset_();
+//          pure virtual task _drive_transaction_(TRANSACTION_TYPE tr);
 //      Производные классы фокусируются на логике сброса интерфейса и преобразовании
 //      транзакций в сигналы. Они не должны переопределять _wait_for_reset_* задачи.
 //==============================================================================
@@ -35,16 +35,9 @@ virtual class vm_base_driver #(
 
     //======================== Методы обработки интерфейса ======================
     
-    pure virtual task drive_transaction (TRANSACTION_TYPE tr);
-    pure virtual task reset(); 
+    pure virtual task _drive_transaction_ (TRANSACTION_TYPE tr);
+    pure virtual task _reset_ (); // Почему это работает?
 
-    task _reset_();
-        reset();
-    endtask: _reset_
-
-    task _drive_transaction_ (TRANSACTION_TYPE tr);
-        drive_transaction(tr);
-    endtask: _drive_transaction_
 
 
 

@@ -35,9 +35,7 @@ class vm_scoreboard extends uvm_scoreboard;
 	// Флаг того, что в тесте используется регистровая модель (устанавливается в env)
 	bit                      has_reg_model; 
 
-	// Переменные для изменения количества товаров после покупки
-	local int                item_count;
-	local int                item_id;
+	
 
 
 	// Функция сброса БД очков клиентов
@@ -112,7 +110,13 @@ class vm_scoreboard extends uvm_scoreboard;
 	// Обработка пользовательских транзакций
 	function void write_USER (user_transaction t);
 
+		// Переменные для изменения количества товаров после покупки
+		int item_count;
+		int item_id;
+
 		tr = t.clone_me(); //Работаем с копией транзакции
+
+		//============================ Проверка на ошибки ==================================
 
 		// Если за время пользовательской сессии появлялся
 		// сигнал сбоя, то устройство должно перестать работать
@@ -148,6 +152,18 @@ class vm_scoreboard extends uvm_scoreboard;
 			return;
 		end
 
+		// Если завершилось время ожидания, то все монеты должны вернуться в виде сдачи
+		if(tr.idle_timeout) begin
+			int balance = checker_h.calculate_balance(tr.coin_in_q, tr.currency_type_q);
+			`uvm_info(get_type_name(), "Idle timeout detected", UVM_LOW)
+
+			if (tr.change_out != balance) begin
+				`uvm_error(get_type_name(), $sformatf("Change_out after idle_timeout = %0d; expected = %0d", tr.change_out, balance))
+			end
+
+			`uvm_info(get_type_name(), `END_TEST_STR, UVM_LOW)
+			return;
+		end
 
 
 		//==================  Нормальная пользовательская сессия  ==================

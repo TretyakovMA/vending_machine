@@ -3,7 +3,8 @@
 class user_checker extends uvm_component;
     `uvm_component_utils(user_checker)
 
-    vm_reg_block reg_block_h;  //информация о товарах хранится в регистрах vend_item
+	// Информация о товарах хранится в регистрах vend_item
+    vm_reg_block reg_block_h;  
 
     function new(string name, uvm_component parent);
 		super.new(name, parent);
@@ -11,15 +12,15 @@ class user_checker extends uvm_component;
 
 
 
-    //Вспомогательные функции для расчета ожидаемой транзакции
-	local function shortreal convert_to_rub(bit [5:0] coin, currency_type_t currency);
+    // Вспомогательные функции для расчета ожидаемой транзакции
+	function shortreal convert_to_rub(bit [5:0] coin, currency_type_t currency);
 		bit [1:0] exchange_rate;
 		shortreal res;
 
-		//exchange_rate берется из регистра vend_cfg
+		// exchange_rate берется из регистра vend_cfg
 		exchange_rate = reg_block_h.vend_cfg.exchange_rate.get_mirrored_value();
 
-		//перевод в рубли
+		// Перевод в рубли
 		case (currency)
 			RUB: res = shortreal'(coin);
 			USD: res = shortreal'(coin) * exchange_rate;
@@ -29,31 +30,31 @@ class user_checker extends uvm_component;
 		return res;
 	endfunction: convert_to_rub
 
-	local function shortreal get_item_price(bit[4:0] item_num, bit [8:0] client_id);
+	function shortreal get_item_price(bit[4:0] item_num, bit [8:0] client_id);
 		int           discount;
 		shortreal     price;
 		bit           vip;
 		bit [7:0]     item_discount;
 
-		//price и item_discount берутся из регистров vend_item
+		// price и item_discount берутся из регистров vend_item
 		price         = reg_block_h.vend_item[item_num].item_price.get_mirrored_value();
 		item_discount = reg_block_h.vend_item[item_num].item_discount.get_mirrored_value();
         `uvm_info(get_type_name(), $sformatf("Base price: %0f, item discount: %0f", price, item_discount), UVM_FULL)
-		//Расчет скидки
+		// Расчет скидки
 		discount = (client_id % 3) * 10;
 		vip      = (client_id % 10 == 0);
 
 		if (vip)           discount += 10;
 		if (discount > 30) discount  = 30;
 
-		//Расчет итоговой цены с учетом скидок
+		// Расчет итоговой цены с учетом скидок
 		price   -= item_discount;
 		price   *= (100 - discount) / 100.0;
 
 		return price;
 	endfunction: get_item_price
 
-	local function shortreal calculate_balance(bit [5:0] q[$], currency_type_t cur_q[$]);
+	function shortreal calculate_balance(bit [5:0] q[$], currency_type_t cur_q[$]);
 		shortreal balance = 0;
 		
 		foreach(q[i]) begin
@@ -65,7 +66,7 @@ class user_checker extends uvm_component;
 
 
 
-	//Функция расчета ожидаемой транзакции
+	// Функция расчета ожидаемой транзакции
 	function user_transaction calculate_exp_transaction(
         user_transaction tr, 
         int client_points = 0
@@ -76,13 +77,13 @@ class user_checker extends uvm_component;
 
 		calc_tr               = tr.clone_me();
 		
-		//Расчет баланса и цены товара
+		// Расчет баланса и цены товара
 		item_price            = get_item_price(calc_tr.item_num, calc_tr.client_id);
 		balance               = calculate_balance(calc_tr.coin_in_q, calc_tr.currency_type_q);
 
         `uvm_info(get_type_name(), $sformatf("Calculated balance: %0f, item price: %0f", balance, item_price), UVM_FULL)
 
-		//Заполнение полей ожидаемой транзакции
+		// Заполнение полей ожидаемой транзакции
 		calc_tr.item_out      = (1 << calc_tr.item_num);
 		calc_tr.change_out    = $ceil(balance - item_price); //Формат округления пока не определен в спецификации
 		calc_tr.no_change     = ($ceil(balance - item_price) == 0) ? 1 : 0;

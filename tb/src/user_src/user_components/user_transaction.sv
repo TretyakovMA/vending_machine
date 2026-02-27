@@ -22,6 +22,7 @@ class user_transaction extends uvm_sequence_item;
 
 	bit [`NUM_ITEMS-1:0]  item_empty;
 	
+	bit                   idle_timeout;
 	
 	
 	//================================ DO-HOOKS ===================================
@@ -112,6 +113,8 @@ class user_transaction extends uvm_sequence_item;
 		this.client_points   = copied_tr.client_points;
 		
 		this.item_empty      = copied_tr.item_empty;
+
+		this.idle_timeout    = copied_tr.idle_timeout;
 	endfunction: do_copy
 	
 	function user_transaction clone_me();

@@ -16,13 +16,13 @@ class emergency_driver extends vm_base_driver #(
     `uvm_register_cb(emergency_driver, emergency_driver_cb)
 
 
-    task reset();
+    task _reset_();
 		vif.tamper_detect  <= 0;
 		vif.jam_detect     <= 0;
 		vif.power_loss     <= 0;
-	endtask: reset
+	endtask: _reset_
 
-    task drive_transaction (emergency_transaction tr);
+    task _drive_transaction_ (emergency_transaction tr);
         #(tr.time_delay);
 
         vif.tamper_detect  <= tr.tamper_detect;
@@ -31,7 +31,7 @@ class emergency_driver extends vm_base_driver #(
         `uvm_info(get_type_name(), {"Send transaction: ", tr.convert2string()}, UVM_LOW)
 
         `uvm_do_callbacks(emergency_driver, emergency_driver_cb, post_drive(vif))
-    endtask: drive_transaction
+    endtask: _drive_transaction_
 
 endclass
 `endif

@@ -13,22 +13,22 @@ class emergency_monitor extends vm_base_monitor #(
 
 
 
-    task wait_for_sampling_event(); 
+    task _wait_for_sampling_event_(); 
         fork
             @(edge vif.tamper_detect);
             @(edge vif.jam_detect);
             @(edge vif.power_loss);
         join_any
         @(posedge vif.clk);
-    endtask: wait_for_sampling_event
+    endtask: _wait_for_sampling_event_
     
-    task collect_transaction_data (emergency_transaction tr);
+    task _collect_transaction_data_ (emergency_transaction tr);
         tr.tamper_detect = vif.tamper_detect;
         tr.jam_detect    = vif.jam_detect;
         tr.power_loss    = vif.power_loss;
         @(posedge vif.clk);
         tr.alarm         = vif.alarm;
-    endtask: collect_transaction_data
+    endtask: _collect_transaction_data_
 endclass
 `endif
 	

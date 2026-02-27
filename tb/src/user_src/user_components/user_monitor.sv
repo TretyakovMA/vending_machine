@@ -6,17 +6,29 @@ class user_monitor extends vm_base_monitor #(
 );
 	`uvm_component_utils(user_monitor)
 
+	vm_reg_block reg_block_h; 
+
 	function new(string name, uvm_component parent);
 		super.new(name, parent);
 	endfunction: new
+
+	function void connect_phase(uvm_phase phase);
+		super.connect_phase(phase);
+		
+		if(!uvm_config_db #(vm_reg_block)::get(this, "", "reg_block", reg_block_h))
+			`uvm_fatal(get_type_name(), "Failed to get reg_block")
+			
+	endfunction: connect_phase
 	
 
 	// Начинаем мониторинг, когда клиент вошел в систему
-	task wait_for_sampling_event(); 
+	task _wait_for_sampling_event_(); 
         @(posedge vif.clk iff vif.id_valid == 1);
-    endtask: wait_for_sampling_event
+    endtask: _wait_for_sampling_event_
 
-	task collect_transaction_data (user_transaction tr);
+
+	// Основная задача для сбора данных в транзакцию
+	task collect_data(user_transaction tr);
 		// Сначала фиксируем ID клиента
 		tr.client_id = vif.client_id; 
 		`uvm_info(get_type_name(), $sformatf("Client %0d authorized", vif.client_id), UVM_HIGH)
@@ -24,7 +36,8 @@ class user_monitor extends vm_base_monitor #(
 		// Ждем сигнала coin_insert
 		@(posedge vif.clk iff vif.coin_insert);
 		
-		repeat(1) @(posedge vif.clk);
+		// Ждем следующий такт
+		@(posedge vif.clk);
 		
 		// Фиксируем монеты, пока не выбран товар
 		while (vif.item_select == 0) begin 
@@ -66,8 +79,39 @@ class user_monitor extends vm_base_monitor #(
 		tr.change_out    = vif.change_out;     
 		tr.no_change     = vif.no_change;
 		tr.client_points = vif.client_points;
+	endtask: collect_data
 
-	endtask: collect_transaction_data
+
+
+	// Задача для отслеживания таймаута на ожидание
+	task timeout(user_transaction tr);
+		bit[11:0] idle_timeout = reg_block_h.vend_cfg.idle_timeout.get();
+		repeat(idle_timeout) @(posedge vif.clk);
+		
+		`uvm_info(get_type_name(), "Idle timeout", UVM_LOW)
+		tr.idle_timeout = 1;
+		
+		// В спецификации точно не указано, когда вернется сдача
+		// я жду 5 тактов, если за это время была сдача, то она зафиксируется
+		fork
+			wait(vif.change_out);
+			repeat(5) @(posedge vif.clk);
+		join_any
+		tr.change_out   = vif.change_out;
+
+	endtask: timeout
+
+
+
+	task _collect_transaction_data_ (user_transaction tr);
+
+		fork
+			timeout(tr);
+			collect_data(tr);
+		join_any
+		
+		disable fork;
+	endtask: _collect_transaction_data_
 	
 endclass
 `endif

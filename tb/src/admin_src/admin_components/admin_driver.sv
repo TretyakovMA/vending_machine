@@ -13,18 +13,18 @@ class admin_driver extends vm_base_driver #(
 
 	
 	
-	task reset();
+	task _reset_();
 		vif.admin_mode     <= 0;
 		vif.admin_password <= 0;
-	endtask: reset
+	endtask: _reset_
 	
-	task drive_transaction(admin_transaction tr);
+	task _drive_transaction_(admin_transaction tr);
 		vif.admin_mode     <= tr.admin_mode;
 		vif.admin_password <= tr.admin_password;
 		`uvm_info(get_type_name(), {"Send transaction: ", tr.convert2string()}, UVM_HIGH)
 		
 		@(posedge vif.clk);
-	endtask: drive_transaction
+	endtask: _drive_transaction_
 	
 endclass
 `endif

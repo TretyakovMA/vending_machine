@@ -35,16 +35,8 @@ virtual class vm_base_monitor #(
 
     //======================== Методы обработки интерфейса ======================
     
-    pure virtual task collect_transaction_data(TRANSACTION_TYPE tr);
-    pure virtual task wait_for_sampling_event(); 
-
-    task _wait_for_sampling_event_(); 
-		wait_for_sampling_event(); 
-	endtask: _wait_for_sampling_event_
-
-    task _collect_transaction_data_(TRANSACTION_TYPE tr); 
-        collect_transaction_data(tr);
-    endtask: _collect_transaction_data_
+    pure virtual task _wait_for_sampling_event_(); 
+    pure virtual task _collect_transaction_data_(TRANSACTION_TYPE tr);
 
 
 

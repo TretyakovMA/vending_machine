@@ -14,7 +14,7 @@ class user_driver extends vm_base_driver #(
 
 	`uvm_register_cb(user_driver, user_driver_cb)
 
-	task reset();
+	task _reset_();
 		vif.id_valid      <= 0;
 		vif.client_id     <= 0;
 		vif.coin_in       <= 0;
@@ -22,10 +22,10 @@ class user_driver extends vm_base_driver #(
 		vif.coin_insert   <= 0;
 		vif.item_select   <= 0;
 		vif.confirm       <= 0;
-	endtask: reset
+	endtask: _reset_
 	
 	
-	task drive_transaction(user_transaction tr);
+	task _drive_transaction_(user_transaction tr);
 		// Сначала клиент совершает вход
 		vif.id_valid    <= 1; 
 		vif.client_id   <= tr.client_id;
@@ -56,7 +56,8 @@ class user_driver extends vm_base_driver #(
 		vif.item_select   <= (1 << tr.item_num);  
 		@(posedge vif.clk);
 		
-		// Через такт поднимается сигнал подтверждения
+		// Через такт (с возможной задержкой) поднимается сигнал подтверждения
+		`uvm_do_callbacks(user_driver, user_driver_cb, delay_before_confirm(vif))
 		vif.confirm       <= 1;                    
 		@(posedge vif.clk);
 
@@ -66,9 +67,11 @@ class user_driver extends vm_base_driver #(
 		`uvm_info(get_type_name(), {"Send transaction:\n", tr.convert2string()}, UVM_HIGH)
 		repeat(4) @(posedge vif.clk); 
 		
-		reset(); //На всякий случай все сигналы сбрасываются
+		// Ожидание следующего клиента
+		_reset_(); 
 		@(posedge vif.clk);
-	endtask: drive_transaction
+		`uvm_do_callbacks(user_driver, user_driver_cb, delay_before_next_client(vif))
+	endtask: _drive_transaction_
 		
 endclass
 `endif

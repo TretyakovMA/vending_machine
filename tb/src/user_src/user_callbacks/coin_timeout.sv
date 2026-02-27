@@ -10,8 +10,7 @@ class coin_timeout extends user_driver_cb;
 	endfunction: new
 
     task delay_in_coin_deposit(virtual user_interface vif);
-        if($urandom_range(1))
-            @(posedge vif.clk);
+        repeat($urandom_range(150)) @(posedge vif.clk);
     endtask: delay_in_coin_deposit
 
 endclass

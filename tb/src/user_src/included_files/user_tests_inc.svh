@@ -10,3 +10,4 @@
 `include "../user_tests/test_lots_of_purchases.sv"
 
 `include "../user_tests/test_coin_timeout_refund.sv"
+`include "../user_tests/test_confirm_timeout_refund.sv"

@@ -14,6 +14,7 @@ class void_driver #(
 
     function new(string name, uvm_component parent);
         super.new(name, parent);
+        `uvm_fatal(get_type_name(), "void_driver should not be created")
     endfunction
 
     INTERFACE_TYPE    vif;
@@ -30,19 +31,22 @@ class void_monitor #(
 
     function new(string name, uvm_component parent);
         super.new(name, parent);
+        `uvm_fatal(get_type_name(), "void_monitor should not be created")
     endfunction
 
     uvm_analysis_port #(TRANSACTION_TYPE) ap;
     INTERFACE_TYPE    vif;
-    
     bit               reset_sensitive;
 endclass
+
+
 
 class void_sequence extends uvm_sequence #(uvm_sequence_item);
     `uvm_object_utils(void_sequence)
 
     function new(string name = "void_sequence");
         super.new(name);
+        `uvm_fatal(get_type_name(), "void_sequence should not be created")
     endfunction
 endclass
 `endif

@@ -13,13 +13,13 @@ class reset_monitor extends vm_base_monitor #(
 
     
 
-    task collect_transaction_data(reset_transaction tr);
-        tr.rst_n = vif.rst_n;
-    endtask: collect_transaction_data
-
-    task wait_for_sampling_event(); 
+    task _wait_for_sampling_event_(); 
 		@(negedge vif.rst_n);
-	endtask: wait_for_sampling_event
+	endtask: _wait_for_sampling_event_
+
+    task _collect_transaction_data_(reset_transaction tr);
+        tr.rst_n = vif.rst_n;
+    endtask: _collect_transaction_data_
 
 endclass
 `endif

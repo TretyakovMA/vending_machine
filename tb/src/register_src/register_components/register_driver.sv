@@ -13,13 +13,13 @@ class register_driver extends vm_base_driver #(
 
 	
 
-	task reset();
+	task _reset_();
 		vif.regs_data_in <= 0;
 		vif.regs_addr    <= 0;
 		vif.regs_we      <= 0;
-	endtask: reset
+	endtask: _reset_
 	
-	task drive_transaction (register_transaction tr);
+	task _drive_transaction_ (register_transaction tr);
 		if (tr.regs_we)
 			write(tr);
 		else
@@ -27,8 +27,8 @@ class register_driver extends vm_base_driver #(
 
 		`uvm_info(get_type_name(), {"Send transaction: ", tr.convert2string()}, UVM_HIGH)
 		
-		reset();
-	endtask: drive_transaction
+		_reset_();
+	endtask: _drive_transaction_
 
 	local task read(register_transaction tr);
 		vif.regs_addr    <= tr.regs_addr;

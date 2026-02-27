@@ -33,9 +33,9 @@ DEFINE_C_FUNCTIONS   = +define+USE_C_FUNCTIONS
 DEFINE_REPORT_SERVER = +define+USE_CUSTOM_REPORT_SERVER
 
 # Определения тестов и количества запусков (<имя_теста>:<количество_запусков>)
-TESTS = check_alarm_test:1 \
+TESTS = test_confirm_timeout_refund:1 \
 		test_coin_timeout_refund:0 \
-		client_session_with_emergency_test:0
+		full_client_session_with_no_errors:0
 
 # =============================================================================
 # Собираем все цели для симуляции

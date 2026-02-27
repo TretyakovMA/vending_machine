@@ -14,16 +14,16 @@ class register_monitor extends vm_base_monitor #(
 
 
 
-	task wait_for_sampling_event(); 
+	task _wait_for_sampling_event_(); 
         @(posedge vif.clk iff vif.regs_data_out != 32'hdead_beef);
-    endtask: wait_for_sampling_event
+    endtask: _wait_for_sampling_event_
 
-	task collect_transaction_data (register_transaction tr);
+	task _collect_transaction_data_ (register_transaction tr);
 		tr.regs_we       = vif.regs_we;
 		tr.regs_addr     = vif.regs_addr;
 		tr.regs_data_in  = vif.regs_data_in;
 		tr.regs_data_out = vif.regs_data_out;
-	endtask: collect_transaction_data
+	endtask: _collect_transaction_data_
 
 endclass
 `endif

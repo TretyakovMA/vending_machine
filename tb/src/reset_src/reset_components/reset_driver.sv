@@ -13,18 +13,18 @@ class reset_driver extends vm_base_driver #(
 
 
 
-    task reset();
+    task _reset_();
         vif.rst_n <= 0;
-    endtask: reset
+    endtask: _reset_
 
-    task drive_transaction(reset_transaction tr);
+    task _drive_transaction_(reset_transaction tr);
         
         #(tr.time_delay);
         vif.rst_n <= 0;
         #(tr.duration);
         vif.rst_n <= 1;
         
-    endtask: drive_transaction
+    endtask: _drive_transaction_
 
 endclass
 `endif
