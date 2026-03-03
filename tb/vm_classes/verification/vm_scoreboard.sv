@@ -3,6 +3,8 @@
 
 `uvm_analysis_imp_decl(_RESET)
 `uvm_analysis_imp_decl(_USER)
+`uvm_analysis_imp_decl(_ADMIN)
+`uvm_analysis_imp_decl(_REGISTER)
 `uvm_analysis_imp_decl(_EMERGENCY)
 
 class vm_scoreboard extends uvm_scoreboard;
@@ -14,6 +16,8 @@ class vm_scoreboard extends uvm_scoreboard;
 
 	uvm_analysis_imp_RESET #(reset_transaction, vm_scoreboard) reset_imp;
 	uvm_analysis_imp_USER #(user_transaction, vm_scoreboard) user_imp;
+	uvm_analysis_imp_ADMIN #(admin_transaction, vm_scoreboard) admin_imp;
+	uvm_analysis_imp_REGISTER #(register_transaction, vm_scoreboard) register_imp;
 	uvm_analysis_imp_EMERGENCY #(emergency_transaction, vm_scoreboard) emergency_imp;
 
 	// Класс для проверки пользовательской транзакции
@@ -35,7 +39,10 @@ class vm_scoreboard extends uvm_scoreboard;
 	// Флаг того, что в тесте используется регистровая модель (устанавливается в env)
 	bit                      has_reg_model; 
 
-	
+	// Флаг, что DUT перешел в режим админа
+	bit                      admin_mode;
+	// Флаг, что scoreboard ожидает access_error в следующей register_transaction
+	bit                      expect_access_error_next; // Это не костыль, это нестандартное решение
 
 
 	// Функция сброса БД очков клиентов
@@ -51,6 +58,8 @@ class vm_scoreboard extends uvm_scoreboard;
 		super.build_phase(phase);
 		reset_imp     = new("reset_imp", this);
 		user_imp      = new("user_imp", this);
+		admin_imp     = new("admin_imp", this);
+		register_imp  = new("register_imp", this);
 		emergency_imp = new("emergency_imp", this);
 	endfunction: build_phase
 
@@ -86,11 +95,50 @@ class vm_scoreboard extends uvm_scoreboard;
 	// Реакция на сигнал сброса
 	function void write_RESET (reset_transaction t); 
 		`uvm_info(get_type_name(), "Reset detected", UVM_HIGH)
+
 		reg_block_h.reset();
 		reset_points();
-		emergency_occurred = 0;
+		emergency_occurred       = 0;
+		admin_mode               = 0;
+		expect_access_error_next = 0;
+
 		`uvm_info(get_type_name(), `END_TEST_STR, UVM_LOW)
 	endfunction: write_RESET
+
+
+	// Обнаружение перехода в admin_mode
+	function void write_ADMIN (admin_transaction t); 
+
+		if (t.admin_mode && t.admin_password == reg_block_h.vend_paswd.get()) begin 
+			admin_mode = 1;
+			`uvm_info(get_type_name(), "Admin mode detected", UVM_LOW)
+		end
+		else 
+			admin_mode = 0;
+	endfunction: write_ADMIN
+
+
+	// Проверка появления сигнала access_error при попытке записи без admin_mode
+	function void write_REGISTER (register_transaction t);
+    	// 1. Сначала проверяем результат предыдущей записи (access_error пришёл на этом такте)
+		if (expect_access_error_next) begin
+			if (t.access_error != 1) begin
+				`uvm_error(get_type_name(), "Signal access_error is not set to 1")
+			end
+			expect_access_error_next = 0;
+		end
+
+		// 2. Если сейчас пришла попытка записи — ставим ожидание на следующий такт
+		if (t.regs_we == 1) begin
+			if (admin_mode == 0) begin
+				expect_access_error_next = 1;
+				`uvm_info(get_type_name(), "Write attempt detected → expect access_error=1 on next cycle", UVM_FULL)
+			end 
+			else begin
+				expect_access_error_next = 0;
+			end
+		end
+	endfunction: write_REGISTER
 	
 
 	// Обработка транзакций сигналов прерывания

@@ -4,6 +4,10 @@ class vend_paswd_reg extends uvm_reg;
 	`uvm_object_utils(vend_paswd_reg)
 	
 	rand uvm_reg_field paswd;
+
+	constraint valid_paswd {
+        paswd.value[31:8] > 0;
+    }
 	
 	function new(string name = "vend_paswd_reg");
 		super.new(.name( name ), .n_bits(32), .has_coverage(UVM_NO_COVERAGE));

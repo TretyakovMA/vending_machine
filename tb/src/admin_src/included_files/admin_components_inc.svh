@@ -6,4 +6,5 @@ typedef uvm_sequencer #(admin_transaction) admin_sequencer;
 `endif
 
 `include "../admin_components/admin_driver.sv"
+`include "../admin_components/admin_monitor.sv"
 `include "../admin_components/admin_agent.sv"

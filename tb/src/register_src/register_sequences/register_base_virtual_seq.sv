@@ -19,6 +19,8 @@ class register_base_virtual_seq #(
 
     bit [31:0]           admin_password;
 
+    bit                  admin_mode = 1;
+
 	
 	task body();
 		// Получение секвенсеров
@@ -35,13 +37,25 @@ class register_base_virtual_seq #(
 
         // Получение пароля администратора из регистра и его установка
         reg_seq_h.get_registers();
-        admin_password = reg_seq_h.reg_block_h.vend_paswd.get_mirrored_value();
+        admin_mode = reg_seq_h.is_need_admin_mode();
+
+        if(reg_seq_h.is_correct_admin_password()) begin
+            admin_password = reg_seq_h.reg_block_h.vend_paswd.get_mirrored_value();
+        end
+        else begin
+            admin_password = $urandom_range(32'hFFFF_FFFF);
+        end
         admin_mode_on_h.admin_password = admin_password;
 
         // Начало выполнения последовательностей
-        admin_mode_on_h.start(admin_sequencer_h);//Сначала происходит переход в режим администратора
-        reg_seq_h.start(register_sequencer_h);//Выполняется основная последовательность
-		admin_mode_off_h.start(admin_sequencer_h);//В конце происходит выход из режима администратора
+        if(admin_mode) begin
+            admin_mode_on_h.start(admin_sequencer_h);//Сначала происходит переход в режим администратора
+            reg_seq_h.start(register_sequencer_h);//Выполняется основная последовательность
+		    admin_mode_off_h.start(admin_sequencer_h);//В конце происходит выход из режима администратора
+        end
+        else begin
+            reg_seq_h.start(register_sequencer_h);//Выполняется только регистровая послесловательность
+        end
 	endtask
 endclass
 `endif

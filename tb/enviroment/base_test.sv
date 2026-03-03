@@ -23,7 +23,7 @@ virtual class base_test extends uvm_test;
 	virtual function void adjust_agent_configs();
 		env_config_h.reset_agent_config_h.has_monitor     = 1;
 		env_config_h.user_agent_config_h.has_monitor      = 1;
-		env_config_h.admin_agent_config_h.has_monitor     = 0;
+		env_config_h.admin_agent_config_h.has_monitor     = 1;
 		env_config_h.register_agent_config_h.has_monitor  = 1;
 		env_config_h.emergency_agent_config_h.has_monitor = 1;
 

@@ -10,11 +10,9 @@ class dollars_seq extends user_base_seq;
 
 	function void apply_constraints(user_transaction tr);
         assert(tr.randomize() with{
-			client_id          == 3;
-			coin_in_q.size()   == 1;
-			coin_in_q[0]       == 25;
-			currency_type_q[0] == USD;
-			item_num           == 1; 
+			coin_in_q.size() < 10;
+			foreach(currency_type_q[i])
+				currency_type_q[i] == USD;
 		});
     endfunction: apply_constraints
 

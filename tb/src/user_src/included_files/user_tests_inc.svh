@@ -11,3 +11,6 @@
 
 `include "../user_tests/test_coin_timeout_refund.sv"
 `include "../user_tests/test_confirm_timeout_refund.sv"
+`include "../user_tests/test_invalid_client_id.sv"
+`include "../user_tests/test_invalid_coin_denomination.sv"
+`include "../user_tests/test_insufficient_funds.sv"

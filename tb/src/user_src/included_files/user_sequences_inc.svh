@@ -10,3 +10,6 @@
 `include "../user_sequences/lots_of_purchases_seq.sv"
 
 `include "../user_sequences/buy_one_item_seq.sv"
+`include "../user_sequences/invalid_client_id_seq.sv"
+`include "../user_sequences/invalid_coin_denomination_seq.sv"
+`include "../user_sequences/insufficient_funds_seq.sv"

@@ -136,7 +136,7 @@ class user_transaction extends uvm_sequence_item;
 		
 		if (this.item_out != compared_tr.item_out) begin
 			same = 0;
-			`uvm_error(get_type_name(), {"Item issuance error:\nGet transaction:\n", compared_tr.convert2string(), "\nExpected:\n", this.convert2string()})
+			`uvm_error(get_type_name(), {"Item issuance error:\nGet transaction:\n", compared_tr.convert2string(), "\n\nExpected:\n", this.convert2string()})
 		end
 		else begin
 			`uvm_info(get_type_name(), "Item issued correctly", UVM_HIGH)
@@ -144,7 +144,7 @@ class user_transaction extends uvm_sequence_item;
 		
 		if (this.change_out != compared_tr.change_out) begin
 			same = 0;
-			`uvm_error(get_type_name(), {"Change issued error:\nGet transaction:\n", compared_tr.convert2string(), "\nExpected:\n", this.convert2string()})
+			`uvm_error(get_type_name(), {"Change issued error:\nGet transaction:\n", compared_tr.convert2string(), "\n\nExpected:\n", this.convert2string()})
 		end
 		else begin
 			`uvm_info(get_type_name(), "Change issued correctly", UVM_HIGH)
@@ -152,7 +152,7 @@ class user_transaction extends uvm_sequence_item;
 		
 		if (this.no_change != compared_tr.no_change) begin
 			same = 0;
-			`uvm_error(get_type_name(), {"No_change signal error:\nGet transaction:\n", compared_tr.convert2string(), "\nExpected:\n", this.convert2string()})
+			`uvm_error(get_type_name(), {"No_change signal error:\nGet transaction:\n", compared_tr.convert2string(), "\n\nExpected:\n", this.convert2string()})
 		end
 		else begin
 			`uvm_info(get_type_name(), "No_change signal correctly", UVM_HIGH)
@@ -160,7 +160,7 @@ class user_transaction extends uvm_sequence_item;
 		
 		if (this.client_points != compared_tr.client_points) begin
 			same = 0;
-			`uvm_error(get_type_name(), {"Points accrual error:\nGet transaction:\n", compared_tr.convert2string(), "\nExpected:\n", this.convert2string()})
+			`uvm_error(get_type_name(), {"Points accrual error:\nGet transaction:\n", compared_tr.convert2string(), "\n\nExpected:\n", this.convert2string()})
 		end
 		else begin
 			`uvm_info(get_type_name(), "Points accrued correctly", UVM_HIGH)
@@ -187,6 +187,9 @@ class user_transaction extends uvm_sequence_item;
 			[21:100] :/ 5
 		};
 		currency_type_q.size() == coin_in_q.size();
+	}
+
+	constraint valid_coin_denomination{ 
 		foreach (coin_in_q[i])
 			coin_in_q[i] inside {1, 5, 10, 25, 50};
 	}

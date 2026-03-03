@@ -87,11 +87,17 @@ class env extends uvm_env;
 			emergency_agent_h.ap.connect(scoreboard_h.emergency_imp);
 		
 		if(env_config_h.has_register_agent) begin
+			register_agent_h.ap.connect(scoreboard_h.register_imp);
+
 			register_agent_h.ap.connect(register_env_h.predictor_h.bus_in);
 			register_env_h.reg_block_h.reg_map.set_sequencer(
 				.sequencer(register_agent_h.sequencer_h),
 				.adapter(register_env_h.adapter_h)
 			);
+		end
+
+		if(env_config_h.has_admin_agent) begin
+			admin_agent_h.ap.connect(scoreboard_h.admin_imp);
 		end
 		
 	endfunction: connect_phase

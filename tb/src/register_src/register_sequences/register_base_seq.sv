@@ -5,15 +5,28 @@ class register_base_seq extends uvm_reg_sequence;
 
     vm_reg_block               reg_block_h;
 	protected uvm_status_e     status;
+    protected uvm_reg          registers[$];
+
 	protected uvm_reg_data_t   value;
     protected uvm_reg_data_t   mirrored_value;
-	protected uvm_reg          registers[$];
+    protected uvm_reg_data_t   old_value;
 
     local     bit              registers_received = 0;
+
     
     function new(string name = "base_reg_seq");
         super.new(name);
     endfunction: new
+
+
+
+    function bit is_need_admin_mode();
+        return 1;
+    endfunction: is_need_admin_mode
+
+    function bit is_correct_admin_password();
+        return 1;
+    endfunction: is_correct_admin_password
 
 
     //Функция получения регистров

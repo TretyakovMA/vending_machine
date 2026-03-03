@@ -11,3 +11,6 @@
 `include "../register_sequences/change_all_registers_seq.sv"
 
 `include "../register_sequences/write_registers_with_emergency_seq.sv"
+`include "../register_sequences/invalid_password_change_seq.sv"
+`include "../register_sequences/unauthorized_write_register_seq.sv"
+`include "../register_sequences/write_registers_with_invalid_password_seq.sv"

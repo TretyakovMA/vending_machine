@@ -1,12 +1,16 @@
 `ifndef REGISTER_TRANSACTION
 `define REGISTER_TRANSACTION
 class register_transaction extends uvm_sequence_item;
+
 	`uvm_object_utils(register_transaction)
+	
 	rand bit [31:0]  regs_data_in;
 	rand bit [7:0]   regs_addr;
 	rand bit         regs_we;
 	
 	bit [31:0]       regs_data_out;
+
+	bit              access_error;
 	
 	function new(string name = "register_transaction");
 		super.new(name);
@@ -15,8 +19,8 @@ class register_transaction extends uvm_sequence_item;
 	
 	function string convert2string();
 		string s;
-		s = $sformatf("Regs_data_in = %h; Regs_addr = %h; regs_we = %b Regs_data_out = %h",
-			regs_data_in, regs_addr, regs_we, regs_data_out);
+		s = $sformatf("Regs_data_in = %h; Regs_addr = %h; regs_we = %b; Regs_data_out = %h; access_error = %b",
+			regs_data_in, regs_addr, regs_we, regs_data_out, access_error);
 		return s;
 	endfunction: convert2string
 	
@@ -25,9 +29,9 @@ class register_transaction extends uvm_sequence_item;
 		register_transaction copied_tr;
 		
 		if(rhs == null)
-			`uvm_fatal("REGISTER_TRANSACTION", "Tried to copy from a null pointer")
+			`uvm_fatal(get_type_name(), "Tried to copy from a null pointer")
 		if(!$cast(copied_tr, rhs))
-			`uvm_fatal("REGISTER_TRANSACTION", "Tried to copy wrong type")
+			`uvm_fatal(get_type_name(), "Tried to copy wrong type")
 		
 		super.do_copy(rhs);
 		
@@ -35,6 +39,7 @@ class register_transaction extends uvm_sequence_item;
 		this.regs_addr     = copied_tr.regs_addr;
 		this.regs_we       = copied_tr.regs_we;
 		this.regs_data_out = copied_tr.regs_data_out;
+		this.access_error  = copied_tr.access_error;
 		
 	endfunction: do_copy
 	

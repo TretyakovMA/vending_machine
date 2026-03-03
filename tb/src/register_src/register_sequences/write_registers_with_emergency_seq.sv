@@ -13,7 +13,7 @@ class write_registers_with_emergency_seq extends register_base_seq;
     bit   emergency_occurred        = 0;
     bit   emergency_flag;
 
-    uvm_reg_data_t old_value;
+
 
     task body();
         super.body();
@@ -50,7 +50,7 @@ class write_registers_with_emergency_seq extends register_base_seq;
 
             // Получение старого значения регистра (если был сигнал сбоя)
             if(emergency_occurred) begin
-                registers[i].peek(status, old_value);
+                peek_reg(registers[i], status, old_value);
                 `uvm_info(get_type_name(), $sformatf("Register %s value was %0d", registers[i].get_name(), old_value), UVM_MEDIUM)
             end
 
