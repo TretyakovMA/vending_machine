@@ -1,13 +1,13 @@
-`ifndef TEST_CONFIRM_TIMEOUT_REFUND
-`define TEST_CONFIRM_TIMEOUT_REFUND
+`ifndef CONFIRM_TIMEOUT_REFUND_TEST
+`define CONFIRM_TIMEOUT_REFUND_TEST
 
-class test_confirm_timeout_refund extends user_base_test #(
-	full_client_session_with_no_errors_seq #(1)
+class confirm_timeout_refund_test extends user_base_test #(
+	client_session_without_errors_seq #(1)
 );
 
-	`uvm_component_utils(test_confirm_timeout_refund)
+	`uvm_component_utils(confirm_timeout_refund_test)
 
-	function new(string name = "test_confirm_timeout_refund", uvm_component parent);
+	function new(string name = "confirm_timeout_refund_test", uvm_component parent);
 		super.new(name, parent);
 	endfunction: new
 

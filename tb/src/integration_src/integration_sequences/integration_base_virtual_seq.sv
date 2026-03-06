@@ -76,7 +76,7 @@ class integration_base_virtual_seq #(
 
 
     // Задача body по умолчанию
-    virtual task main_body();
+    virtual task run_body();
         repeat (REPEAT_BODY) fork
 
             if(emergency_seq_created) 
@@ -93,14 +93,14 @@ class integration_base_virtual_seq #(
             end
 
         join
-    endtask: main_body
+    endtask: run_body
 
 
 
     // Основная задача
     virtual task body();
         create_body();
-        main_body();
+        run_body();
     endtask: body
 endclass
 `endif

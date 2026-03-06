@@ -1,12 +1,12 @@
-`ifndef RANDOM_CLIENTS_WITH_NO_CHANGE_SEQ
-`define RANDOM_CLIENTS_WITH_NO_CHANGE_SEQ
-class random_client_with_no_change_seq extends user_base_seq #(
+`ifndef RANDOM_CLIENTS_WITHOUT_CHANGE_SEQ
+`define RANDOM_CLIENTS_WITHOUT_CHANGE_SEQ
+class random_client_without_change_seq extends user_base_seq #(
 	.NUMBER_OF_TESTS   (5    ),
 	.NUMBER_OF_ATTEMPTS(10000)
 );
-	`uvm_object_utils(random_client_with_no_change_seq)
+	`uvm_object_utils(random_client_without_change_seq)
     
-	function new(string name = "random_client_with_no_change_seq");
+	function new(string name = "random_client_without_change_seq");
 		super.new(name);
 	endfunction
 
