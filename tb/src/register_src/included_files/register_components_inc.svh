@@ -1,3 +1,6 @@
+`include "../register_callbacks/register_monitor_cb.sv"
+`include "../register_callbacks/unauthorized_write_cb.sv"
+
 `include "../register_components/register_transaction.sv"
 
 `ifndef REGISTER_SEQUENCER

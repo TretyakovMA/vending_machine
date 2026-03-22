@@ -125,6 +125,9 @@ class vm_scoreboard extends uvm_scoreboard;
 			if (t.access_error != 1) begin
 				`uvm_error(get_type_name(), "Signal access_error is not set to 1")
 			end
+			else begin
+				`uvm_info(get_type_name(), "Signal access_error is correct", UVM_LOW)
+			end
 			expect_access_error_next = 0;
 		end
 

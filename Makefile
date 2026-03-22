@@ -26,16 +26,17 @@ TB_PKG     = vm_pkg.sv
 
 # Дополнительный настройки
 VERBOSITY  = UVM_LOW # (UVM_NONE, UVM_LOW, UVM_MEDIUM, UVM_HIGH, UVM_FULL, UVM_DEBUG)
-SEED       = random
+#SEED       = random
+SEED = 262432446
 
 # Флаги для компиляции
 DEFINE_C_FUNCTIONS   = +define+USE_C_FUNCTIONS
 DEFINE_REPORT_SERVER = +define+USE_CUSTOM_REPORT_SERVER
 
 # Определения тестов и количества запусков (<имя_теста>:<количество_запусков>)
-TESTS = write_registers_with_invalid_password_test:1 \
-		buy_for_dollars_after_change_exchange_rate_test:0 \
-		full_client_session_with_no_errors:0
+TESTS = buy_for_dollars_after_change_exchange_rate_test:0 \
+		check_after_reset_test:0 \
+		unauthorized_write_register_test:1
 
 # =============================================================================
 # Собираем все цели для симуляции

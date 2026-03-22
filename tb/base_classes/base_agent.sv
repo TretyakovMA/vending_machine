@@ -90,6 +90,7 @@ virtual class base_agent #(
 		// Монитор создается, если так указано в конфигурации
 		if (config_h.has_monitor == 1) begin
 			monitor_h   = MONITOR_TYPE::type_id::create("monitor_h", this);
+			uvm_config_db #(MONITOR_TYPE)::set(null, "*", monitor_h.get_type_name(), monitor_h);
 			ap          = new("ap", this);
 		end
 		
