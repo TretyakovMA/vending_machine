@@ -1,6 +1,6 @@
 `ifndef ADMIN_MONITOR
 `define ADMIN_MONITOR
-class admin_monitor extends vm_base_monitor #(
+class admin_monitor extends base_monitor #(
 	.INTERFACE_TYPE   (virtual admin_interface), 
 	.TRANSACTION_TYPE (admin_transaction      )
 );
@@ -10,6 +10,19 @@ class admin_monitor extends vm_base_monitor #(
 	function new(string name, uvm_component parent);
 		super.new(name, parent);
     endfunction: new
+
+
+
+    task _wait_for_reset_deassert_();
+		@(posedge vif.clk iff vif.rst_n == 1);
+	endtask: _wait_for_reset_deassert_
+
+	task _wait_for_reset_assert_();
+		@(negedge vif.rst_n);
+	endtask: _wait_for_reset_assert_
+
+
+
 
     task _wait_for_sampling_event_(); 
         @(edge vif.admin_mode);

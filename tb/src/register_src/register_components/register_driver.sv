@@ -1,6 +1,6 @@
 `ifndef REGISTER_DRIVER
 `define REGISTER_DRIVER
-class register_driver extends vm_base_driver #(
+class register_driver extends base_driver #(
 	.INTERFACE_TYPE   (virtual register_interface), 
 	.TRANSACTION_TYPE (register_transaction      )
 );
@@ -10,6 +10,16 @@ class register_driver extends vm_base_driver #(
 	function new(string name, uvm_component parent);
 		super.new(name, parent);
 	endfunction: new
+
+
+
+	task _wait_for_reset_deassert_();
+		@(posedge vif.clk iff vif.rst_n == 1);
+	endtask: _wait_for_reset_deassert_
+
+	task _wait_for_reset_assert_();
+		@(negedge vif.rst_n);
+	endtask: _wait_for_reset_assert_
 
 	
 
@@ -25,7 +35,7 @@ class register_driver extends vm_base_driver #(
 		else
 			read(tr);
 
-		`uvm_info(get_type_name(), {"Send transaction: ", tr.convert2string()}, UVM_HIGH)
+		`uvm_info(get_type_name(), {"Send transaction: ", tr.convert2string()}, UVM_MEDIUM)
 		
 		_reset_();
 	endtask: _drive_transaction_

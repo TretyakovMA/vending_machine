@@ -1,6 +1,3 @@
-`include "../register_callbacks/register_monitor_cb.sv"
-`include "../register_callbacks/unauthorized_write_cb.sv"
-
 `include "../register_components/register_transaction.sv"
 
 `ifndef REGISTER_SEQUENCER
@@ -18,3 +15,5 @@ typedef uvm_reg_predictor #(register_transaction) register_predictor;
 `include "../register_components/register_adapter.sv"
 `include "../register_components/register_agent.sv"
 `include "../register_components/register_env.sv"
+
+`include "../register_components/unauthorized_write_monitor.sv"

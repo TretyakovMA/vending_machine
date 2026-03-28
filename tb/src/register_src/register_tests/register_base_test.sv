@@ -5,8 +5,9 @@
 virtual class register_base_test #(
     type REGISTER_SEQUENCE_TYPE
 ) extends sequence_base_test #(
-    .SEQUENCE_TYPE(register_base_virtual_seq #(REGISTER_SEQUENCE_TYPE)),
-    .IS_VIRTUAL_SEQUENCE(1)
+    .SEQUENCE_TYPE      (register_base_virtual_seq #(REGISTER_SEQUENCE_TYPE)),
+    .IS_VIRTUAL_SEQUENCE(1                                                  ),
+    .PARENT_TYPE        (base_test                                          )
 );
     `uvm_component_param_utils(register_base_test #(REGISTER_SEQUENCE_TYPE));
     

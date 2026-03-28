@@ -24,13 +24,6 @@
 //     способ «мягкого» перезапуска потока в UVM.
 //   • При обнаружении сброса текущий процесс мониторинга принудительно останавливается,
 //     чтобы избежать сбора некорректных данных во время сброса.
-//
-// Наследование (рекомендуемый порядок):
-//   1. Производный базовый монитор (с реализацией ожиданий сигналов).
-//   2. Конкретные мониторы <- наследуются от базового и реализуют только 
-//      методы обработки интерфейса:
-//          pure virtual task _wait_for_sampling_event_(); 
-//          pure virtual task _collect_transaction_data_(TRANSACTION_TYPE tr);
 //==============================================================================
 virtual class base_monitor #(
     type INTERFACE_TYPE,
@@ -43,17 +36,16 @@ virtual class base_monitor #(
 		super.new(name, parent);
 	endfunction: new
 
+	local base_agent_config #(INTERFACE_TYPE) config_h;
 
 	// Интерфейс, через который монитор получает сигналы от DUT.
-    // Устанавливается агентом в connect_phase.
-	INTERFACE_TYPE   vif;
+	protected INTERFACE_TYPE vif;
 
 	// Текущая обрабатываемая транзакция.
-    TRANSACTION_TYPE transaction;
+    local TRANSACTION_TYPE   transaction;
 
 	// Флаг, определяющий, нужно ли монитору реагировать на сброс.
-	// Устанавливается агентом из конфигурации.
-	bit reset_sensitive = 1;
+	local bit                reset_sensitive;
 
     uvm_analysis_port #(TRANSACTION_TYPE) ap;
 	
@@ -99,13 +91,19 @@ virtual class base_monitor #(
 
 
 	//=========================== Фазы UVM ================================
-	virtual function void build_phase(uvm_phase phase);
+	
+	local function void build_phase(uvm_phase phase);
 		super.build_phase(phase);
-		ap = new("ap", this);
-	endfunction: build_phase    
+		if(!uvm_config_db #(base_agent_config #(INTERFACE_TYPE))::get(this, "", "config", config_h))
+			`uvm_fatal(get_type_name(), "Failed to get agent_config")
+		
+		vif             = config_h.vif;
+		reset_sensitive = config_h.reset_sensitive;
 
-	// Здесь начинается вся основная работа драйвера.
-	virtual task main_phase(uvm_phase phase);
+		ap = new("ap", this);
+	endfunction: build_phase
+
+	local task main_phase(uvm_phase phase);
 		super.main_phase(phase);
 
 		// Если установлен reset_sensitive, то монитор реагирует на сброс

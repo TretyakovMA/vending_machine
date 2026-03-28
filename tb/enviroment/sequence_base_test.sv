@@ -1,13 +1,11 @@
 `ifndef SEQUENCE_BASE_TEST
 `define SEQUENCE_BASE_TEST
 
-typedef class base_test;
-
 virtual class sequence_base_test #(
     type   SEQUENCE_TYPE,
     type   SEQUENCER_TYPE      = uvm_sequencer #(uvm_sequence_item),
     bit    IS_VIRTUAL_SEQUENCE = 1,
-    type   PARENT_TYPE         = base_test
+    type   PARENT_TYPE         = uvm_component
 ) extends PARENT_TYPE;
 
     `uvm_component_param_utils(sequence_base_test #(
@@ -37,14 +35,14 @@ virtual class sequence_base_test #(
 
 
     // Функция для создания callback
-	// Настраивается в производных тестах
+	// Настраивается в производных тестах, если требуется
 	virtual function void create_callbacks(); 
 
 	endfunction: create_callbacks
 
     
     
-    virtual function void connect_phase(uvm_phase phase);
+    local function void connect_phase(uvm_phase phase);
 		super.connect_phase(phase);
 
         // Создание callback
@@ -63,13 +61,13 @@ virtual class sequence_base_test #(
         end
     endfunction: connect_phase
     
-    virtual task main_phase(uvm_phase phase);
+    local task main_phase(uvm_phase phase);
         super.main_phase(phase);
 
         // Создание и запуск последовательности
         sequence_h = SEQUENCE_TYPE::type_id::create("sequence_h");
 
-        `uvm_info(get_type_name(), "Starting sequence", UVM_HIGH);
+        `uvm_info(get_type_name(), "Starting sequence", UVM_FULL);
         
         sequence_h.set_starting_phase(phase);
         sequence_h.set_automatic_phase_objection(1);

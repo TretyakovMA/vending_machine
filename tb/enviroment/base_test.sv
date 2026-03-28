@@ -38,10 +38,14 @@ virtual class base_test extends uvm_test;
 	virtual function void adjust_env_config;
 		return; //По умолчанию все включено
 	endfunction: adjust_env_config
+
+	// Функция для дополнительных действий при построении теста
+	virtual function void build_hooks();
+	endfunction: build_hooks
 	
 
 
-	function void build_phase(uvm_phase phase);
+	virtual function void build_phase(uvm_phase phase);
 		super.build_phase(phase);
 
 		// Создание конфигурации среды, с ней создаются все agent_config
@@ -68,37 +72,42 @@ virtual class base_test extends uvm_test;
 			this, "", "emergency_vif", env_config_h.emergency_agent_config_h.vif
 		)) `uvm_fatal(get_type_name(), "Faild to get emergency interface")
 			
+
+
 		// Настройка agent_config
 		adjust_agent_configs();
 
 		// Настройка env_config
 		adjust_env_config();
 		
-		// Готовый env_config отправляется к env
+		// Готовый env_config отправляется к env и создается env
 		uvm_config_db #(env_config)::set(
 			this, "env_h", "env_config", env_config_h
 		);
 		env_h     = env::type_id::create("env_h", this);
 
-		// Мой report_server создается только если симуляция запустилась с флагом
+
+
+		// Мой report_server создается только если симуляция запустилась с нужным флагом
 `ifdef USE_CUSTOM_REPORT_SERVER
 		my_server = new();
+		uvm_report_server::set_server(my_server);
 `endif
 
 		// Создается компонент для запуска последовательности инициализации устройства
 		initiator_h = initiator::type_id::create("initiator_h", this);
 
+
+
+		// Вызов дополнительных действий при построении теста
+		build_hooks();
+
 	endfunction: build_phase
 	
 	
 	
-	function void start_of_simulation_phase(uvm_phase phase);
+	virtual function void start_of_simulation_phase(uvm_phase phase);
 		super.start_of_simulation_phase(phase);
-
-		// Установка report_server
-`ifdef USE_CUSTOM_REPORT_SERVER
-		uvm_report_server::set_server(my_server);
-`endif
 
 		// Установка максимального времени симуляции
 		// (если симуляция дойдет до 1 миллисекунды, то она завершится)

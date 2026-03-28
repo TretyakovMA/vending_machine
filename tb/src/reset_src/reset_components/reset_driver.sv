@@ -1,6 +1,6 @@
 `ifndef RESET_DRIVER
 `define RESET_DRIVER
-class reset_driver extends vm_base_driver #(
+class reset_driver extends base_driver #(
     .INTERFACE_TYPE   (virtual reset_interface),
     .TRANSACTION_TYPE (reset_transaction      )
 );
@@ -10,6 +10,14 @@ class reset_driver extends vm_base_driver #(
     function new(string name, uvm_component parent);
         super.new(name, parent);
     endfunction: new
+
+
+
+    task _wait_for_reset_deassert_();
+	endtask: _wait_for_reset_deassert_
+
+	task _wait_for_reset_assert_();
+	endtask: _wait_for_reset_assert_
 
 
 

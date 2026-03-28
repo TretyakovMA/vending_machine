@@ -1,14 +1,14 @@
 `ifndef VM_SCOREBOARD
 `define VM_SCOREBOARD
 
-`uvm_analysis_imp_decl(_RESET)
-`uvm_analysis_imp_decl(_USER)
-`uvm_analysis_imp_decl(_ADMIN)
-`uvm_analysis_imp_decl(_REGISTER)
-`uvm_analysis_imp_decl(_EMERGENCY)
-
 class vm_scoreboard extends uvm_scoreboard;
 	`uvm_component_utils(vm_scoreboard)
+
+	`uvm_analysis_imp_decl(_RESET)
+	`uvm_analysis_imp_decl(_USER)
+	`uvm_analysis_imp_decl(_ADMIN)
+	`uvm_analysis_imp_decl(_REGISTER)
+	`uvm_analysis_imp_decl(_EMERGENCY)
 
 	function new(string name, uvm_component parent);
 		super.new(name, parent);

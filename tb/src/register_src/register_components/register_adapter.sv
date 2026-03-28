@@ -27,7 +27,7 @@ class register_adapter extends uvm_reg_adapter;
 		else begin
 			tr.regs_data_out = rw.data;
 		end
-		`uvm_info (get_type_name(), {"reg2bus: ", tr.convert2string()}, UVM_HIGH) 
+		`uvm_info (get_type_name(), {"reg2bus: ", tr.convert2string()}, UVM_FULL) 
 		return tr; //Результатом является заполенная транзакция
 	endfunction
 	
@@ -52,7 +52,7 @@ class register_adapter extends uvm_reg_adapter;
 			rw.data = tr.regs_data_out;
 		end
 		`uvm_info (get_type_name(), {"Get transaction: ", tr.convert2string()}, UVM_FULL) 
-		`uvm_info (get_type_name(), $sformatf("bus2reg : addr=0x%0h data=0x%0h kind=%s status=%s", rw.addr, rw.data, rw.kind.name(), rw.status.name()), UVM_HIGH)
+		`uvm_info (get_type_name(), $sformatf("bus2reg : addr=0x%0h data=0x%0h kind=%s status=%s", rw.addr, rw.data, rw.kind.name(), rw.status.name()), UVM_FULL)
 		rw.status = UVM_IS_OK;  
 	endfunction
 	

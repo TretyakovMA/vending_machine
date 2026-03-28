@@ -34,13 +34,6 @@ package vm_pkg;
 
 
 	//==============================================================================
-	// VM_base_classes
-	`include "vm_classes/base/base_inc.svh"
-	//==============================================================================
-
-
-
-	//==============================================================================
 	// Agent_config classes
 	typedef base_agent_config #(virtual reset_interface)     reset_agent_config;
 	typedef base_agent_config #(virtual user_interface)      user_agent_config;
@@ -94,8 +87,8 @@ package vm_pkg;
 
 
 	//==============================================================================
-	// VM_verification_classes
-	`include "vm_classes/verification/verification_inc.svh"
+	// VM_classes
+	`include "vm_classes/vm_classes_inc.svh"
 	//==============================================================================
 
 

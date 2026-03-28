@@ -25,10 +25,10 @@ class write_registers_with_emergency_seq extends register_base_seq;
 
         // Проверка, произошло ли событие до начала последовательности
         if (uvm_config_db #(bit)::get(null, "", "emergency_flag", emergency_event_occurred)) begin
-            `uvm_info(get_type_name(), "Emergency event already occurred before sequence start", UVM_LOW)
+            `uvm_info(get_type_name(), "Emergency event already occurred before sequence start", UVM_FULL)
         end 
         else begin
-            `uvm_info(get_type_name(), "Emergency event will be simulated", UVM_LOW)
+            `uvm_info(get_type_name(), "Emergency event will be simulated", UVM_FULL)
         end
 
         // Ожидание события (параллельно с записью регистров)
@@ -45,13 +45,13 @@ class write_registers_with_emergency_seq extends register_base_seq;
             // Если произошло событие, то поднимается флаг emergency_occurred
             if(emergency_event_occurred && emergency_occurred == 0) begin 
                 emergency_occurred  = 1;
-                `uvm_info(get_type_name(), $sformatf("Emergency_event in register %s occured", registers[i].get_name()), UVM_LOW)
+                `uvm_info(get_type_name(), $sformatf("Emergency_event in register %s occured", registers[i].get_name()), UVM_HIGH)
             end
 
             // Получение старого значения регистра (если был сигнал сбоя)
             if(emergency_occurred) begin
                 peek_reg(registers[i], status, old_value);
-                `uvm_info(get_type_name(), $sformatf("Register %s value was %0d", registers[i].get_name(), old_value), UVM_MEDIUM)
+                `uvm_info(get_type_name(), $sformatf("Register %s value was %0d", registers[i].get_name(), old_value), UVM_FULL)
             end
 
             // Запись случайного значения в регистр 

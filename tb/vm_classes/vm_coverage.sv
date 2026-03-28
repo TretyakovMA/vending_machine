@@ -67,7 +67,7 @@ class vm_coverage extends uvm_subscriber #(user_transaction);
 	
 	function void write(user_transaction t); //Основная работа покрытия
 		tr = t.clone_me();
-		`uvm_info(get_type_name(), "Start work", UVM_HIGH)
+		`uvm_info(get_type_name(), "Start work", UVM_FULL)
 		cg_client_id.sample();
 		cg_coin_in_q.sample();
 		cg_item_num.sample();

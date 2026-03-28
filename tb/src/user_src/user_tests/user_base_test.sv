@@ -6,7 +6,8 @@ virtual class user_base_test #(
 ) extends sequence_base_test #(
     .SEQUENCE_TYPE      (USER_SEQUENCE_TYPE),
     .SEQUENCER_TYPE     (user_sequencer    ),
-    .IS_VIRTUAL_SEQUENCE(0                 )
+    .IS_VIRTUAL_SEQUENCE(0                 ),
+    .PARENT_TYPE        (base_test         )
 );
     `uvm_component_param_utils(user_base_test #(USER_SEQUENCE_TYPE));
     

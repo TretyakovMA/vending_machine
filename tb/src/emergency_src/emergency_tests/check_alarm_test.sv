@@ -4,7 +4,8 @@
 class check_alarm_test extends sequence_base_test #(
     .SEQUENCE_TYPE      (activate_emergency_signals_seq),
     .SEQUENCER_TYPE     (emergency_sequencer           ),
-    .IS_VIRTUAL_SEQUENCE(0                             )
+    .IS_VIRTUAL_SEQUENCE(0                             ),
+    .PARENT_TYPE        (base_test                     )
 );
     `uvm_component_utils(check_alarm_test);
     

@@ -1,6 +1,6 @@
 `ifndef USER_DRIVER
 `define USER_DRIVER
-class user_driver extends vm_base_driver #(
+class user_driver extends base_driver #(
 	.INTERFACE_TYPE   (virtual user_interface), 
 	.TRANSACTION_TYPE (user_transaction      )
 );
@@ -9,6 +9,16 @@ class user_driver extends vm_base_driver #(
 	function new(string name, uvm_component parent);
 		super.new(name, parent);
 	endfunction: new
+
+
+
+	task _wait_for_reset_deassert_();
+		@(posedge vif.clk iff vif.rst_n == 1);
+	endtask: _wait_for_reset_deassert_
+
+	task _wait_for_reset_assert_();
+		@(negedge vif.rst_n);
+	endtask: _wait_for_reset_assert_
 
 
 
@@ -64,7 +74,7 @@ class user_driver extends vm_base_driver #(
 		// Ожидание, пока автомат работает
 		vif.item_select   <= 0;
 		vif.confirm       <= 0;
-		`uvm_info(get_type_name(), {"Send transaction:\n", tr.convert2string()}, UVM_HIGH)
+		`uvm_info(get_type_name(), {"Send transaction:\n", tr.convert2string()}, UVM_MEDIUM)
 		repeat(4) @(posedge vif.clk); 
 		
 		// Ожидание следующего клиента

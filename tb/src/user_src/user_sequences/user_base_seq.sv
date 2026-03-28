@@ -49,7 +49,7 @@ class user_base_seq #(
 				exp_tr  = checker_h.calculate_exp_transaction(tr); //Расчет ожидаемой транзакции
 
 				success = check_success(exp_tr); //Проверка корректности транзакции
-				`uvm_info("TEST", {"Attempt to send a transaction: ", exp_tr.convert2string()}, UVM_FULL)
+				`uvm_info("TEST", {"Attempt to send a transaction: ", exp_tr.convert2string()}, UVM_DEBUG)
 			end while (success == 0 && count_test < NUMBER_OF_ATTEMPTS);
 
             if (count_test == NUMBER_OF_ATTEMPTS) //Если транзакция не была сгенерирована, то возникает фатальная ошибка

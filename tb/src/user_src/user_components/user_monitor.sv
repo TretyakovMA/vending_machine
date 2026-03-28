@@ -1,6 +1,6 @@
 `ifndef USER_MONITOR
 `define USER_MONITOR
-class user_monitor extends vm_base_monitor #(
+class user_monitor extends base_monitor #(
 	.INTERFACE_TYPE   (virtual user_interface), 
 	.TRANSACTION_TYPE (user_transaction      )
 );
@@ -14,11 +14,21 @@ class user_monitor extends vm_base_monitor #(
 
 	function void connect_phase(uvm_phase phase);
 		super.connect_phase(phase);
-		
 		if(!uvm_config_db #(vm_reg_block)::get(this, "", "reg_block", reg_block_h))
 			`uvm_fatal(get_type_name(), "Failed to get reg_block")
-			
 	endfunction: connect_phase
+
+
+
+	task _wait_for_reset_deassert_();
+		@(posedge vif.clk iff vif.rst_n == 1);
+	endtask: _wait_for_reset_deassert_
+
+	task _wait_for_reset_assert_();
+		@(negedge vif.rst_n);
+	endtask: _wait_for_reset_assert_
+
+	
 	
 
 	// Начинаем мониторинг, когда клиент вошел в систему

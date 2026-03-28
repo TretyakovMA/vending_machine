@@ -57,13 +57,13 @@ virtual class base_agent #(
 
 	uvm_analysis_port #(TRANSACTION_TYPE) ap;
 
-	// Функция для указания имения секвенсера 
+	// Функция для указания имения секвенсера, 
     // он будет отправлен в config_db с данным ключем
     virtual function string set_sequencer_name();
         return "";  
     endfunction: set_sequencer_name
 
-	virtual function void build_phase(uvm_phase phase);
+	local function void build_phase(uvm_phase phase);
 		super.build_phase(phase);
 
 		// Получение конфигурации от env
@@ -75,11 +75,15 @@ virtual class base_agent #(
 			driver_h       = DRIVER_TYPE::type_id::create("driver_h", this);
 			sequencer_h    = SEQUENCER_TYPE::type_id::create("sequencer_h", this);
 
+			// Передача конфигурации драйверу через uvm_config_db
+			uvm_config_db #(base_agent_config #(INTERFACE_TYPE))::set(this, driver_h.get_name(), "config", config_h);
+
 			// Агент задает имя секвенсера
 			sequencer_name = set_sequencer_name();
 			// Проверка, что имя секвенсера указано
 			if (sequencer_name == "") 
                 `uvm_warning(get_type_name(), "Sequencer name not provided via set_sequencer_name()");
+			
 			// Запись секвенсера в uvm_config_db
 			uvm_config_db #(SEQUENCER_TYPE)::set(null, "*", sequencer_name, sequencer_h);
 
@@ -90,27 +94,44 @@ virtual class base_agent #(
 		// Монитор создается, если так указано в конфигурации
 		if (config_h.has_monitor == 1) begin
 			monitor_h   = MONITOR_TYPE::type_id::create("monitor_h", this);
+			
+			// Передача конфигурации монитору через uvm_config_db
+			uvm_config_db #(base_agent_config #(INTERFACE_TYPE))::set(this, monitor_h.get_name(), "config", config_h);
+
+			// Запись монитора в uvm_config_db
 			uvm_config_db #(MONITOR_TYPE)::set(null, "*", monitor_h.get_type_name(), monitor_h);
+
 			ap          = new("ap", this);
 		end
-		
+
 	endfunction
 	
-	virtual function void connect_phase(uvm_phase phase);
+	local function void connect_phase(uvm_phase phase);
 		super.connect_phase(phase);
+
 		// Созданные компоненты подключаются к необходимым портам и флагам
 		if (config_h.is_active == UVM_ACTIVE) begin
 			driver_h.seq_item_port.connect(sequencer_h.seq_item_export);
-			driver_h.vif             = config_h.vif;
-			driver_h.reset_sensitive = config_h.reset_sensitive;
 		end
 		if (config_h.has_monitor == 1) begin
-			monitor_h.ap.connect(ap);
-			monitor_h.vif             = config_h.vif;
-			monitor_h.reset_sensitive = config_h.reset_sensitive;
+			connect_monitor_to_analysis_port();
 		end
 		
 	endfunction 
+
+	virtual function void connect_monitor_to_analysis_port();
+		// Пытаемся привести монитор к нашему базовому типу, где точно есть 'ap'
+		base_monitor #(INTERFACE_TYPE, TRANSACTION_TYPE) b_mon;
+
+		if ($cast(b_mon, monitor_h)) begin
+			// Если это наш монитор — подключаем
+			b_mon.ap.connect(this.ap);
+		end 
+		else begin
+			// Если монитор сторонний, то пользователь должен подключить его вручную в наследнике агента.
+			`uvm_info(get_type_name(), "External monitor detected: automatic 'ap' connection skipped", UVM_MEDIUM)
+		end
+	endfunction
 
 endclass
 `endif

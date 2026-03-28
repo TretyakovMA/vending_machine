@@ -9,36 +9,38 @@ import "DPI-C" function string get_simulation_start_time();
 class my_report_server extends uvm_default_report_server;
 
     // ANSI-коды цветов для терминала
-    local string RED             = "\033[31;0m";
-    local string RED_BOLD        = "\033[31;1m";
-    local string RED_BACKGROUND  = "\033[30;41m";
-    local string YELLOW_BOLD     = "\033[33;1m";
-    local string CYAN            = "\033[36m";
-    local string CYAN_UNDERLINED = "\033[36;4m";
-    local string BLACK           = "\033[30m";
-    local string PURPLE          = "\033[35m";
-    local string BLUE            = "\033[34m";
-    local string BLUE_ITALIC     = "\033[34;3m";
-    local string BLUE_BOLD       = "\033[34;1m";
-    local string BRIGHT_CYAN     = "\033[96m";
+    localparam string RED             = "\033[31;0m";
+    localparam string RED_BOLD        = "\033[31;1m";
+    localparam string RED_BACKGROUND  = "\033[30;41m";
+    localparam string YELLOW_BOLD     = "\033[33;1m";
+    localparam string CYAN            = "\033[36m";
+    localparam string CYAN_UNDERLINED = "\033[36;4m";
+    localparam string BLACK           = "\033[30m";
+    localparam string PURPLE          = "\033[35m";
+    localparam string BLUE            = "\033[34m";
+    localparam string BLUE_ITALIC     = "\033[34;3m";
+    localparam string BLUE_BOLD       = "\033[34;1m";
+    localparam string BRIGHT_CYAN     = "\033[96m";
 
-    local string DEFAULT         = "\033[0m";
+    localparam string DEFAULT         = "\033[0m";
 
-    
 
+
+    // Сообщение без ANSI-кодов (для логов в файлах)
+    local string  no_ansi_msg;     
 
     // Переменные для цветов 
-    local string info_color    = BLUE_BOLD;
-    local string warning_color = YELLOW_BOLD;
-    local string error_color   = RED_BOLD;
-    local string fatal_color   = RED_BACKGROUND;
+    local string  info_color    = BLUE_BOLD;
+    local string  warning_color = YELLOW_BOLD;
+    local string  error_color   = RED_BOLD;
+    local string  fatal_color   = RED_BACKGROUND;
     
-    local string time_color    = CYAN;
-    local string id_color      = CYAN_UNDERLINED;
-    local string msg_color     = DEFAULT;
-    local string reset         = DEFAULT;
+    local string  time_color    = CYAN;
+    local string  id_color      = CYAN_UNDERLINED;
+    local string  msg_color     = DEFAULT;
+    local string  reset         = DEFAULT;
 
-    local bit    no_color      = 0;       // Флаг отключения цветов
+    local bit     no_color      = 0;      // Флаг отключения цветов
 
     protected int errors_fd;              // Дескриптор файла ошибок
     protected int sim_log_fd;             // Дескриптор файла для sim_log
@@ -105,11 +107,9 @@ class my_report_server extends uvm_default_report_server;
     endfunction
 
     virtual function void execute_report_message(uvm_report_message report_message, string composed_message);
-        // Убираем ANSI-коды цветов для файла
-        string plain_message = remove_ansi_codes(composed_message);
         
         // Запись в sim_log_*.log для всех сообщений
-        $fdisplay(sim_log_fd, "%s", plain_message);
+        $fdisplay(sim_log_fd, "%s", no_ansi_msg);
         $fflush(sim_log_fd);
 
         if (report_message.get_severity() inside {UVM_WARNING, UVM_ERROR, UVM_FATAL}) begin
@@ -119,25 +119,13 @@ class my_report_server extends uvm_default_report_server;
             end
 
             has_errors = 1;
-            $fdisplay(errors_fd, "%s", plain_message);
+            $fdisplay(errors_fd, "%s", no_ansi_msg);
             $fflush(errors_fd);  // Сбрасываем буфер для гарантии записи
         end
         super.execute_report_message(report_message, composed_message);
     endfunction: execute_report_message
 
     
-
-    // Вспомогательная функция для удаления ANSI-кодов (чтобы лог в файле был без "мусора")
-    local function string remove_ansi_codes(string s);
-        string result = "";
-        bit in_ansi = 0;
-        foreach (s[i]) begin
-            if (s[i] == "\033") in_ansi = 1;
-            else if (in_ansi && (s[i] == "m")) in_ansi = 0;
-            else if (!in_ansi) result = {result, s[i]};
-        end
-        return result;
-    endfunction
 
     virtual function string compose_report_message( 
         uvm_report_message report_message,
@@ -154,18 +142,26 @@ class my_report_server extends uvm_default_report_server;
 
         string sev_str, time_str, id_str, msg_str, file_str;
 
-        if (no_color) begin
-            sev_str  = {severity.name(), "\n"};
+        
+        
 
-            if (filename == "")
-                file_str = "";
-            else
-                file_str = $sformatf("%s |Line: %2d\n", filename, line);
+        if (filename == "")
+            file_str = "";
+        else
+            file_str = $sformatf("%s |Line: %2d\n", filename, line);
 
-            time_str   = {"Time: ", $sformatf("%0t", $time)};
-            id_str     = id;
-            msg_str    = {"Message: ", message, "\n\n"};
-        end 
+        no_ansi_msg = $sformatf("%s\n%s%s | %-21s | %s: \n%s",
+                        severity.name(),
+                        file_str,
+                        {"Time: ", $sformatf("%0t", $time)},
+                        name,
+                        id,
+                        {"Message: ", message, "\n\n"}
+        ); 
+
+        if(no_color) begin
+            return no_ansi_msg;
+        end
         else begin
             string sev_color;
 
@@ -179,10 +175,6 @@ class my_report_server extends uvm_default_report_server;
             
             sev_str    = {sev_color, severity.name(), DEFAULT, "\n"};
 
-            if (filename == "")
-                file_str = "";
-            else
-                file_str = $sformatf("%s |Line: %2d\n", filename, line);
             
             time_str   = {"Time: ", $sformatf("%s%0t%s",time_color, $time, DEFAULT)};
             id_str     = {id_color, id, DEFAULT};

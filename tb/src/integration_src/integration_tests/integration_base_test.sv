@@ -4,7 +4,8 @@ virtual class integration_base_test #(
     type INTEGRATION_SEQUENCE_TYPE
 ) extends sequence_base_test #(
     .SEQUENCE_TYPE      (INTEGRATION_SEQUENCE_TYPE),
-    .IS_VIRTUAL_SEQUENCE(1)
+    .IS_VIRTUAL_SEQUENCE(1                        ),
+    .PARENT_TYPE        (base_test                )
 );
     `uvm_component_param_utils(integration_base_test #(INTEGRATION_SEQUENCE_TYPE));
     

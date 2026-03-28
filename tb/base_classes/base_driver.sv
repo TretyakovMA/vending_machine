@@ -24,13 +24,6 @@
 //     способ «мягкого» перезапуска потока в UVM.
 //   • При обнаружении сброса текущая транзакция принудительно завершается
 //     через item_done(), чтобы секвенсер не завис навсегда.
-//
-// Наследование (рекомендуемый порядок):
-//   1. Производный базовый драйвер (с реализацией ожиданий сигналов).
-//   2. Конкретные драйверы <- наследуются от базового и реализуют только 
-//      методы обработки интерфейса:
-//          pure virtual task _reset_();
-//          pure virtual task _drive_transaction_(TRANSACTION_TYPE tr);
 //==============================================================================
 
 virtual class base_driver #(
@@ -44,18 +37,16 @@ virtual class base_driver #(
 		super.new(name, parent);
 	endfunction: new
 
-
+	local base_agent_config #(INTERFACE_TYPE) config_h;
 
 	// Интерфейс, через который драйвер общается с DUT.
-    // Устанавливается агентом в connect_phase.
-	INTERFACE_TYPE   vif; 
+	protected INTERFACE_TYPE vif; 
 
 	// Текущая обрабатываемая транзакция
-	TRANSACTION_TYPE transaction;
+	local TRANSACTION_TYPE   transaction;
 
 	// Флаг, определяющий поведение драйвера при сбросе.
-    // Устанавливается агентом из конфигурации.
-	bit reset_sensitive = 1;
+	local bit                reset_sensitive;
 
 
 
@@ -100,14 +91,23 @@ virtual class base_driver #(
 
 	//============================== Фазы UVM ====================================
 	
+	local function void build_phase(uvm_phase phase);
+		super.build_phase(phase);
+		if(!uvm_config_db #(base_agent_config #(INTERFACE_TYPE))::get(this, "", "config", config_h))
+			`uvm_fatal(get_type_name(), "Failed to get agent_config")
+		
+		vif             = config_h.vif;
+		reset_sensitive = config_h.reset_sensitive;
+	endfunction: build_phase
+
 	// Сбрасываем интерфейс в начале тестирования.
-	virtual task reset_phase(uvm_phase phase);
+	local task reset_phase(uvm_phase phase);
 		super.reset_phase(phase);
 		_reset_();
 	endtask: reset_phase
 	
 	// Здесь начинается вся основная работа драйвера.
-	virtual task main_phase(uvm_phase phase);
+	local task main_phase(uvm_phase phase);
 		super.main_phase(phase);
 
 		// Если установлен reset_sensitive, то драйвер реагирует на сброс
@@ -173,13 +173,13 @@ task base_driver::_drive_loop_();
 	forever begin
 		// Получаем очередную транзакцию от секвенсера
 		seq_item_port.get_next_item(transaction);
-		`uvm_info(get_type_name(), "Start work", UVM_HIGH)
+		`uvm_info(get_type_name(), "Start work", UVM_FULL)
 
 		// Записываем транзакцию в интерфейс
         _drive_transaction_(transaction);
 
 		// Сообщаем секвенсеру, что транзакция отработана
-		`uvm_info(get_type_name(), "End work", UVM_HIGH)
+		`uvm_info(get_type_name(), "End work", UVM_FULL)
         seq_item_port.item_done();
 	end
 endtask: _drive_loop_
