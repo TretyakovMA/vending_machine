@@ -11,15 +11,6 @@ class reset_monitor extends base_monitor #(
         super.new(name, parent);
     endfunction: new
 
-
-
-    task _wait_for_reset_deassert_();
-	endtask: _wait_for_reset_deassert_
-
-	task _wait_for_reset_assert_();
-	endtask: _wait_for_reset_assert_
-
-
     
 
     task _wait_for_sampling_event_(); 

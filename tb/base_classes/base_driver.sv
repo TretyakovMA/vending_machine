@@ -37,6 +37,14 @@ virtual class base_driver #(
 		super.new(name, parent);
 	endfunction: new
 
+
+
+`ifndef BASE_AGENT_CONFIG
+	// Минимальная заглушка для базовой конфигурации, если она не используется
+	class base_agent_config #(type INTERFACE_TYPE) extends uvm_object;
+	endclass: base_agent_config
+`endif
+
 	local base_agent_config #(INTERFACE_TYPE) config_h;
 
 	// Интерфейс, через который драйвер общается с DUT.
@@ -61,12 +69,25 @@ virtual class base_driver #(
 
 
 	//========================== Вспомогательные методы =========================
+	// Эти методы должны быть переопределены, если reset_sensitive == 1.
 
 	// Задача для ожидания, пока не опустится сигнал сброса
-	pure virtual task _wait_for_reset_deassert_();
+	extern virtual task _wait_for_reset_deassert_();
 
 	// Задача для ожидания сигнала сброса
-	pure virtual task _wait_for_reset_assert_();
+	extern virtual task _wait_for_reset_assert_();
+
+	// Метод для установки конфигурации драйвера, если не используется base_agent_config
+	// Пример переопределения:
+	//
+	// virtual function void set_drv_cfg();
+	//    if (!uvm_config_db #(my_vif)::get(this, "", "my_vif", vif))
+	//        `uvm_fatal(get_type_name(), "Failed to get virtual interface from config_db")
+	//	  reset_sensitive = 1;
+	// endfunction: set_drv_cfg
+	virtual function void set_drv_cfg();
+		`uvm_fatal(get_type_name(), "set_drv_cfg() must be overridden if not using base_agent_config")
+	endfunction: set_drv_cfg
 
 
 
@@ -93,16 +114,26 @@ virtual class base_driver #(
 	
 	local function void build_phase(uvm_phase phase);
 		super.build_phase(phase);
-		if(!uvm_config_db #(base_agent_config #(INTERFACE_TYPE))::get(this, "", "config", config_h))
-			`uvm_fatal(get_type_name(), "Failed to get agent_config")
+		if(uvm_config_db #(base_agent_config #(INTERFACE_TYPE))::get(
+			this, "", "config", config_h
+		)) begin
+			vif             = config_h.vif;
+			reset_sensitive = config_h.reset_sensitive;
+		end
+
+		else begin
+			`uvm_warning(get_type_name(), "Failed to get agent_config. Attempting to set driver config via set_drv_cfg()")
+			set_drv_cfg(); 
+		end
 		
-		vif             = config_h.vif;
-		reset_sensitive = config_h.reset_sensitive;
 	endfunction: build_phase
 
 	// Сбрасываем интерфейс в начале тестирования.
 	local task reset_phase(uvm_phase phase);
 		super.reset_phase(phase);
+		if(vif == null) begin
+			`uvm_fatal(get_type_name(), "Virtual interface not set")
+		end
 		_reset_();
 	endtask: reset_phase
 	
@@ -134,6 +165,27 @@ endclass: base_driver
 
 
 //=========================== Реализация задач ===========================
+
+task base_driver::_wait_for_reset_deassert_();
+    if (!reset_sensitive) begin
+        return;
+    end
+
+    // Если reset_sensitive == 1, а метод не переопределён — ошибка
+    `uvm_fatal(get_type_name(),
+        "_wait_for_reset_deassert_() must be overridden when reset_sensitive == 1")
+endtask
+
+
+
+task base_driver::_wait_for_reset_assert_();
+    // Этот метод вызывается только при reset_sensitive == 1
+    `uvm_fatal(get_type_name(),
+        "_wait_for_reset_assert_() must be overridden when reset_sensitive == 1")
+endtask
+
+
+
 task base_driver::_handle_reset_();
 	forever begin
 		// 1. Ждём, пока сигнал сброса станет активным

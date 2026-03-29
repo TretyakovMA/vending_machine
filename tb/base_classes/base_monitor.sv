@@ -36,6 +36,14 @@ virtual class base_monitor #(
 		super.new(name, parent);
 	endfunction: new
 
+
+
+`ifndef BASE_AGENT_CONFIG
+	// Минимальная заглушка для базовой конфигурации, если она не используется
+	class base_agent_config #(type INTERFACE_TYPE) extends uvm_object;
+	endclass: base_agent_config
+`endif
+
 	local base_agent_config #(INTERFACE_TYPE) config_h;
 
 	// Интерфейс, через который монитор получает сигналы от DUT.
@@ -62,13 +70,26 @@ virtual class base_monitor #(
 	
 
 	//========================== Вспомогательные методы =========================
+	// Эти методы должны быть переопределены, если reset_sensitive == 1.
 
 	// Задача для ожидания, пока не опустится сигнал сброса
-	pure virtual task _wait_for_reset_deassert_(); 
+	extern virtual task _wait_for_reset_deassert_(); 
 	
 	// Задача для ожидания сигнала сброса
-	pure virtual task _wait_for_reset_assert_();
-	
+	extern virtual task _wait_for_reset_assert_();
+
+	// Метод для установки конфигурации монитора, если не используется base_agent_config
+	// Пример переопределения:
+	//
+	// virtual function void set_mon_cfg();
+	//    if (!uvm_config_db #(my_vif)::get(this, "", "my_vif", vif))
+	//        `uvm_fatal(get_type_name(), "Failed to get virtual interface from config_db")
+	//	  reset_sensitive = 1;
+	// endfunction: set_mon_cfg
+	virtual function void set_mon_cfg();
+		`uvm_fatal(get_type_name(), "set_mon_cfg() must be overridden if not using base_agent_config")
+	endfunction: set_mon_cfg
+
 
 
 	//=========================== Основная логика ===============================
@@ -94,12 +115,18 @@ virtual class base_monitor #(
 	
 	local function void build_phase(uvm_phase phase);
 		super.build_phase(phase);
-		if(!uvm_config_db #(base_agent_config #(INTERFACE_TYPE))::get(this, "", "config", config_h))
-			`uvm_fatal(get_type_name(), "Failed to get agent_config")
-		
-		vif             = config_h.vif;
-		reset_sensitive = config_h.reset_sensitive;
+		if(uvm_config_db #(base_agent_config #(INTERFACE_TYPE))::get(
+			this, "", "config", config_h
+		)) begin
+			vif             = config_h.vif;
+			reset_sensitive = config_h.reset_sensitive;
+		end
 
+		else begin
+			`uvm_warning(get_type_name(), "Failed to get agent_config. Attempting to set monitor config via set_mon_cfg()")
+			set_mon_cfg();
+		end
+		
 		ap = new("ap", this);
 	endfunction: build_phase
 
@@ -128,6 +155,26 @@ endclass: base_monitor
 
 
 //=========================== Реализация задач ===========================
+task base_monitor::_wait_for_reset_deassert_();
+    if (!reset_sensitive) begin
+        return;
+    end
+
+    // Если reset_sensitive == 1, а метод не переопределён — ошибка
+    `uvm_fatal(get_type_name(),
+        "_wait_for_reset_deassert_() must be overridden when reset_sensitive == 1")
+endtask
+
+
+
+task base_monitor::_wait_for_reset_assert_();
+    // Этот метод вызывается только при reset_sensitive == 1
+    `uvm_fatal(get_type_name(),
+        "_wait_for_reset_assert_() must be overridden when reset_sensitive == 1")
+endtask
+
+
+
 task base_monitor::_handle_reset_(); 
 	forever begin
 		// Ждём, пока сигнал сброса станет активным
