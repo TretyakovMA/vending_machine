@@ -79,7 +79,6 @@ class user_driver extends base_driver #(
 		
 		// Ожидание следующего клиента
 		_reset_(); 
-		@(posedge vif.clk);
 		`uvm_do_callbacks(user_driver, user_driver_cb, delay_before_next_client(vif))
 	endtask: _drive_transaction_
 		

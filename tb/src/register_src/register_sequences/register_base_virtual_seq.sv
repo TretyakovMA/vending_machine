@@ -18,6 +18,7 @@ class register_base_virtual_seq #(
     register_sequencer   register_sequencer_h;
 
     bit [31:0]           admin_password;
+    bit [31:0]           value;
 
     bit                  admin_mode = 1;
 
@@ -56,6 +57,20 @@ class register_base_virtual_seq #(
         else begin
             reg_seq_h.start(register_sequencer_h);//Выполняется только регистровая послесловательность
         end
+
+        // После выполнения последовательности может случиться так,
+        // что в vend_cfg будет записано багованное значение,
+        // так как в конце все сигналы обнуляются, что соответсвует чтению vend_cfg
+        // regs_we = 0; regs_addr = 0;
+        // в dut в данном регистре после сброса записана неверная информация
+        // из-за auto_predict она записывается в модель регистров
+        // и это приходится исправлять
+        value = reg_seq_h.reg_block_h.vend_cfg.get();
+        if (value == 32'h02014c8a) begin
+            value = reg_seq_h.reg_block_h.vend_cfg.get_reset();
+            void'(reg_seq_h.reg_block_h.vend_cfg.predict(value));
+        end
+        
 	endtask
 endclass
 `endif

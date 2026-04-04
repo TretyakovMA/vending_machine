@@ -1,5 +1,5 @@
-`include "base_macros.svh"
-`include "my_report_server.sv"
+`include "custom_report_macros.svh"
+`include "custom_report_server.sv"
 
 `include "void_classes.svh"
 

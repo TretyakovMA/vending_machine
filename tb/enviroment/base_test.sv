@@ -8,14 +8,14 @@ virtual class base_test extends uvm_test;
 		super.new(name, parent);
 	endfunction: new
 	
-	env               env_h;
-	env_config        env_config_h;
+	env                  env_h;
+	env_config           env_config_h;
 	
 `ifdef USE_CUSTOM_REPORT_SERVER
-	my_report_server  my_server; 
+	custom_report_server my_server; 
 `endif
 
-	initiator         initiator_h;
+	initiator            initiator_h;
 
 
 
@@ -41,6 +41,7 @@ virtual class base_test extends uvm_test;
 
 	// Функция для дополнительных действий при построении теста
 	virtual function void build_hooks();
+		return;
 	endfunction: build_hooks
 	
 
@@ -74,7 +75,7 @@ virtual class base_test extends uvm_test;
 			
 
 
-		// Настройка agent_config
+		// Настройка agent_configs
 		adjust_agent_configs();
 
 		// Настройка env_config
@@ -86,8 +87,6 @@ virtual class base_test extends uvm_test;
 		);
 		env_h     = env::type_id::create("env_h", this);
 
-
-
 		// Мой report_server создается только если симуляция запустилась с нужным флагом
 `ifdef USE_CUSTOM_REPORT_SERVER
 		my_server = new();
@@ -96,8 +95,6 @@ virtual class base_test extends uvm_test;
 
 		// Создается компонент для запуска последовательности инициализации устройства
 		initiator_h = initiator::type_id::create("initiator_h", this);
-
-
 
 		// Вызов дополнительных действий при построении теста
 		build_hooks();

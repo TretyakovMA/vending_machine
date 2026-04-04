@@ -6,7 +6,6 @@ class emergency_driver extends base_driver #(
 );
 
     `uvm_component_utils(emergency_driver)
-    `uvm_register_cb(emergency_driver, emergency_driver_cb)
 
     function new(string name, uvm_component parent);
 		super.new(name, parent);
@@ -37,8 +36,6 @@ class emergency_driver extends base_driver #(
 		vif.jam_detect     <= tr.jam_detect;
 		vif.power_loss     <= tr.power_loss;
         `uvm_info(get_type_name(), {"Send transaction: ", tr.convert2string()}, UVM_MEDIUM)
-
-        `uvm_do_callbacks(emergency_driver, emergency_driver_cb, post_drive(vif))
     endtask: _drive_transaction_
 
 endclass

@@ -1,9 +1,15 @@
-`ifndef BASE_MACROS
-`define BASE_MACROS
+`ifndef CUSTOM_REPORT_MACROS
+`define CUSTOM_REPORT_MACROS
 
     `define START_TEST_STR {\
         "\n",{50{"#"}},\
         "   \033[35mStart Test\033[0m   ",\
+        {50{"#"}}\
+    }
+
+    `define START_TEST_STR_NC {\
+        "\n",{50{"#"}},\
+        "   Start Test   ",\
         {50{"#"}}\
     }
 
@@ -47,10 +53,18 @@
     `define RES_STR_1 {"\n", {51{"!"}}, "   Result   ", {51{"!"}}, "\n"}
     `define RES_STR_2 {"\n", {114{"!"}}}
 
+
     `define RES_SUC_STR{\
         `RES_STR_1, \
         {49{" "}}, \
         "\033[32mTest successful\033[0m", \
+        `RES_STR_2\
+    }
+
+    `define RES_SUC_STR_NC{\
+        `RES_STR_1, \
+        {49{" "}}, \
+        "Test successful", \
         `RES_STR_2\
     }
 
@@ -61,10 +75,25 @@
         `RES_STR_2\
     }
 
+    `define RES_FAILD_STR_NC{\
+        `RES_STR_1, \
+        {52{" "}}, \
+        "Test failed", \
+        `RES_STR_2\
+    }
+
+
     `define END_TEST_STR {\
         "\n", \
         {51{"#"}},\
         "   \033[35mEnd Test\033[0m   ", \
+        {51{"#"}}\
+    }
+
+    `define END_TEST_STR_NC {\
+        "\n", \
+        {51{"#"}},\
+        "   End Test   ", \
         {51{"#"}}\
     }
 

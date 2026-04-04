@@ -33,9 +33,9 @@ DEFINE_C_FUNCTIONS   = +define+USE_C_FUNCTIONS
 DEFINE_REPORT_SERVER = +define+USE_CUSTOM_REPORT_SERVER
 
 # Определения тестов и количества запусков (<имя_теста>:<количество_запусков>)
-TESTS = check_write_test:0 \
-		check_read_test:0 \
-		unauthorized_write_register_test:1
+TESTS = buy_for_euros_after_change_exchange_rate_test:1 \
+		check_alarm_test:0 \
+		unauthorized_write_register_test:0
 
 # =============================================================================
 # Собираем все цели для симуляции
@@ -69,15 +69,11 @@ $(foreach test,$(TESTS),$(eval SIM_TARGETS += sim_$(word 1,$(subst :, ,$(test)))
 $(foreach test,$(TESTS),$(eval sim_$(word 1,$(subst :, ,$(test))): ; @$(MAKE) sim TEST_NAME=$(word 1,$(subst :, ,$(test))) RUN_COUNT=$(word 2,$(subst :, ,$(test)))))
 
 run_sims: $(SIM_TARGETS) merge_coverage
-
-#start_sim: 
-#	@echo. > errors.log
 	
 # Основная цель симуляции
 sim:
 	@for /L %%i in (1,1,$(RUN_COUNT)) do @( \
 		echo Simulation #%%i start for $(TEST_NAME) & \
-		@echo. > sim_log_$(strip $(TEST_NAME))_%%i.log & \
 		vsim -c \
 		-cvgperinstance \
 		-wlf "vsim_$(strip $(TEST_NAME))_%%i.wlf" \
@@ -92,11 +88,12 @@ sim:
 		$(basename $(TOP_MODULE)) \
 		-coverage \
 		-sv_seed $(SEED) \
-		"+UVM_TESTNAME=$(strip $(TEST_NAME))" \
-		"+RUN_COUNT=%%i" \
-		"+UVM_VERBOSITY=$(strip $(VERBOSITY))" \
+		+UVM_TESTNAME=$(strip $(TEST_NAME)) \
+		+RUN_COUNT=%%i \
+		+UVM_VERBOSITY=$(strip $(VERBOSITY)) \
 		-sv_lib $(PROJECT_DIR)/work/c_functions \
 		-sv_lib $(UVM_DPI) \
+		+UVM_REPORT_NOCOLOR \
 	)
 	@echo "All simulations completed for $(TEST_NAME)"
 

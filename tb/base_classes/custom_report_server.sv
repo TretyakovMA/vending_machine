@@ -1,12 +1,12 @@
-`ifndef MY_REPORT_SERVER
-`define MY_REPORT_SERVER
+`ifndef CUSTOM_REPORT_SERVER
+`define CUSTOM_REPORT_SERVER
 
 `ifdef USE_C_FUNCTIONS
 import "DPI-C" function string get_simulation_start_time();
 `endif
 
 `ifdef USE_CUSTOM_REPORT_SERVER
-class my_report_server extends uvm_default_report_server;
+class custom_report_server extends uvm_default_report_server;
 
     // ANSI-коды цветов для терминала
     localparam string RED             = "\033[31;0m";
@@ -102,7 +102,6 @@ class my_report_server extends uvm_default_report_server;
         log_header = $sformatf("---------- Test: %s, Run: %s, Seed: %0d, Start time: %s ----------\n", 
                               test_name, run_count, seed, start_time_sim);
         $fdisplay(sim_log_fd, "%s", log_header);
-        $fflush(sim_log_fd);
         
     endfunction
 
@@ -110,17 +109,14 @@ class my_report_server extends uvm_default_report_server;
         
         // Запись в sim_log_*.log для всех сообщений
         $fdisplay(sim_log_fd, "%s", no_ansi_msg);
-        $fflush(sim_log_fd);
 
         if (report_message.get_severity() inside {UVM_WARNING, UVM_ERROR, UVM_FATAL}) begin
             if (has_errors == 0) begin
                 $fdisplay(errors_fd, "%s", log_header);
-                $fflush(errors_fd);
             end
 
             has_errors = 1;
             $fdisplay(errors_fd, "%s", no_ansi_msg);
-            $fflush(errors_fd);  // Сбрасываем буфер для гарантии записи
         end
         super.execute_report_message(report_message, composed_message);
     endfunction: execute_report_message
@@ -142,21 +138,37 @@ class my_report_server extends uvm_default_report_server;
 
         string sev_str, time_str, id_str, msg_str, file_str;
 
-        
-        
+
+
+`ifdef CUSTOM_REPORT_MACROS
+        if(message.len() > 100 && (message[1] == "#" || message[1] == "!"))
+            case(message)
+                `START_TEST_STR: msg_str = `START_TEST_STR_NC;
+                `RES_SUC_STR:    msg_str = `RES_SUC_STR_NC;
+                `RES_FAILD_STR:  msg_str = `RES_FAILD_STR_NC;
+                `END_TEST_STR:   msg_str = `END_TEST_STR_NC;
+                default:         msg_str = message;
+            endcase
+        else
+            msg_str = message;
+`else 
+        msg_str = message;
+`endif
+
+
 
         if (filename == "")
             file_str = "";
         else
             file_str = $sformatf("%s |Line: %2d\n", filename, line);
 
-        no_ansi_msg = $sformatf("%s\n%s%s | %-21s | %s: \n%s",
+        no_ansi_msg = $sformatf("%s\n%sTime: %0t | %-21s | %s: \nMessage: %s\n\n",
                         severity.name(),
                         file_str,
-                        {"Time: ", $sformatf("%0t", $time)},
+                        $time,
                         name,
                         id,
-                        {"Message: ", message, "\n\n"}
+                        msg_str
         ); 
 
         if(no_color) begin

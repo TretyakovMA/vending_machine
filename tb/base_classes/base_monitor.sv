@@ -37,14 +37,9 @@ virtual class base_monitor #(
 	endfunction: new
 
 
-
-`ifndef BASE_AGENT_CONFIG
-	// Минимальная заглушка для базовой конфигурации, если она не используется
-	class base_agent_config #(type INTERFACE_TYPE) extends uvm_object;
-	endclass: base_agent_config
-`endif
-
+`ifdef BASE_AGENT_CONFIG
 	local base_agent_config #(INTERFACE_TYPE) config_h;
+`endif
 
 	// Интерфейс, через который монитор получает сигналы от DUT.
 	protected INTERFACE_TYPE vif;
@@ -81,55 +76,48 @@ virtual class base_monitor #(
 	// Метод для установки конфигурации монитора, если не используется base_agent_config
 	// Пример переопределения:
 	//
-	// virtual function void set_mon_cfg();
-	//    if (!uvm_config_db #(my_vif)::get(this, "", "my_vif", vif))
+	// virtual function void get_mon_cfg();
+	//    if (!uvm_config_db #(virtual my_if)::get(this, "", "my_vif", vif))
 	//        `uvm_fatal(get_type_name(), "Failed to get virtual interface from config_db")
 	//	  reset_sensitive = 1;
-	// endfunction: set_mon_cfg
-	virtual function void set_mon_cfg();
-		`uvm_fatal(get_type_name(), "set_mon_cfg() must be overridden if not using base_agent_config")
-	endfunction: set_mon_cfg
+	// endfunction: get_mon_cfg
+	virtual function void get_mon_cfg();
+		`uvm_fatal(get_type_name(), "get_mon_cfg() must be overridden if not using base_agent_config")
+	endfunction: get_mon_cfg
 
 
 
 	//=========================== Основная логика ===============================
 
 	// Бесконечный поиск сигнала сброса
-	// При каждом assert rst_n:
+	// При каждом assert rst:
     //   1. Убивает текущий _monitor_loop_.
     //   2. Запускает новый экземпляр _monitor_loop_ в отдельном процессе.
-	extern local task _handle_reset_();
+	extern local task _handle_reset_(uvm_phase phase);
 
-	// Основной рабочий цикл драйвера.
+	// Основной рабочий цикл монитора.
 	//   • Ждёт снятия сброса (инициализация DUT или перезапуск после сброса).
     //   • В бесконечном цикле: ждет событие начала мониторинга  
 	//     -> вызывает _collect_transaction_data_
     //     -> отправляет транзакцию с помошью write.
     //   Этот процесс может быть убит и перезапущен задачей _handle_reset_.
-	extern local task _monitor_loop_(); 
+	extern local task _monitor_loop_(uvm_phase phase); 
 
 	
 
 
 	//=========================== Фазы UVM ================================
 	
-	local function void build_phase(uvm_phase phase);
-		super.build_phase(phase);
-		if(uvm_config_db #(base_agent_config #(INTERFACE_TYPE))::get(
-			this, "", "config", config_h
-		)) begin
-			vif             = config_h.vif;
-			reset_sensitive = config_h.reset_sensitive;
-		end
+	// Получение конфигурации из config_db, настройка интерфейса и анализ-порта.
+	extern local function void build_phase(uvm_phase phase);
 
-		else begin
-			`uvm_warning(get_type_name(), "Failed to get agent_config. Attempting to set monitor config via set_mon_cfg()")
-			set_mon_cfg();
-		end
-		
-		ap = new("ap", this);
-	endfunction: build_phase
+	// Проверка, что интерфейс установлен
+	local task reset_phase(uvm_phase phase);
+		super.reset_phase(phase);
+		if(vif == null) `uvm_fatal(get_type_name(), "Virtual interface not set")
+	endtask: reset_phase
 
+	// Основная работа монитора.
 	local task main_phase(uvm_phase phase);
 		super.main_phase(phase);
 
@@ -139,14 +127,14 @@ virtual class base_monitor #(
         	// 2. _handle_reset_ — мониторинг сброса
         	// join_any нужен, чтобы main_phase не блокировался навсегда
 		if(reset_sensitive) fork
-			_handle_reset_();
-			_monitor_loop_();
-		join
+			_handle_reset_(phase);
+			_monitor_loop_(phase);
+		join_any
 		
 
 		// Если reset_sensitive = 0, то монитор игнорирует сброс
 		else begin
-			_monitor_loop_();
+			_monitor_loop_(phase);
 		end
 	endtask: main_phase
 	
@@ -175,7 +163,34 @@ endtask
 
 
 
-task base_monitor::_handle_reset_(); 
+function void base_monitor::build_phase(uvm_phase phase);
+	super.build_phase(phase);
+`ifdef BASE_AGENT_CONFIG
+	if(uvm_config_db #(base_agent_config #(INTERFACE_TYPE))::get(
+		this, "", "config", config_h
+	)) begin
+		vif             = config_h.vif;
+		reset_sensitive = config_h.reset_sensitive;
+
+		`uvm_info(get_type_name(), "Configuration taken from base_agent_config", UVM_FULL)
+	end
+
+	else begin
+		`uvm_warning(get_type_name(), 
+            "base_agent_config not found in config_db. Falling back to get_mon_cfg()")
+		get_mon_cfg();
+	end
+`else
+	`uvm_warning(get_type_name(), 
+		"BASE_AGENT_CONFIG not defined. Using direct get_mon_cfg()")
+	get_mon_cfg();
+`endif
+	ap = new("ap", this);
+endfunction: build_phase
+
+
+
+task base_monitor::_handle_reset_(uvm_phase phase); 
 	forever begin
 		// Ждём, пока сигнал сброса станет активным
 		_wait_for_reset_assert_();
@@ -187,14 +202,14 @@ task base_monitor::_handle_reset_();
 		// Запускаем новый экземпляр _monitor_loop_ в отдельном процессе
         // (join_none, чтобы _handle_reset_ продолжал жить)
 		fork
-            _monitor_loop_(); 
+            _monitor_loop_(phase); 
 		join_none
 	end
 endtask: _handle_reset_
 
 
 
-task base_monitor::_monitor_loop_(); 
+task base_monitor::_monitor_loop_(uvm_phase phase); 
 
 	// Ждём снятия сигнала сброса
 	_wait_for_reset_deassert_(); 
@@ -204,6 +219,10 @@ task base_monitor::_monitor_loop_();
 		// Ждем момента, когда нужно начинать мониторинг
 		_wait_for_sampling_event_();
 
+		// Если прошло условие начала мониторинга, то поднимаем возражение
+		// чтобы тест не завершился, пока DUT работает
+		phase.raise_objection(this);
+
 		// Создаем новую транзакцию
 		transaction = TRANSACTION_TYPE::type_id::create("tr");
 		`uvm_info(get_type_name(), "Start work", UVM_FULL)
@@ -211,10 +230,15 @@ task base_monitor::_monitor_loop_();
 		// Собираем данные транзакции
 		_collect_transaction_data_(transaction); 
 
+`ifdef CUSTOM_REPORT_MACROS
 		`uvm_info(get_type_name(), `GET_TR_STR(transaction), UVM_LOW)
+`endif
 		// Отправляем транзакцию на анализ
 		ap.write(transaction); 
 		`uvm_info(get_type_name(), "End work", UVM_FULL)
+
+		// Транзакция отправлена в scoreboard, можно снять возражение
+		phase.drop_objection(this);
 			
 	end
 endtask: _monitor_loop_

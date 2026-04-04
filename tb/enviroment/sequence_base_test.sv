@@ -37,8 +37,13 @@ virtual class sequence_base_test #(
     // Функция для создания callback
 	// Настраивается в производных тестах, если требуется
 	virtual function void create_callbacks(); 
-
+        return;
 	endfunction: create_callbacks
+
+    // Функция для настройки времени задержки после фазы main_phase
+    virtual function int set_drain_time();
+        return 0;
+    endfunction: set_drain_time
 
     
     
@@ -62,6 +67,11 @@ virtual class sequence_base_test #(
     endfunction: connect_phase
     
     local task main_phase(uvm_phase phase);
+        // Установка задержки после фазы main_phase, если она задана
+        int drain_time = set_drain_time();
+        if(drain_time != 0)
+            phase.phase_done.set_drain_time(this, drain_time * 1000);
+
         super.main_phase(phase);
 
         // Создание и запуск последовательности

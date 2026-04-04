@@ -39,13 +39,9 @@ virtual class base_driver #(
 
 
 
-`ifndef BASE_AGENT_CONFIG
-	// Минимальная заглушка для базовой конфигурации, если она не используется
-	class base_agent_config #(type INTERFACE_TYPE) extends uvm_object;
-	endclass: base_agent_config
-`endif
-
+`ifdef BASE_AGENT_CONFIG
 	local base_agent_config #(INTERFACE_TYPE) config_h;
+`endif
 
 	// Интерфейс, через который драйвер общается с DUT.
 	protected INTERFACE_TYPE vif; 
@@ -80,14 +76,14 @@ virtual class base_driver #(
 	// Метод для установки конфигурации драйвера, если не используется base_agent_config
 	// Пример переопределения:
 	//
-	// virtual function void set_drv_cfg();
-	//    if (!uvm_config_db #(my_vif)::get(this, "", "my_vif", vif))
+	// virtual function void get_drv_cfg();
+	//    if (!uvm_config_db #(virtual my_if)::get(this, "", "my_vif", vif))
 	//        `uvm_fatal(get_type_name(), "Failed to get virtual interface from config_db")
 	//	  reset_sensitive = 1;
-	// endfunction: set_drv_cfg
-	virtual function void set_drv_cfg();
-		`uvm_fatal(get_type_name(), "set_drv_cfg() must be overridden if not using base_agent_config")
-	endfunction: set_drv_cfg
+	// endfunction: get_drv_cfg
+	virtual function void get_drv_cfg();
+		`uvm_fatal(get_type_name(), "get_drv_cfg() must be overridden if not using base_agent_config")
+	endfunction: get_drv_cfg
 
 
 
@@ -111,29 +107,14 @@ virtual class base_driver #(
 
 
 	//============================== Фазы UVM ====================================
-	
-	local function void build_phase(uvm_phase phase);
-		super.build_phase(phase);
-		if(uvm_config_db #(base_agent_config #(INTERFACE_TYPE))::get(
-			this, "", "config", config_h
-		)) begin
-			vif             = config_h.vif;
-			reset_sensitive = config_h.reset_sensitive;
-		end
 
-		else begin
-			`uvm_warning(get_type_name(), "Failed to get agent_config. Attempting to set driver config via set_drv_cfg()")
-			set_drv_cfg(); 
-		end
-		
-	endfunction: build_phase
+	// Получение конфигурации из config_db, настройка интерфейса.
+	extern local function void build_phase(uvm_phase phase);
 
 	// Сбрасываем интерфейс в начале тестирования.
 	local task reset_phase(uvm_phase phase);
 		super.reset_phase(phase);
-		if(vif == null) begin
-			`uvm_fatal(get_type_name(), "Virtual interface not set")
-		end
+		if(vif == null) `uvm_fatal(get_type_name(), "Virtual interface not set")
 		_reset_();
 	endtask: reset_phase
 	
@@ -183,6 +164,33 @@ task base_driver::_wait_for_reset_assert_();
     `uvm_fatal(get_type_name(),
         "_wait_for_reset_assert_() must be overridden when reset_sensitive == 1")
 endtask
+
+
+
+function void base_driver::build_phase(uvm_phase phase);
+	super.build_phase(phase);
+`ifdef BASE_AGENT_CONFIG
+	if(uvm_config_db #(base_agent_config #(INTERFACE_TYPE))::get(
+		this, "", "config", config_h
+	)) begin
+		vif             = config_h.vif;
+		reset_sensitive = config_h.reset_sensitive;
+
+		`uvm_info(get_type_name(), "Configuration taken from base_agent_config", UVM_FULL)
+	end
+
+	else begin
+		`uvm_warning(get_type_name(), 
+            "base_agent_config not found in config_db. Falling back to get_drv_cfg()")
+		get_drv_cfg();
+	end
+`else
+	`uvm_warning(get_type_name(), 
+		"BASE_AGENT_CONFIG not defined. Using direct get_drv_cfg()")
+	get_drv_cfg();
+`endif
+
+endfunction: build_phase
 
 
 

@@ -95,7 +95,10 @@ class user_monitor extends base_monitor #(
 
 	// Задача для отслеживания таймаута на ожидание
 	task timeout(user_transaction tr);
-		bit[11:0] idle_timeout = reg_block_h.vend_cfg.idle_timeout.get();
+		bit[11:0] idle_timeout;
+		idle_timeout = reg_block_h.vend_cfg.idle_timeout.get_mirrored_value();
+		`uvm_info(get_type_name(), $sformatf("Idle timeout = %0d", idle_timeout), UVM_FULL)
+		
 		repeat(idle_timeout) @(posedge vif.clk);
 		
 		`uvm_info(get_type_name(), "Idle timeout", UVM_LOW)
