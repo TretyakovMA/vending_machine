@@ -1,0 +1,16 @@
+`include "../sequences/integration_sequences/integration_base_virtual_seq.sv"
+
+`include "../sequences/integration_sequences/buy_one_item_after_change_price_vseq.sv"
+`include "../sequences/integration_sequences/c_s_after_change_price_vseq.sv"
+`include "../sequences/integration_sequences/c_s_after_change_discount_vseq.sv"
+
+`include "../sequences/integration_sequences/buy_for_dollars_after_change_exchange_rate_vseq.sv"
+`include "../sequences/integration_sequences/buy_for_euros_after_change_exchange_rate_vseq.sv"
+`include "../sequences/integration_sequences/c_s_after_change_exchange_rate_vseq.sv"
+
+`include "../sequences/integration_sequences/c_s_after_change_all_registers_vseq.sv"
+
+`include "../sequences/integration_sequences/c_s_with_emergency_vseq.sv"  
+`include "../sequences/integration_sequences/write_registers_with_emergency_vseq.sv"  
+
+`include "../sequences/integration_sequences/c_s_with_reset_vseq.sv"

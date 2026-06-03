@@ -1,1 +1,0 @@
-`include "../emergency_sequences/activate_emergency_signals_seq.sv"

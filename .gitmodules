@@ -1,0 +1,3 @@
+[submodule "tb/uvm_base_classes"]
+	path = tb/uvm_base_classes
+	url = https://github.com/TretyakovMA/uvm_base_classes

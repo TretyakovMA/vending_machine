@@ -1,0 +1,15 @@
+`include "../sequences/user_sequences/user_base_seq.sv"
+
+`include "../sequences/user_sequences/simple_test_seq.sv"
+`include "../sequences/user_sequences/one_coin_seq.sv"
+`include "../sequences/user_sequences/few_coin_seq.sv"
+`include "../sequences/user_sequences/dollars_seq.sv"
+`include "../sequences/user_sequences/euros_seq.sv"
+`include "../sequences/user_sequences/random_client_without_change_seq.sv"
+`include "../sequences/user_sequences/client_session_without_errors_seq.sv"
+`include "../sequences/user_sequences/lots_of_purchases_seq.sv"
+
+`include "../sequences/user_sequences/buy_one_item_seq.sv"
+`include "../sequences/user_sequences/invalid_client_id_seq.sv"
+`include "../sequences/user_sequences/invalid_coin_denomination_seq.sv"
+`include "../sequences/user_sequences/insufficient_funds_seq.sv"

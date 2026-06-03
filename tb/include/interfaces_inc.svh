@@ -1,0 +1,5 @@
+`include "../interfaces/reset_interface.sv"
+`include "../interfaces/user_interface.sv"
+`include "../interfaces/admin_interface.sv"
+`include "../interfaces/register_interface.sv"
+`include "../interfaces/emergency_interface.sv"

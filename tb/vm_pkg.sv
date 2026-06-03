@@ -1,16 +1,16 @@
-`define NUM_ITEMS 10
-`define MAX_CLIENTS 100
-
-
-
 `ifndef VM_PKG
 `define VM_PKG
 
-`include "interfaces/full_interface.svh"
+
+`define NUM_ITEMS 10
+`define MAX_CLIENTS 100
+
+// Interfaces
+`include "include/interfaces_inc.svh"
 
 package vm_pkg;
 	timeunit      1ns;
-	timeprecision 100ps;
+	timeprecision 1ns;
 	
 	typedef enum bit[1:0] {
 		RUB = 2'b00, 
@@ -28,7 +28,7 @@ package vm_pkg;
 
 	//==============================================================================
 	// Base Classes
-	`include "base_classes/base_classes_pkg.sv"
+	`include "uvm_base_classes/base_classes_pkg.sv"
 	//==============================================================================
 
 
@@ -43,120 +43,95 @@ package vm_pkg;
 	//==============================================================================
 
 
-
 	//==============================================================================
-	// Reset_components
-	`include "src/reset_src/included_files/reset_components_inc.svh"
-	//==============================================================================
-
-
-
-	//==============================================================================
-	//Registers
-	`include "src/register_src/included_files/registers_inc.svh"
+	// Registers
+	`include "include/registers_inc.svh"
 	//==============================================================================
 
 
 
 	//==============================================================================
-	// Register Components
-	`include "src/register_src/included_files/register_components_inc.svh"
+	// Callbacks
+	`include "include/callbacks_inc.svh"
 	//==============================================================================
 
 
 
 	//==============================================================================
-	// Emergency Components
-	`include "src/emergency_src/included_files/emergency_components_inc.svh"
-	//==============================================================================
+	// Agents
+
+	// Reset agent
+	`include "include/reset_agent_inc.svh"
+
+	// Register agent
+	`include "include/register_agent_inc.svh"
 	
-
-
-	//==============================================================================
-	// User Components
-	`include "src/user_src/included_files/user_components_inc.svh"
-	//==============================================================================
+	// Emergency agent
+	`include "include/emergency_agent_inc.svh"
 	
+	// User agent
+	`include "include/user_agent_inc.svh"
 
-
-	//==============================================================================
-	// Admin Components
-	`include "src/admin_src/included_files/admin_components_inc.svh"
-	//==============================================================================
-
-
-
-	//==============================================================================
-	// VM_classes
-	`include "vm_classes/vm_classes_inc.svh"
+	// Admin agent
+	`include "include/admin_agent_inc.svh"
 	//==============================================================================
 
 
 
+	
+	// Scoreboard
+	`include "include/scoreboard_inc.svh"
+	// Coverage
+	`include "include/coverage_inc.svh"
+
+
+
 	//==============================================================================
+	// Sequences
+
 	// Reset sequences
-	`include "src/reset_src/included_files/reset_sequences_inc.svh"
+	`include "include/reset_sequences_inc.svh"
+
+	// User Sequences
+	`include "include/user_sequences_inc.svh"
+	
+	// Admin Sequences
+	`include "include/admin_sequences_inc.svh"
+	
+	// Register Sequences
+	`include "include/register_sequences_inc.svh"
+	
+	// Emergency Sequences
+	`include "include/emergency_sequences_inc.svh"
+	
+	// Integration Sequences
+	`include "include/integration_sequences_inc.svh"
 	//==============================================================================
 
 	
 
 	//==============================================================================
 	// Environment
-	`include "enviroment/enviroment_inc.svh"
+	`include "include/environment_inc.svh"
 	//==============================================================================
 
 
 
+	
 	//==============================================================================
-	// User Sequences
-	`include "src/user_src/included_files/user_sequences_inc.svh"
-	//==============================================================================
-
-	//==============================================================================
+	// Tests
+	
 	// User Tests
-	`include "src/user_src/included_files/user_tests_inc.svh"
-	//==============================================================================
-
-
-
-	//==============================================================================
-	// Admin Sequences
-	`include "src/admin_src/included_files/admin_sequences_inc.svh"
-	//==============================================================================
+	`include "include/user_tests_inc.svh"
 	
-	//==============================================================================
-	// Register Sequences
-	`include "src/register_src/included_files/register_sequences_inc.svh"
-	//==============================================================================
-
-	//==============================================================================
 	// Register Tests
-	`include "src/register_src/included_files/register_tests_inc.svh"
-	//==============================================================================
+	`include "include/register_tests_inc.svh"
 	
-
-
-	//==============================================================================
-	// Emergency Sequences
-	`include "src/emergency_src/included_files/emergency_sequences_inc.svh"
-	//==============================================================================
-
-	//==============================================================================
 	// Emergency Tests
-	`include "src/emergency_src/included_files/emergency_tests_inc.svh"
-	//==============================================================================
-
-
-
-
-	//==============================================================================
-	// Integration Sequences
-	`include "src/integration_src/included_files/integration_sequences_inc.svh"
-	//==============================================================================
-
-	//==============================================================================
+	`include "include/emergency_tests_inc.svh"
+	
 	// Integration Tests
-	`include "src/integration_src/included_files/integration_tests_inc.svh"
+	`include "include/integration_tests_inc.svh"
 	//==============================================================================
 
 

@@ -1,0 +1,16 @@
+`include "../tests/user_tests/user_base_test.sv"
+
+`include "../tests/user_tests/simple_test.sv"
+`include "../tests/user_tests/one_coin_test.sv"
+`include "../tests/user_tests/few_coin_test.sv"
+`include "../tests/user_tests/dollars_test.sv"
+`include "../tests/user_tests/euros_test.sv"
+`include "../tests/user_tests/random_client_without_change_test.sv"
+`include "../tests/user_tests/client_session_without_errors_test.sv"
+`include "../tests/user_tests/lots_of_purchases_test.sv"
+
+`include "../tests/user_tests/coin_timeout_refund_test.sv"
+`include "../tests/user_tests/confirm_timeout_refund_test.sv"
+`include "../tests/user_tests/invalid_client_id_test.sv"
+`include "../tests/user_tests/invalid_coin_denomination_test.sv"
+`include "../tests/user_tests/insufficient_funds_test.sv"
