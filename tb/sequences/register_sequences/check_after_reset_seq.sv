@@ -10,7 +10,10 @@ class check_after_reset_seq extends register_base_seq;
     task body();
         super.body();
 
-        check_registers();
+        //check_registers();
+        foreach(registers[i])begin
+            mirror_reg(registers[i], status, UVM_CHECK, UVM_BACKDOOR);
+		end
 
         reg_block_h.print();
         

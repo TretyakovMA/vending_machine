@@ -11,5 +11,11 @@ class write_registers_with_invalid_password_test extends register_base_test #(
         super.new(name, parent);
     endfunction
 
+    function void build_hooks();
+        register_monitor::type_id::set_type_override(
+            unauthorized_write_monitor::get_type()
+        );
+    endfunction: build_hooks
+
 endclass
 `endif

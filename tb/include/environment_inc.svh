@@ -1,4 +1,5 @@
 `include "../environment/sequence_base_test.sv"
+`include "../environment/register_env.sv"
 `include "../environment/env_config.sv"
 `include "../environment/env.sv"
 `include "../environment/initiator.sv"

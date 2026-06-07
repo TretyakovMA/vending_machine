@@ -19,8 +19,6 @@ class check_write_seq extends register_base_seq;
 				write_random_value(registers[i]);
 			end	
 
-			#1;
-			check_registers();
 			reg_block_h.print();
 		end
 	endtask

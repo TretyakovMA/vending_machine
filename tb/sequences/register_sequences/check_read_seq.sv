@@ -22,13 +22,7 @@ class check_read_seq extends register_base_seq;
             registers.shuffle();
 
             foreach(registers[i]) begin
-                mirrored_value = registers[i].get_mirrored_value();
-
                 mirror_reg(registers[i], status, UVM_CHECK);
-                
-                if(mirrored_value != registers[i].get_mirrored_value()) begin
-                    void '(registers[i].predict(mirrored_value));
-                end
             end
 
             reg_block_h.print();

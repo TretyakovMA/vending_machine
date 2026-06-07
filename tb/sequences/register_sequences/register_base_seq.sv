@@ -42,11 +42,7 @@ class register_base_seq extends uvm_reg_sequence;
     //Функция проверки регистров в DUT с помощью backdoor доступа
     protected task check_registers();
 		foreach(registers[i])begin
-			mirrored_value = registers[i].get_mirrored_value();
             mirror_reg(registers[i], status, UVM_CHECK, UVM_BACKDOOR);
-			if(mirrored_value != registers[i].get_mirrored_value()) begin
-				void '(registers[i].predict(mirrored_value));
-			end
 		end
 	endtask: check_registers
 

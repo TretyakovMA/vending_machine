@@ -12,15 +12,26 @@ class register_env extends uvm_env;
 	register_adapter       adapter_h;
 	register_predictor     predictor_h;
 	vm_reg_block           reg_block_h;
+	vm_reg_access_cb       reg_cb_h;
 	
 	
 	
 	function void build_phase(uvm_phase phase);
+		uvm_reg_field fields[$];
+
 		super.build_phase(phase);
 		predictor_h = register_predictor::type_id::create("predictor_h", this);
 		adapter_h   = register_adapter::type_id::create("adapter_h", this);
 		reg_block_h = vm_reg_block::type_id::create("reg_block_h", this);
 		reg_block_h.build();
+		reg_cb_h    = vm_reg_access_cb::type_id::create("reg_cb_h");
+
+		reg_block_h.get_fields(fields);
+		foreach (fields[i]) begin
+			uvm_reg_field_cb::add(fields[i], reg_cb_h);
+		end
+		
+		uvm_config_db #(vm_reg_access_cb)::set(null, "*", "reg_cb", reg_cb_h);
 		uvm_config_db #(vm_reg_block)::set(null, "*", "reg_block", reg_block_h);
 	endfunction
 	

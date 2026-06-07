@@ -10,9 +10,6 @@ class vm_scoreboard extends uvm_scoreboard;
 	`uvm_analysis_imp_decl(_REGISTER)
 	`uvm_analysis_imp_decl(_EMERGENCY)
 
-	function new(string name, uvm_component parent);
-		super.new(name, parent);
-	endfunction: new
 
 	uvm_analysis_imp_RESET #(reset_transaction, vm_scoreboard) reset_imp;
 	uvm_analysis_imp_USER #(user_transaction, vm_scoreboard) user_imp;
@@ -20,38 +17,63 @@ class vm_scoreboard extends uvm_scoreboard;
 	uvm_analysis_imp_REGISTER #(register_transaction, vm_scoreboard) register_imp;
 	uvm_analysis_imp_EMERGENCY #(emergency_transaction, vm_scoreboard) emergency_imp;
 
-	// Класс для проверки пользовательской транзакции
-	local user_checker       checker_h;
+	function new(string name, uvm_component parent);
+		super.new(name, parent);
+	endfunction: new
 
-	// Текущая и ожидаемая пользовательские транзакции
-	local user_transaction   tr;
-	local user_transaction   exp_tr;
+	// Класс для проверки пользовательской транзакции
+	user_checker checker_h;
+
+	
+	vm_reg_access_cb           reg_cb_h;
+	register_transaction       reg_tr_q[$];
+	virtual register_interface vif;
 
 	// БД накопленных очков клиентов
-	local int                client_points_db[int]; 
+	int client_points_db[int]; 
 
 	// Регистровая модель
-	local vm_reg_block       reg_block_h;
+	vm_reg_block reg_block_h;
 
 	// Флаг наличия сигнала прерывания в время пользовательской сессии
-	local bit                emergency_occurred = 0; 
+	bit emergency_occurred = 0; 
 
 	// Флаг того, что в тесте используется регистровая модель (устанавливается в env)
-	bit                      has_reg_model; 
+	bit has_reg_model; 
 
 	// Флаг, что DUT перешел в режим админа
-	bit                      admin_mode;
+	bit admin_mode;
+
 	// Флаг, что scoreboard ожидает access_error в следующей register_transaction
-	bit                      expect_access_error_next; // Это не костыль, это нестандартное решение
+	bit expect_access_error_next; // Это не костыль, это нестандартное решение
 
 
 	// Функция сброса БД очков клиентов
-	local function void reset_points(); 
+	function void reset_points(); 
 		`uvm_info (get_type_name(), "Resetting client points database", UVM_HIGH)
 		for (int i = 0; i < `MAX_CLIENTS; i++) begin
 			client_points_db[i] = i % 20;
 		end
 	endfunction: reset_points
+
+
+
+	function void update_write_ignore();
+		if (reg_cb_h == null) return;
+
+		if (admin_mode == 0 || emergency_occurred == 1) begin
+			reg_cb_h.write_should_be_ignored = 1;
+			`uvm_info(get_type_name(), 
+				$sformatf("write_should_be_ignored set to 1 (admin_mode=%b, emergency=%b)", 
+					admin_mode, emergency_occurred), UVM_FULL)
+		end
+		else begin
+			reg_cb_h.write_should_be_ignored = 0;
+			`uvm_info(get_type_name(), "write_should_be_ignored set to 0 (admin mode + no emergency)", UVM_FULL)
+		end
+	endfunction: update_write_ignore
+
+
 	
 	//============================== Фазы UVM ====================================
 	function void build_phase(uvm_phase phase);
@@ -72,20 +94,32 @@ class vm_scoreboard extends uvm_scoreboard;
 		
 		// Поиск регистровой модели 
 		if(has_reg_model) begin
+
 			if(!uvm_config_db #(vm_reg_block)::get(this, "", "reg_block", reg_block_h))
 				`uvm_fatal(get_type_name(), "Failed to get reg_block")
-			
+
+			if(!uvm_config_db #(vm_reg_access_cb)::get(this, "", "reg_cb", reg_cb_h))
+				`uvm_fatal(get_type_name(), "Failed to get reg_cb")
+
 			// Чекер получает регистровую модель
 			checker_h.reg_block_h = reg_block_h;
 		end
+
+		// Поиск интерфейса
+		if(!uvm_config_db #(virtual interface register_interface)::get(
+			this, "", "register_vif", vif
+		)) `uvm_fatal(get_type_name(), "Faild to get register interface")
+
 	endfunction: connect_phase
 
 	task reset_phase(uvm_phase phase);
 		super.reset_phase(phase);
 		// Сброс очков и регистровой модели
 		reset_points();
-		if(has_reg_model)
+		if(has_reg_model) begin
 			reg_block_h.reset();
+			update_write_ignore();
+		end
 	endtask: reset_phase
 	
 
@@ -101,6 +135,7 @@ class vm_scoreboard extends uvm_scoreboard;
 		emergency_occurred       = 0;
 		admin_mode               = 0;
 		expect_access_error_next = 0;
+		update_write_ignore();
 
 		`uvm_info(get_type_name(), `END_TEST_STR, UVM_LOW)
 	endfunction: write_RESET
@@ -113,13 +148,21 @@ class vm_scoreboard extends uvm_scoreboard;
 			admin_mode = 1;
 			`uvm_info(get_type_name(), "Admin mode detected", UVM_LOW)
 		end
-		else 
+		else begin
 			admin_mode = 0;
+		end
+
+		update_write_ignore();
 	endfunction: write_ADMIN
 
 
-	// Проверка появления сигнала access_error при попытке записи без admin_mode
+	
+	// Обработка регистровых транзакций
 	function void write_REGISTER (register_transaction t);
+		// Сохранение транзакции для проверки в main_phase
+		reg_tr_q.push_back(t);
+
+		// Проверка появления сигнала access_error при попытке записи без admin_mode
     	// 1. Сначала проверяем результат предыдущей записи (access_error пришёл на этом такте)
 		if (expect_access_error_next) begin
 			if (t.access_error != 1) begin
@@ -142,7 +185,65 @@ class vm_scoreboard extends uvm_scoreboard;
 			end
 		end
 	endfunction: write_REGISTER
+
 	
+	function uvm_reg get_reg_by_transaction(
+		vm_reg_block         reg_block,
+		register_transaction tr
+	);
+		uvm_reg        reg_handle;
+		uvm_reg_addr_t offset;
+
+		if (reg_block == null) begin
+			`uvm_error(get_type_name(), "reg_block is null")
+			return null;
+		end
+		if (tr == null) begin
+			`uvm_error(get_type_name(), "transaction is null")
+			return null;
+		end
+
+		// Адрес в транзакции — 8 бит
+		offset = tr.regs_addr;
+
+		reg_handle = reg_block.reg_map.get_reg_by_offset(offset);
+
+		if (reg_handle == null) begin
+			`uvm_warning(get_type_name(), 
+				$sformatf("No register found at address 0x%0h", offset))
+		end
+
+		return reg_handle;
+
+	endfunction: get_reg_by_transaction
+
+
+
+
+	// Проверка операций записи в регистры
+	task main_phase(uvm_phase phase);
+		register_transaction tr;
+		uvm_reg 			 register;
+		uvm_status_e		 status;
+
+		super.main_phase(phase);
+		forever begin 
+			wait ((reg_tr_q.size() > 0) && (reg_tr_q[0].regs_we == 1));
+			phase.raise_objection(this);
+
+			tr = reg_tr_q.pop_front();
+			register = get_reg_by_transaction(reg_block_h, tr);
+
+			@(posedge vif.clk);
+			
+			register.mirror(status, UVM_CHECK, UVM_BACKDOOR);
+
+			phase.drop_objection(this);
+		end
+	endtask: main_phase
+	
+
+
 
 	// Обработка транзакций сигналов прерывания
 	function void write_EMERGENCY (emergency_transaction t);
@@ -156,10 +257,19 @@ class vm_scoreboard extends uvm_scoreboard;
 		if ((t.alarm != 1) && (t.tamper_detect || t.jam_detect || t.power_loss)) begin
 			`uvm_error(get_type_name(), "Alarm is not set to 1")
 		end
+
+		update_write_ignore();
 	endfunction: write_EMERGENCY
 	
+
+
+
 	// Обработка пользовательских транзакций
 	function void write_USER (user_transaction t);
+
+		// Текущая и ожидаемая пользовательские транзакции
+		user_transaction   tr;
+		user_transaction   exp_tr;
 
 		// Переменные для изменения количества товаров после покупки
 		int item_count;
@@ -189,7 +299,7 @@ class vm_scoreboard extends uvm_scoreboard;
 		item_id    = $clog2(tr.item_out);
 		item_count = reg_block_h.vend_item[item_id].item_count.get();
 
-		// Если сигнала нет, а регистровая модель говорит что товар закончился, то это ошибка
+		// Если сигнала нет, а регистровая модель говорит, что товар закончился, то это ошибка
 		if (item_count == 0 && (tr.item_empty != tr.item_out)) begin
 			`uvm_error(get_type_name(), $sformatf("The item_empty signal is incorrect; should be: %b", tr.item_out))
 			`uvm_info(get_type_name(), `RES_FAILD_STR, UVM_LOW)

@@ -18,7 +18,7 @@ class activate_emergency_signals_seq extends uvm_sequence #(emergency_transactio
 		
 		tr = emergency_transaction::type_id::create("tr");
 		start_item(tr);
-		assert (tr.randomize());
+		assert (tr.randomize() with {time_delay inside {[10:100]};});
 		
 		fork
 			begin

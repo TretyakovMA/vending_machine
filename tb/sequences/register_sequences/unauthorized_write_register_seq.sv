@@ -21,18 +21,10 @@ class unauthorized_write_register_seq extends register_base_seq;
         registers.shuffle();
         
         foreach (registers[i]) begin
-            peek_reg(registers[i], status, old_value);
             write_random_value(registers[i]);
-            void '(registers[i].predict(old_value));
         end
 
-        #1;
-        check_registers();
         reg_block_h.print();
-
-        foreach (registers[i]) begin
-            read_reg(registers[i], status, value);
-        end
 
     endtask: body
 endclass

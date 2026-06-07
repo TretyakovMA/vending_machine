@@ -62,8 +62,8 @@ class env extends uvm_env;
 
 		// Регистры и необходимые им компоненты создаются по флагу has_register_env
 		if(env_config_h.has_register_env) begin
-			register_env_h    = register_env::type_id::create("register_env_h", this);
 			
+			register_env_h = register_env::type_id::create("register_env_h", this);
 			scoreboard_h.has_reg_model = 1; //Разрешаем доступ scoreboard к регистровой модели
 		end
 
