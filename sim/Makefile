@@ -3,9 +3,7 @@
 # =============================================================================
 ifeq ($(OS),Windows_NT)
     # Настройки для Windows
-    DLL_EXT      := dll
-    DPI_OS_DIR   := win64
-    CFLAGS       := -shared
+	DPI_OS_DIR   := win64
     RM           := del /Q /F
     RMDIR        := rmdir /S /Q
     # Команда создания библиотеки, если её нет
@@ -14,9 +12,7 @@ ifeq ($(OS),Windows_NT)
     SUB_ERR      := 2>NUL || rem
 else
     # Настройки для Linux
-    DLL_EXT      := so
-    DPI_OS_DIR   := linux_x86_64
-    CFLAGS       := -shared -fPIC
+	DPI_OS_DIR   := linux_x86_64
     RM           := rm -f
     RMDIR        := rm -rf
     CREATE_WORK  := vlib work
@@ -40,14 +36,12 @@ TB_PKG        ?= vm_pkg.sv
 UVM_SRC        = $(QUESTASIM_DIR)/verilog_src/uvm-1.2/src
 UVM_DPI        = $(QUESTASIM_DIR)/uvm-1.2/$(DPI_OS_DIR)/uvm_dpi
 
-C_DLL          = $(SIM_DIR)/work/c_functions.$(DLL_EXT)
-C_SRC          = $(TB_DIR)/uvm_base_classes/c_functions.c
-
 # Переменные от Python
-TEST_NAME     ?= base_test
-SEED          ?= random
-VERBOSITY     ?= UVM_LOW
-ITER          ?= 1
+TEST_NAME      ?= simple_test
+SEED           ?= random
+VERBOSITY      ?= UVM_LOW
+ITER           ?= 1
+SIM_START_TIME ?= N/A
 
 # =============================================================================
 # Правила сборки (одинаковые для всех ОС)
@@ -58,15 +52,11 @@ all: compile sim
 pre_compile:
 	@$(CREATE_WORK)
 
-$(C_DLL): $(C_SRC) pre_compile
-	gcc $(CFLAGS) -o $@ $< -I"$(QUESTASIM_DIR)/include"
-
-compile: pre_compile $(C_DLL)
+compile: pre_compile
 	vlog -sv +acc -cover f +incdir+$(UVM_SRC) \
 		$(DUT_DIR)/$(DUT_MODULE) \
 		$(TB_DIR)/$(TB_PKG) \
 		$(TB_DIR)/$(TOP_MODULE).sv \
-		+define+USE_C_FUNCTIONS \
 		+define+USE_CUSTOM_REPORT_SERVER
 
 sim:
@@ -80,11 +70,12 @@ sim:
 		"+UVM_TESTNAME=$(TEST_NAME)" \
 		"+RUN_COUNT=$(ITER)" \
 		"+UVM_VERBOSITY=$(VERBOSITY)" \
-		-sv_lib work/c_functions \
+		"+SIM_START_TIME=$(SIM_START_TIME)" \
 		-sv_lib $(UVM_DPI)
 
+UCDB_FILES = $(wildcard ucdb_*.ucdb)
 merge_coverage:
-	vcover merge -testassociated -verbose -out total.ucdb *.ucdb
+	vcover merge -testassociated -verbose -out total.ucdb $(foreach f,$(UCDB_FILES),"$(f)")
 
 clean:
 	-$(RM) transcript *.wlf *.ucdb *.log *.vcd total.ucdb $(SUB_ERR)
