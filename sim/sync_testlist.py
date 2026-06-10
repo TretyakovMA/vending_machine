@@ -12,7 +12,7 @@ XLSX_FILE = os.path.abspath(os.path.join(SCRIPT_DIR, "..", "doc", "testplan.xlsx
 YAML_FILE = os.path.join(SCRIPT_DIR, "tests_suite.yaml")
 
 # Список листов в Excel для парсинга
-TARGET_SHEETS = ["user_tests", "register_tests", "emergency_tests", "integration_tests", "errors_tests"]
+#TARGET_SHEETS = ["user_tests", "register_tests", "emergency_tests", "integration_tests", "errors_tests"]
 
 START_ROW = 2                 # Строка, с которой начинаются тесты
 COL_TEST_NAME = 2             # Столбец B (Имя теста)
@@ -40,10 +40,7 @@ def main():
     total_active_tests = 0
 
     # Обходим каждый целевой лист
-    for sheet_name in TARGET_SHEETS:
-        if sheet_name not in wb.sheetnames:
-            print(f"[WARNING] Sheet '{sheet_name}' not found in Excel. Skipping.")
-            continue
+    for sheet_name in wb.sheetnames:
             
         sheet = wb[sheet_name]
         sheet_tests = {}

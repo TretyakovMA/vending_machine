@@ -42,6 +42,7 @@ SEED           ?= random
 VERBOSITY      ?= UVM_LOW
 ITER           ?= 1
 SIM_START_TIME ?= N/A
+RUN_DIR        ?= .
 
 # =============================================================================
 # Правила сборки (одинаковые для всех ОС)
@@ -62,8 +63,8 @@ compile: pre_compile
 sim:
 	vsim -c \
 		-cvgperinstance \
-		-wlf "vsim_$(TEST_NAME)_$(ITER).wlf" \
-		-do "set NoQuitOnFinish 1; log -r /*; vcd file vsim_$(TEST_NAME)_$(ITER).vcd; vcd add -r /*; run -all; coverage save ucdb_$(TEST_NAME)_$(ITER).ucdb; quit -f" \
+		-wlf "$(RUN_DIR)/vsim_$(TEST_NAME)_$(ITER).wlf" \
+		-do "log -r /*; vcd file $(RUN_DIR)/vsim_$(TEST_NAME)_$(ITER).vcd; vcd add -r /*; run -all; coverage save $(RUN_DIR)/ucdb_$(TEST_NAME)_$(ITER).ucdb; quit" \
 		$(TOP_MODULE) \
 		-coverage \
 		-sv_seed $(SEED) \
@@ -71,9 +72,10 @@ sim:
 		"+RUN_COUNT=$(ITER)" \
 		"+UVM_VERBOSITY=$(VERBOSITY)" \
 		"+SIM_START_TIME=$(SIM_START_TIME)" \
+		"+LOG_DIR=$(RUN_DIR)/" \
 		-sv_lib $(UVM_DPI)
 
-UCDB_FILES = $(wildcard ucdb_*.ucdb)
+UCDB_FILES = $(wildcard ucdb_*.ucdb) $(wildcard runs/*/ucdb_*.ucdb)
 merge_coverage:
 	vcover merge -testassociated -verbose -out total.ucdb $(foreach f,$(UCDB_FILES),"$(f)")
 
@@ -81,6 +83,6 @@ clean:
 	-$(RM) transcript *.wlf *.ucdb *.log *.vcd total.ucdb $(SUB_ERR)
 
 clean_all: clean
-	-$(RMDIR) work $(SUB_ERR)
+	-$(RMDIR) work runs bugs summary.md $(SUB_ERR)
 
 .PHONY: all pre_compile compile sim merge_coverage clean clean_all

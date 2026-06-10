@@ -27,7 +27,6 @@ suites:
     client_session_after_change_all_registers_test: null
     client_session_with_interrupt_test: null
     write_register_with_interrupt_test: null
-    read_register_with_interrupt_test: null
   errors_tests:
     invalid_client_id_test: null
     invalid_coin_denomination_test: null
