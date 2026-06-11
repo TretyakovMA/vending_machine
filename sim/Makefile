@@ -10,6 +10,8 @@ ifeq ($(OS),Windows_NT)
     CREATE_WORK  := if not exist work vlib work
     # Игнорирование ошибок удаления (в Windows del падает, если файлов нет)
     SUB_ERR      := 2>NUL || rem
+	# Отключение файла transcript для Windows
+    TRANSCRIPT_OUT := NUL
 else
     # Настройки для Linux
 	DPI_OS_DIR   := linux_x86_64
@@ -17,8 +19,9 @@ else
     RMDIR        := rm -rf
     CREATE_WORK  := vlib work
     SUB_ERR      := 2>/dev/null || true
+	TRANSCRIPT_OUT := /dev/null
 endif
-
+#
 # =============================================================================
 # Переменные путей
 # =============================================================================
@@ -62,6 +65,7 @@ compile: pre_compile
 
 sim:
 	vsim -c \
+		-l $(TRANSCRIPT_OUT) \
 		-cvgperinstance \
 		-wlf "$(RUN_DIR)/vsim_$(TEST_NAME)_$(ITER).wlf" \
 		-do "log -r /*; vcd file $(RUN_DIR)/vsim_$(TEST_NAME)_$(ITER).vcd; vcd add -r /*; run -all; coverage save $(RUN_DIR)/ucdb_$(TEST_NAME)_$(ITER).ucdb; quit" \

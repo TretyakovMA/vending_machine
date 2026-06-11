@@ -8,3 +8,5 @@
 transcript
 work/
 .vscode/
+**/__pycache__/
+*.pyc

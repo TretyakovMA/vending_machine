@@ -23,10 +23,12 @@ suites:
   integration_tests:
     client_session_after_change_price_test: null
     client_session_after_change_discount_test: null
+    buy_for_dollars_after_change_exchange_rate_test: null
+    buy_for_euros_after_change_exchange_rate_test: null
     client_session_after_change_exchange_rate_test: null
     client_session_after_change_all_registers_test: null
-    client_session_with_interrupt_test: null
-    write_register_with_interrupt_test: null
+    client_session_with_emergency_test: null
+    write_registers_with_emergency_test: null
   errors_tests:
     invalid_client_id_test: null
     invalid_coin_denomination_test: null
